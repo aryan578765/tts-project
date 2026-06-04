@@ -1,0 +1,175 @@
+{
+  "model": "kokoro",
+  "endpoint_id": "3z59kpduf0vkil",
+  "timestamp": "2026-06-04T16:10:00",
+  "total_languages": 15,
+  "succeeded": 4,
+  "failed": 11,
+  "results": [
+    {
+      "language_code": "en",
+      "language_name": "English",
+      "script": "Latin",
+      "text": "The quick brown fox jumps over the lazy dog. This is a natural English sentence with varied phonemes.",
+      "success": true,
+      "generation_time_s": 3.883,
+      "audio_duration_s": 6.95,
+      "file_size_bytes": 333644,
+      "error": ""
+    },
+    {
+      "language_code": "es",
+      "language_name": "Spanish",
+      "script": "Latin",
+      "text": "El rápido zorro marrón salta sobre el perro perezoso. Esta es una oración natural en español.",
+      "success": true,
+      "generation_time_s": 3.8802,
+      "audio_duration_s": 5.775,
+      "file_size_bytes": 277244,
+      "error": ""
+    },
+    {
+      "language_code": "fr",
+      "language_name": "French",
+      "script": "Latin",
+      "text": "Le renard brun rapide saute par-dessus le chien paresseux. C'est une phrase naturelle en français.",
+      "success": false,
+      "generation_time_s": 2.2486,
+      "audio_duration_s": 0.0,
+      "file_size_bytes": 0,
+      "error": "Job failed: Synthesis failed: 404 Client Error. (Request ID: Root=1-6a2155c9-2033fc010d59053a5d3878b9;32d5d804-844f-44dc-a1aa-2ababcada518)\n\nEntry Not Found for url: https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices/ff_sixtine.pt."
+    },
+    {
+      "language_code": "de",
+      "language_name": "German",
+      "script": "Latin",
+      "text": "Der schnelle braune Fuchs springt über den faulen Hund. Dies ist ein natürlicher deutscher Satz.",
+      "success": false,
+      "generation_time_s": 1.2279,
+      "audio_duration_s": 0.0,
+      "file_size_bytes": 0,
+      "error": "Job failed: Invalid lang_code 'de'. Valid options: ['a', 'b', 'e', 'f', 'i', 'j', 'p', 'z']"
+    },
+    {
+      "language_code": "it",
+      "language_name": "Italian",
+      "script": "Latin",
+      "text": "La volpe marrone veloce salta sopra il cane pigro. Questa è una frase naturale in italiano.",
+      "success": true,
+      "generation_time_s": 3.6869,
+      "audio_duration_s": 6.05,
+      "file_size_bytes": 290444,
+      "error": ""
+    },
+    {
+      "language_code": "pt",
+      "language_name": "Portuguese",
+      "script": "Latin",
+      "text": "A rápida raposa marrom pula sobre o cão preguiçoso. Esta é uma frase natural em português.",
+      "success": false,
+      "generation_time_s": 1.8296,
+      "audio_duration_s": 0.0,
+      "file_size_bytes": 0,
+      "error": "Job failed: Synthesis failed: 404 Client Error. (Request ID: Root=1-6a2155d0-58aae32c75b9de4c53ae205b;96e5ebbe-97fb-4379-bd53-b73ee5729857)\n\nEntry Not Found for url: https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices/pf_daniele.pt."
+    },
+    {
+      "language_code": "ja",
+      "language_name": "Japanese",
+      "script": "CJK",
+      "text": "速い茶色の狐が怠けた犬を飛び越えます。これは自然な日本語の文章です。",
+      "success": false,
+      "generation_time_s": 3.0827,
+      "audio_duration_s": 0.0,
+      "file_size_bytes": 0,
+      "error": "Job failed: Synthesis failed: \nFailed initializing MeCab. Please see the README for possible solutions:\n\n    https://github.com/polm/fugashi\n\nIf you are still having trouble, please file an issue here, and include the\nERROR DETAILS below:\n\n    https://github.com/polm/fugashi/issues\n\nissueを英語で書く必要はありません。\n\n------------------- ERROR DETAILS ------------------------\narguments: [b'fugashi', b'-C', b'-r', b'/opt/conda/lib/python3.11/site-packages/unidic/dicdir/mecabrc', b'-d', b'/opt/conda/lib/python3.11/site-packages/unidic/dicdir']\nparam.cpp(69) [ifs] no such file or directory: /opt/conda/lib/python3.11/site-packages/unidic/dicdir/mecabrc\n----------------------------------------------------------\n"
+    },
+    {
+      "language_code": "zh",
+      "language_name": "Chinese (Mandarin)",
+      "script": "CJK",
+      "text": "快速的棕色狐狸跳过了懒惰的狗。这是一个自然的中文句子。",
+      "success": true,
+      "generation_time_s": 4.8025,
+      "audio_duration_s": 6.8,
+      "file_size_bytes": 326444,
+      "error": ""
+    },
+    {
+      "language_code": "ko",
+      "language_name": "Korean",
+      "script": "Hangul",
+      "text": "빠른 갈색 여우가 게으른 개를 뛰어넘습니다. 이것은 자연스러운 한국어 문장입니다.",
+      "success": false,
+      "generation_time_s": 0.7938,
+      "audio_duration_s": 0.0,
+      "file_size_bytes": 0,
+      "error": "Job failed: Invalid lang_code 'ko'. Valid options: ['a', 'b', 'e', 'f', 'i', 'j', 'p', 'z']"
+    },
+    {
+      "language_code": "hi",
+      "language_name": "Hindi",
+      "script": "Devanagari",
+      "text": "तेज़ भूरी लोमड़ी आलसी कुत्ते के ऊपर कूदती है। यह एक स्वाभाविक हिंदी वाक्य है।",
+      "success": false,
+      "generation_time_s": 1.246,
+      "audio_duration_s": 0.0,
+      "file_size_bytes": 0,
+      "error": "Job failed: Invalid lang_code 'hi'. Valid options: ['a', 'b', 'e', 'f', 'i', 'j', 'p', 'z']"
+    },
+    {
+      "language_code": "ar",
+      "language_name": "Arabic",
+      "script": "Arabic",
+      "text": "الثعلب البني السريع يقفز فوق الكلب الكسول. هذه جملة طبيعية باللغة العربية.",
+      "success": false,
+      "generation_time_s": 1.1276,
+      "audio_duration_s": 0.0,
+      "file_size_bytes": 0,
+      "error": "Job failed: Invalid lang_code 'ar'. Valid options: ['a', 'b', 'e', 'f', 'i', 'j', 'p', 'z']"
+    },
+    {
+      "language_code": "ru",
+      "language_name": "Russian",
+      "script": "Cyrillic",
+      "text": "Быстрая коричневая лиса перепрыгивает через ленивую собаку. Это естественное русское предложение.",
+      "success": false,
+      "generation_time_s": 1.1278,
+      "audio_duration_s": 0.0,
+      "file_size_bytes": 0,
+      "error": "Job failed: Invalid lang_code 'ru'. Valid options: ['a', 'b', 'e', 'f', 'i', 'j', 'p', 'z']"
+    },
+    {
+      "language_code": "tr",
+      "language_name": "Turkish",
+      "script": "Latin",
+      "text": "Hızlı kahverengi tilki tembel köpeğin üzerinden atlar. Bu doğal bir Türkçe cümledir.",
+      "success": false,
+      "generation_time_s": 1.122,
+      "audio_duration_s": 0.0,
+      "file_size_bytes": 0,
+      "error": "Job failed: Invalid lang_code 'tr'. Valid options: ['a', 'b', 'e', 'f', 'i', 'j', 'p', 'z']"
+    },
+    {
+      "language_code": "nl",
+      "language_name": "Dutch",
+      "script": "Latin",
+      "text": "De snelle bruine vos springt over de luie hond. Dit is een natuurlijke Nederlandse zin.",
+      "success": false,
+      "generation_time_s": 1.2314,
+      "audio_duration_s": 0.0,
+      "file_size_bytes": 0,
+      "error": "Job failed: Invalid lang_code 'nl'. Valid options: ['a', 'b', 'e', 'f', 'i', 'j', 'p', 'z']"
+    },
+    {
+      "language_code": "pl",
+      "language_name": "Polish",
+      "script": "Latin",
+      "text": "Szybki brązowy lis przeskakuje nad leniwym psem. To jest naturalne polskie zdanie.",
+      "success": false,
+      "generation_time_s": 1.1298,
+      "audio_duration_s": 0.0,
+      "file_size_bytes": 0,
+      "error": "Job failed: Invalid lang_code 'pl'. Valid options: ['a', 'b', 'e', 'f', 'i', 'j', 'p', 'z']"
+    }
+  ]
+}

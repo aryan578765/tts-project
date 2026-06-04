@@ -1,0 +1,14 @@
+test_id,title,text_length_chars,kokoro_gen_time_s,kokoro_audio_dur_s,kokoro_rtf,cosyvoice_gen_time_s,cosyvoice_audio_dur_s,cosyvoice_rtf
+test_1,Calm confidence monologue,137,3.0384,8.875,0.3424,55.4804,25.6,2.1672
+test_10,"Numbers, decimals, and currency",144,3.5776,19.2,0.1863,45.3375,49.6,0.9141
+test_11,Dates and times,201,2.6912,18.525,0.1453,47.8927,47.2,1.0147
+test_12,URLs and emails,199,2.5294,15.7,0.1611,34.6878,35.2,0.9854
+test_13,Mixed technical strings,161,2.7553,15.325,0.1798,37.9597,41.6,0.9125
+test_2,Descriptive scene with pacing,158,2.0684,10.575,0.1956,49.0874,25.6,1.9175
+test_3,Long-form stability test,408,3.0601,25.225,0.1213,58.8474,66.4,0.8863
+test_4,Structured list with question,163,3.9719,10.5,0.3783,25.9988,28.0,0.9285
+test_5,Quoted speech with hesitation,130,2.8371,8.5,0.3338,25.2521,23.2,1.0885
+test_6,Code-switching English-Spanish,111,2.4036,8.05,0.2986,19.9311,20.8,0.9582
+test_7,Sibilance stress test,153,2.1587,11.25,0.1919,17.0576,17.6,0.9692
+test_8,Start/end behavior test,86,1.7164,5.875,0.2922,12.5182,12.8,0.978
+test_9,Acronyms and technical terms,177,2.4798,13.175,0.1882,33.2668,36.8,0.904

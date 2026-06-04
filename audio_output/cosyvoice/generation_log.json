@@ -1,0 +1,127 @@
+{
+  "model": "cosyvoice",
+  "endpoint_id": "x3yzb0ve3mgx82",
+  "timestamp": "2026-06-04T15:59:29",
+  "total_generation_time_s": 463.3177,
+  "success_count": 13,
+  "fail_count": 0,
+  "entries": [
+    {
+      "test_id": "test_1",
+      "title": "Calm confidence monologue",
+      "text_length_chars": 137,
+      "generation_time_s": 55.4804,
+      "success": true,
+      "file_size_bytes": 1228844,
+      "duration_seconds": 25.6
+    },
+    {
+      "test_id": "test_2",
+      "title": "Descriptive scene with pacing",
+      "text_length_chars": 158,
+      "generation_time_s": 49.0874,
+      "success": true,
+      "file_size_bytes": 1228844,
+      "duration_seconds": 25.6
+    },
+    {
+      "test_id": "test_3",
+      "title": "Long-form stability test",
+      "text_length_chars": 408,
+      "generation_time_s": 58.8474,
+      "success": true,
+      "file_size_bytes": 3187244,
+      "duration_seconds": 66.4
+    },
+    {
+      "test_id": "test_4",
+      "title": "Structured list with question",
+      "text_length_chars": 163,
+      "generation_time_s": 25.9988,
+      "success": true,
+      "file_size_bytes": 1344044,
+      "duration_seconds": 28.0
+    },
+    {
+      "test_id": "test_5",
+      "title": "Quoted speech with hesitation",
+      "text_length_chars": 130,
+      "generation_time_s": 25.2521,
+      "success": true,
+      "file_size_bytes": 1113644,
+      "duration_seconds": 23.2
+    },
+    {
+      "test_id": "test_6",
+      "title": "Code-switching English-Spanish",
+      "text_length_chars": 111,
+      "generation_time_s": 19.9311,
+      "success": true,
+      "file_size_bytes": 998444,
+      "duration_seconds": 20.8
+    },
+    {
+      "test_id": "test_7",
+      "title": "Sibilance stress test",
+      "text_length_chars": 153,
+      "generation_time_s": 17.0576,
+      "success": true,
+      "file_size_bytes": 844844,
+      "duration_seconds": 17.6
+    },
+    {
+      "test_id": "test_8",
+      "title": "Start/end behavior test",
+      "text_length_chars": 86,
+      "generation_time_s": 12.5182,
+      "success": true,
+      "file_size_bytes": 614444,
+      "duration_seconds": 12.8
+    },
+    {
+      "test_id": "test_9",
+      "title": "Acronyms and technical terms",
+      "text_length_chars": 177,
+      "generation_time_s": 33.2668,
+      "success": true,
+      "file_size_bytes": 1766444,
+      "duration_seconds": 36.8
+    },
+    {
+      "test_id": "test_10",
+      "title": "Numbers, decimals, and currency",
+      "text_length_chars": 144,
+      "generation_time_s": 45.3375,
+      "success": true,
+      "file_size_bytes": 2380844,
+      "duration_seconds": 49.6
+    },
+    {
+      "test_id": "test_11",
+      "title": "Dates and times",
+      "text_length_chars": 201,
+      "generation_time_s": 47.8927,
+      "success": true,
+      "file_size_bytes": 2265644,
+      "duration_seconds": 47.2
+    },
+    {
+      "test_id": "test_12",
+      "title": "URLs and emails",
+      "text_length_chars": 199,
+      "generation_time_s": 34.6878,
+      "success": true,
+      "file_size_bytes": 1689644,
+      "duration_seconds": 35.2
+    },
+    {
+      "test_id": "test_13",
+      "title": "Mixed technical strings",
+      "text_length_chars": 161,
+      "generation_time_s": 37.9597,
+      "success": true,
+      "file_size_bytes": 1996844,
+      "duration_seconds": 41.6
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+[
+  {
+    "id": "test_1",
+    "title": "Calm confidence monologue",
+    "text": "I didn't rush this decision.\nI took my time, listened carefully, and chose what felt right.\nIt's not dramatic. It's just calm confidence.",
+    "covers": [
+      "1:Base voice naturalness",
+      "6:Emotional subtlety",
+      "7:Emotion-content alignment",
+      "14:Negation audibility",
+      "23:AI audibility"
+    ],
+    "assessment": "Listen for natural voice quality, subtle emotional tone matching the calm content, clear negation in 'didn't rush', and whether it sounds human or synthetic."
+  },
+  {
+    "id": "test_2",
+    "title": "Descriptive scene with pacing",
+    "text": "The room was quiet, almost still.\nOutside, traffic moved slowly, patiently, as if the city itself was thinking.\nNothing was urgent. Everything was deliberate.",
+    "covers": [
+      "2:Prosody continuity",
+      "4:Pause realism",
+      "5:Rhythm variability",
+      "6:Emotional subtlety",
+      "24:Overall realism ceiling"
+    ],
+    "assessment": "Evaluate prosodic flow across sentences, realism of pauses at commas and periods, rhythmic variation matching the contemplative mood, and overall realism."
+  },
+  {
+    "id": "test_3",
+    "title": "Long-form stability test",
+    "text": "This explanation is intentionally calm and steady.\nIt is meant to be listened to without effort or tension.\nThe goal is not to impress, persuade, or entertain, but to remain clear and consistent over time.\nAs the minutes pass, nothing important should change.\nThe voice should not drift.\nThe pacing should not collapse.\nIf this becomes tiring, irritating, or unstable, that will be noticeable before the end.",
+    "covers": [
+      "8:Voice stability",
+      "9:Long-form coherence",
+      "10:Listener comfort",
+      "2:Prosody continuity",
+      "14:Negation audibility"
+    ],
+    "assessment": "This is the longest single text. Check for voice drift, pacing collapse, listener fatigue, consistency of tone across all seven sentences, and clear negations."
+  },
+  {
+    "id": "test_4",
+    "title": "Structured list with question",
+    "text": "Here are the key principles to remember:\n– Focus matters more than speed.\n– Clarity beats complexity.\n– Consistency builds trust.\nDoes this sound obvious\nIt should",
+    "covers": [
+      "11:Structural awareness",
+      "12:Question intonation",
+      "13:Emphasis handling",
+      "4:Pause realism"
+    ],
+    "assessment": "Check if the model recognizes the list structure (pauses before dashes), applies rising intonation on the question without a question mark, and emphasizes key contrasts (focus vs speed, clarity vs complexity)."
+  },
+  {
+    "id": "test_5",
+    "title": "Quoted speech with hesitation",
+    "text": "He paused and said, \"This will not work,\" then added, \"at least not yet.\"\nThat hesitation mattered more than the words themselves.",
+    "covers": [
+      "15:Quoted speech prosody",
+      "14:Negation audibility",
+      "3:Intonation accuracy",
+      "4:Pause realism"
+    ],
+    "assessment": "Listen for prosodic shift into quoted speech, clear negations ('will not work', 'not yet'), natural pause after 'paused and said', and appropriate intonation contours."
+  },
+  {
+    "id": "test_6",
+    "title": "Code-switching English-Spanish",
+    "text": "This part is in English, but ahora cambiamos al español sin detenernos, and then we return smoothly to English.",
+    "covers": [
+      "16:Language prosody",
+      "17:Code-switch smoothness",
+      "1:Base voice naturalness"
+    ],
+    "assessment": "Evaluate whether the Spanish segment sounds natural with correct pronunciation, whether transitions in and out of Spanish are smooth, and whether voice identity is maintained across languages."
+  },
+  {
+    "id": "test_7",
+    "title": "Sibilance stress test",
+    "text": "Strategic systems scale slowly, especially sophisticated solutions serving sensitive situations.\nSynchronization, specificity, and sustainability matter.",
+    "covers": [
+      "18:Phonetic robustness",
+      "21:Sibilance control",
+      "5:Rhythm variability"
+    ],
+    "assessment": "Heavy sibilance load. Listen for harsh 's' sounds, distortion, lisp artifacts, or unnatural emphasis. Check that rhythm stays natural despite the alliterative challenge."
+  },
+  {
+    "id": "test_8",
+    "title": "Start/end behavior test",
+    "text": "This recording should begin cleanly and end without being cut off or padded awkwardly.",
+    "covers": [
+      "19:Audio cleanliness",
+      "20:Silence shaping",
+      "22:Start/end behavior"
+    ],
+    "assessment": "Check the very beginning and end of the audio. Is there a clean onset without clicks or pops? Does it end naturally without abrupt cutoff or excessive trailing silence?"
+  },
+  {
+    "id": "test_9",
+    "title": "Acronyms and technical terms",
+    "text": "Our API connects to the CRM, then writes events to SQL.\nNASA is unrelated, but it is a good acronym test.\nIn practice, most teams say \"A P I\" and sometimes say \"sequel\" for SQL.",
+    "covers": [
+      "25:Acronym handling",
+      "15:Quoted speech prosody",
+      "18:Phonetic robustness"
+    ],
+    "assessment": "API should be spelled out (A-P-I), CRM spelled out (C-R-M), SQL can be 'sequel' or spelled out, NASA should be spoken as a word. Check consistency and confidence in acronym handling."
+  },
+  {
+    "id": "test_10",
+    "title": "Numbers, decimals, and currency",
+    "text": "The amount is $1,250.75, not $1250.\nThe price is €19.99, and the budget is AMD 25,000.\nThe interest rate is 3.5 percent, and the margin is 0.75.",
+    "covers": [
+      "26:Numbers and decimals",
+      "27:Currency and amounts",
+      "14:Negation audibility"
+    ],
+    "assessment": "Check correct verbalization: 'one thousand two hundred fifty dollars and seventy-five cents' or similar, 'nineteen ninety-nine euros', 'twenty-five thousand AMD'. Decimals should be clear. Negation in 'not' should be audible."
+  },
+  {
+    "id": "test_11",
+    "title": "Dates and times",
+    "text": "The meeting is on 12/07/2025 at 7:45 PM.\nThe same date can be written as 2025-12-07, and the time can be 07:45.\nIf the date format is ambiguous, the reading should still sound confident and consistent.",
+    "covers": [
+      "28:Dates and times",
+      "8:Voice stability",
+      "3:Intonation accuracy"
+    ],
+    "assessment": "Date should be read as 'December seventh, twenty twenty-five' or 'the twelfth of July'. Time as 'seven forty-five PM'. ISO format should match. Check confidence and consistency across both formats."
+  },
+  {
+    "id": "test_12",
+    "title": "URLs and emails",
+    "text": "For details, visit https://help.vbout.com and then open the article.\nIf you need support, email support@vbout.com.\nThe URL and the email should not become a long character-by-character spelling test.",
+    "covers": [
+      "29:URLs and emails",
+      "18:Phonetic robustness",
+      "5:Rhythm variability"
+    ],
+    "assessment": "URL should be read naturally (e.g., 'help dot v-bout dot com') not spelled character by character. Email similarly natural. Pacing should not break down when encountering these tokens."
+  },
+  {
+    "id": "test_13",
+    "title": "Mixed technical strings",
+    "text": "We deployed version v2.1.0 to staging.\nThe RunPod endpoint is 6bfcpifl87zlax, and the job ID is 9f2a1c7e.\nThese strings should not break pacing or pronunciation.",
+    "covers": [
+      "30:Mixed technical strings",
+      "25:Acronym handling",
+      "22:Start/end behavior"
+    ],
+    "assessment": "Version should be 'v two point one point zero' or similar. Alphanumeric IDs will likely be spelled out — check that the model doesn't stumble, stutter, or break pacing on these unusual token sequences."
+  }
+]

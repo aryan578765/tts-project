@@ -1,0 +1,24 @@
+# Kokoro TTS - RunPod Serverless Dependencies
+# =============================================
+
+# Core TTS engine
+kokoro>=0.9.4
+
+# Japanese language support
+misaki[ja]
+
+# Chinese language support
+misaki[zh]
+
+# PyTorch (provided by base image, pinned for reproducibility)
+torch>=2.2.1
+torchaudio>=2.2.1
+
+# Audio I/O
+soundfile>=0.12.1
+
+# RunPod serverless SDK
+runpod>=1.7.0
+
+# Numpy (transitive, pinned for compatibility)
+numpy>=1.24.0

@@ -1,0 +1,5 @@
+FROM patelaryan777/cosyvoice2-runpod:v4
+COPY handler.py /app/handler.py
+CMD ["python", "-u", "/app/handler.py"]
+
+

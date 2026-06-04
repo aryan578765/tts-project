@@ -1,0 +1,91 @@
+{
+  "model": "cosyvoice",
+  "endpoint_id": "x3yzb0ve3mgx82",
+  "timestamp": "2026-06-04T16:08:30",
+  "results": [
+    {
+      "test_id": "ssml_break_10ms",
+      "description": "10ms break between words",
+      "text_plain": "This is a test of pause insertion.",
+      "text_ssml": "This is a <break time=\"10ms\"/> test of pause insertion.",
+      "plain_success": true,
+      "ssml_success": true,
+      "plain_duration_s": 6.4,
+      "ssml_duration_s": 16.0,
+      "duration_difference_s": 9.6,
+      "pause_respected": true,
+      "plain_gen_time_s": 8.3303,
+      "ssml_gen_time_s": 15.1942
+    },
+    {
+      "test_id": "ssml_break_250ms",
+      "description": "250ms break (noticeable pause)",
+      "text_plain": "The system is processing your request now.",
+      "text_ssml": "The system is processing <break time=\"250ms\"/> your request now.",
+      "plain_success": true,
+      "ssml_success": true,
+      "plain_duration_s": 6.4,
+      "ssml_duration_s": 18.4,
+      "duration_difference_s": 12.0,
+      "pause_respected": true,
+      "plain_gen_time_s": 7.5099,
+      "ssml_gen_time_s": 18.0587
+    },
+    {
+      "test_id": "ssml_break_500ms",
+      "description": "500ms break (dramatic pause)",
+      "text_plain": "I have one thing to say. Listen carefully.",
+      "text_ssml": "I have one thing to say. <break time=\"500ms\"/> Listen carefully.",
+      "plain_success": true,
+      "ssml_success": true,
+      "plain_duration_s": 8.0,
+      "ssml_duration_s": 18.4,
+      "duration_difference_s": 10.4,
+      "pause_respected": true,
+      "plain_gen_time_s": 9.1766,
+      "ssml_gen_time_s": 17.5249
+    },
+    {
+      "test_id": "ssml_break_1s",
+      "description": "1 second break (long pause)",
+      "text_plain": "First point. Second point.",
+      "text_ssml": "First point. <break time=\"1s\"/> Second point.",
+      "plain_success": true,
+      "ssml_success": true,
+      "plain_duration_s": 4.8,
+      "ssml_duration_s": 14.4,
+      "duration_difference_s": 9.6,
+      "pause_respected": true,
+      "plain_gen_time_s": 6.4181,
+      "ssml_gen_time_s": 14.0251
+    },
+    {
+      "test_id": "ssml_multiple_breaks",
+      "description": "Multiple breaks in one sentence",
+      "text_plain": "Step one, step two, step three, done.",
+      "text_ssml": "Step one, <break time=\"200ms\"/> step two, <break time=\"200ms\"/> step three, <break time=\"500ms\"/> done.",
+      "plain_success": true,
+      "ssml_success": true,
+      "plain_duration_s": 8.8,
+      "ssml_duration_s": 26.12,
+      "duration_difference_s": 17.32,
+      "pause_respected": true,
+      "plain_gen_time_s": 9.7367,
+      "ssml_gen_time_s": 24.687
+    },
+    {
+      "test_id": "ssml_break_emphasis",
+      "description": "Break combined with emphasis context",
+      "text_plain": "This is not acceptable. We need to fix it.",
+      "text_ssml": "This is not acceptable. <break time=\"300ms\"/> We need to fix it.",
+      "plain_success": true,
+      "ssml_success": true,
+      "plain_duration_s": 8.8,
+      "ssml_duration_s": 19.2,
+      "duration_difference_s": 10.4,
+      "pause_respected": true,
+      "plain_gen_time_s": 9.8874,
+      "ssml_gen_time_s": 18.1864
+    }
+  ]
+}
