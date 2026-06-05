@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Model Evaluation Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.15);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --kokoro-color: #ec4899;
+            --cosyvoice-color: #8b5cf6;
+            --styletts-color: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            border-left: 4px solid var(--primary);
+            padding-left: 0.75rem;
+        }
+
+        /* Benchmark Summary Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-kokoro { background-color: rgba(236, 72, 153, 0.15); color: var(--kokoro-color); }
+        .badge-cosyvoice { background-color: rgba(139, 92, 246, 0.15); color: var(--cosyvoice-color); }
+        .badge-styletts { background-color: rgba(16, 185, 129, 0.15); color: var(--styletts-color); }
+        .badge-commercial { background-color: rgba(156, 163, 175, 0.15); color: #e5e7eb; }
+
+        /* Playground form styling */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            padding: 0.75rem;
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
+        button.btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        button.btn:hover {
+            background-color: #2563eb;
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        button.btn:disabled {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Test cases section */
+        .test-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .test-item {
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .test-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        .test-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .test-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .test-text {
+            font-size: 0.95rem;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 0.75rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
+            white-space: pre-wrap;
+            color: #e5e7eb;
+        }
+
+        .audio-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .audio-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        .audio-player-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .audio-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        audio {
+            width: 100%;
+            height: 40px;
+            border-radius: 30px;
+        }
+
+        /* Custom styling to support dark mode audio player controls on some browsers */
+        audio::-webkit-media-controls-enclosure {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .status-container {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .status-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .status-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .status-loading {
+            background-color: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TTS Model Evaluation</h1>
+            <p>Interactive Audio Evaluation Dashboard & Serverless Playground</p>
+        </header>
+
+        <!-- Benchmark Section -->
+        <section class="card">
+            <h2 class="card-title">Performance & Cost Benchmarks (L4 GPU)</h2>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Model Size</th>
+                            <th>Real-Time Factor (RTF)</th>
+                            <th>Cost / Audio Hour</th>
+                            <th>Cost / 1M Chars</th>
+                            <th>Savings vs Commercial</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-kokoro">Kokoro v1.0</span></td>
+                            <td>82M params</td>
+                            <td><strong>0.2319</strong> (4.3x speed)</td>
+                            <td>$0.1600</td>
+                            <td>$2.96</td>
+                            <td><strong>8.0x savings</strong></td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-styletts">StyleTTS 2</span></td>
+                            <td>~150M params</td>
+                            <td><strong>0.1500</strong> (6.7x speed)</td>
+                            <td>$0.1035</td>
+                            <td>$1.92</td>
+                            <td><strong>12.4x savings</strong></td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-cosyvoice">CosyVoice 2.0</span></td>
+                            <td>500M params</td>
+                            <td><strong>1.1249</strong> (0.9x speed)</td>
+                            <td>$0.7762</td>
+                            <td>$14.45</td>
+                            <td><strong>1.6x savings</strong></td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-commercial">Commercial Baseline</span></td>
+                            <td>Proprietary</td>
+                            <td>N/A</td>
+                            <td>$1.2800</td>
+                            <td>$16.00</td>
+                            <td>Baseline</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+                * Marginal GPU costs calculated on RunPod serverless L4 GPU pricing ($0.69/hr). Savings compare against the $1.28/hr commercial baseline.
+            </p>
+        </section>
+
+        <!-- Interactive Playground -->
+        <section class="card">
+            <h2 class="card-title">Interactive TTS Playground</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+                Generate custom speech on-the-fly using the deployed serverless endpoints. All requests are sent directly from your browser to RunPod, ensuring your credentials are kept secure.
+            </p>
+            
+            <div class="form-group">
+                <label for="apiKey">RunPod API Key</label>
+                <input type="password" id="apiKey" class="form-control" placeholder="Enter your rpa_... API key">
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="modelSelect">Select Model</label>
+                    <select id="modelSelect" class="form-control">
+                        <option value="kokoro">Kokoro v1.0 (US Female, High Priority)</option>
+                        <option value="cosyvoice">CosyVoice 2.0 (SFT English Female)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="voiceSelect">Select Voice / Speaker ID</label>
+                    <select id="voiceSelect" class="form-control">
+                        <!-- Kokoro voices -->
+                        <option class="kokoro-opt" value="af_heart">af_heart (US Female - Default)</option>
+                        <option class="kokoro-opt" value="af_bella">af_bella (US Female)</option>
+                        <option class="kokoro-opt" value="bf_emma">bf_emma (UK Female)</option>
+                        <option class="kokoro-opt" value="ef_dora">ef_dora (Spanish Female)</option>
+                        <option class="kokoro-opt" value="ff_sixtine">ff_sixtine (French Female)</option>
+                        <option class="kokoro-opt" value="zf_xiaobei">zf_xiaobei (Chinese Female)</option>
+                        <!-- CosyVoice voices -->
+                        <option class="cosy-opt" value="英文女" style="display:none;">英文女 (English Female - Default)</option>
+                        <option class="cosy-opt" value="中文女" style="display:none;">中文女 (Chinese Female)</option>
+                        <option class="cosy-opt" value="英文男" style="display:none;">英文男 (English Male)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="textPrompt">Input Text</label>
+                <textarea id="textPrompt" class="form-control" rows="3" placeholder="Type custom text to synthesize... (e.g. Test pause support by adding: This is a <break time='500ms'/> pause test.)"></textarea>
+            </div>
+
+            <button id="generateBtn" class="btn">Generate Speech</button>
+
+            <div id="statusContainer" class="status-container"></div>
+            
+            <div id="playgroundAudioContainer" style="display:none; margin-top: 1.5rem;" class="audio-player-wrapper">
+                <div class="audio-label">
+                    <span>Generated Audio</span>
+                    <span id="playgroundMeta" style="color: var(--success)"></span>
+                </div>
+                <audio id="playgroundAudio" controls></audio>
+            </div>
+        </section>
+
+        <!-- Test Cases Section -->
+        <section class="card">
+            <h2 class="card-title">Standardized Test Cases (13 Monologues)</h2>
+            <div class="test-list" id="testListContainer">
+                <!-- Programmatically populated or rendered directly -->
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Standardized 13 test texts data
+        const testCases = [
+            {
+                id: "test_1",
+                title: "Calm confidence monologue",
+                text: "I didn't rush this decision.\nI took my time, listened carefully, and chose what felt right.\nIt's not dramatic. It's just calm confidence.",
+                meta: "Naturalness, subtleness, negations"
+            },
+            {
+                id: "test_2",
+                title: "Descriptive scene with pacing",
+                text: "The room was quiet, almost still.\nOutside, traffic moved slowly, patiently, as if the city itself was thinking.\nNothing was urgent. Everything was deliberate.",
+                meta: "Prosody flow, pause realism, silence shaping"
+            },
+            {
+                id: "test_3",
+                title: "Long-form stability test",
+                text: "This explanation is intentionally calm and steady.\nIt is meant to be listened to without effort or tension.\nThe goal is not to impress, persuade, or entertain, but to remain clear and consistent over time.\nAs the minutes pass, nothing important should change.\nThe voice should not drift.\nThe pacing should not collapse.\nIf this becomes tiring, irritating, or unstable, that will be noticeable before the end.",
+                meta: "Long-form stability, pitch drift, listener comfort"
+            },
+            {
+                id: "test_4",
+                title: "Structured list with question",
+                text: "Here are the key principles to remember:\n– Focus matters more than speed.\n– Clarity beats complexity.\n– Consistency builds trust.\nDoes this sound obvious\nIt should",
+                meta: "List structure pauses, question intonation without question mark"
+            },
+            {
+                id: "test_5",
+                title: "Quoted speech with hesitation",
+                text: "He paused and said, \"This will not work,\" then added, \"at least not yet.\"\nThat hesitation mattered more than the words themselves.",
+                meta: "Prosodic quote shifts, comma hesitation pauses"
+            },
+            {
+                id: "test_6",
+                title: "Code-switching English-Spanish",
+                text: "This part is in English, but ahora cambiamos al español sin detenernos, and then we return smoothly to English.",
+                meta: "Smooth language transition, Spanish phonetic accuracy"
+            },
+            {
+                id: "test_7",
+                title: "Sibilance stress test",
+                text: "Strategic systems scale slowly, especially sophisticated solutions serving sensitive situations.\nSynchronization, specificity, and sustainability matter.",
+                meta: "Heavy sibilants control, phonetic robustness"
+            },
+            {
+                id: "test_8",
+                title: "Start/end behavior test",
+                text: "This recording should begin cleanly and end without being cut off or padded awkwardly.",
+                meta: "Onset and offset cleanliness, silence shaping"
+            },
+            {
+                id: "test_9",
+                title: "Acronyms and technical terms",
+                text: "Our API connects to the CRM, then writes events to SQL.\nNASA is unrelated, but it is a good acronym test.\nIn practice, most teams say \"A P I\" and sometimes say \"sequel\" for SQL.",
+                meta: "Spell-outs vs word pronunciation"
+            },
+            {
+                id: "test_10",
+                title: "Numbers, decimals, and currency",
+                text: "The amount is $1,250.75, not $1250.\nThe price is €19.99, and the budget is AMD 25,000.\nThe interest rate is 3.5 percent, and the margin is 0.75.",
+                meta: "Numbers, decimals, and currency formatting"
+            },
+            {
+                id: "test_11",
+                title: "Dates and times",
+                text: "The meeting is on 12/07/2025 at 7:45 PM.\nThe same date can be written as 2025-12-07, and the time can be 07:45.\nIf the date format is ambiguous, the reading should still sound confident and consistent.",
+                meta: "Multiple date formats, times reading"
+            },
+            {
+                id: "test_12",
+                title: "URLs and emails",
+                text: "For details, visit https://help.vbout.com and then open the article.\nIf you need support, email support@vbout.com.\nThe URL and the email should not become a long character-by-character spelling test.",
+                meta: "URLs and emails pronunciation"
+            },
+            {
+                id: "test_13",
+                title: "Mixed technical strings",
+                text: "We deployed version v2.1.0 to staging.\nThe RunPod endpoint is 6bfcpifl87zlax, and the job ID is 9f2a1c7e.\nThese strings should not break pacing or pronunciation.",
+                meta: "Technical version strings, alphanumeric IDs pacing"
+            }
+        ];
+
+        // Endpoint routing mapping
+        const endpointMapping = {
+            kokoro: {
+                id: "3z59kpduf0vkil",
+                payloadBuilder: (text, voice) => ({
+                    input: {
+                        text: text,
+                        voice: voice,
+                        speed: 1.0,
+                        lang_code: voice.startsWith("bf") ? "b" : voice.startsWith("ef") ? "e" : voice.startsWith("ff") ? "f" : voice.startsWith("zf") ? "z" : "a",
+                        ssml: text.includes("<break")
+                    }
+                })
+            },
+            cosyvoice: {
+                id: "x3yzb0ve3mgx82",
+                payloadBuilder: (text, voice) => ({
+                    input: {
+                        text: text,
+                        voice: voice,
+                        speed: 1.0,
+                        language: voice === "中文女" ? "zh" : "en",
+                        mode: "sft"
+                    }
+                })
+            }
+        };
+
+        // Render standard test cases
+        const container = document.getElementById("testListContainer");
+        testCases.forEach((c) => {
+            const item = document.createElement("div");
+            item.className = "test-item";
+            
+            const kokoroUrl = `audio_output/kokoro/${c.id}.wav`;
+            const cosyvoiceUrl = `audio_output/cosyvoice/${c.id}.wav`;
+
+            item.innerHTML = `
+                <div class="test-header">
+                    <span class="test-title">${c.id.toUpperCase()}: ${c.title}</span>
+                    <span class="test-meta">${c.meta}</span>
+                </div>
+                <div class="test-text">${c.text}</div>
+                <div class="audio-grid">
+                    <div class="audio-player-wrapper">
+                        <div class="audio-label">
+                            <span>Kokoro v1.0</span>
+                        </div>
+                        <audio src="${kokoroUrl}" controls preload="metadata"></audio>
+                    </div>
+                    <div class="audio-player-wrapper">
+                        <div class="audio-label">
+                            <span>CosyVoice 2.0</span>
+                        </div>
+                        <audio src="${cosyvoiceUrl}" controls preload="metadata"></audio>
+                    </div>
+                </div>
+            `;
+            container.appendChild(item);
+        });
+
+        // Handle playground selector toggle
+        const modelSelect = document.getElementById("modelSelect");
+        const voiceSelect = document.getElementById("voiceSelect");
+
+        modelSelect.addEventListener("change", () => {
+            const val = modelSelect.value;
+            document.querySelectorAll(".kokoro-opt").forEach(opt => {
+                opt.style.display = val === "kokoro" ? "block" : "none";
+            });
+            document.querySelectorAll(".cosy-opt").forEach(opt => {
+                opt.style.display = val === "cosyvoice" ? "block" : "none";
+            });
+            
+            // Set default voice based on selected model
+            if (val === "kokoro") {
+                voiceSelect.value = "af_heart";
+            } else {
+                voiceSelect.value = "英文女";
+            }
+        });
+
+        // Trigger TTS Request
+        const generateBtn = document.getElementById("generateBtn");
+        const statusContainer = document.getElementById("statusContainer");
+        const audioWrapper = document.getElementById("playgroundAudioContainer");
+        const audioPlayer = document.getElementById("playgroundAudio");
+        const metaField = document.getElementById("playgroundMeta");
+
+        generateBtn.addEventListener("click", async () => {
+            const apiKey = document.getElementById("apiKey").value.trim();
+            const text = document.getElementById("textPrompt").value.trim();
+            const model = modelSelect.value;
+            const voice = voiceSelect.value;
+
+            if (!apiKey) {
+                showStatus("Please enter your RunPod API key.", "error");
+                return;
+            }
+            if (!text) {
+                showStatus("Please enter some text to synthesize.", "error");
+                return;
+            }
+
+            showStatus("Submitting job to RunPod serverless...", "loading");
+            generateBtn.disabled = true;
+            audioWrapper.style.display = "none";
+
+            const route = endpointMapping[model];
+            const payload = route.payloadBuilder(text, voice);
+            
+            try {
+                // Submit runsync job
+                const response = await fetch(`https://api.runpod.ai/v2/${route.id}/runsync`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.status === 401) {
+                    throw new Error("Unauthorized: Invalid RunPod API Key");
+                }
+                if (!response.ok) {
+                    throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
+                }
+
+                let jobData = await response.json();
+                let status = jobData.status;
+
+                // Poll if needed
+                if (status === "IN_QUEUE" || status === "IN_PROGRESS") {
+                    showStatus("Job in progress. Polling for results...", "loading");
+                    jobData = await pollJobStatus(route.id, jobData.id, apiKey);
+                }
+
+                if (jobData.status === "COMPLETED") {
+                    const output = jobData.output || {};
+                    let audioBase64 = output.audio_base64 || output.audio || output.audio_data;
+                    
+                    if (!audioBase64) {
+                        throw new Error("Job completed but no audio content was returned in response.");
+                    }
+
+                    // Handle nested output wrap
+                    if (typeof audioBase64 === "object" && audioBase64 !== null) {
+                        audioBase64 = audioBase64.audio || audioBase64.audio_base64;
+                    }
+
+                    const audioSrc = `data:audio/wav;base64,${audioBase64}`;
+                    audioPlayer.src = audioSrc;
+                    
+                    const duration = output.duration_seconds || output.duration || "?";
+                    metaField.innerText = `Success (${duration}s duration)`;
+                    audioWrapper.style.display = "block";
+                    showStatus("Synthesis completed successfully!", "success");
+                } else {
+                    const err = jobData.error || "Unknown execution error";
+                    throw new Error(`Job execution failed: ${err}`);
+                }
+
+            } catch (err) {
+                showStatus(err.message, "error");
+            } finally {
+                generateBtn.disabled = false;
+            }
+        });
+
+        // Helper to poll job status
+        async function pollJobStatus(endpointId, jobId, apiKey) {
+            const pollUrl = `https://api.runpod.ai/v2/${endpointId}/status/${jobId}`;
+            let attempts = 0;
+            const maxAttempts = 100;
+            
+            while (attempts < maxAttempts) {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                try {
+                    const response = await fetch(pollUrl, {
+                        headers: { "Authorization": `Bearer ${apiKey}` }
+                    });
+                    const data = await response.json();
+                    
+                    if (data.status === "COMPLETED" || data.status === "FAILED") {
+                        return data;
+                    }
+                } catch (e) {
+                    console.warn("Polling request failed, retrying...", e);
+                }
+                attempts++;
+            }
+            throw new Error("Polling timed out. The job is still running on RunPod.");
+        }
+
+        // Show status banner helper
+        function showStatus(msg, type) {
+            statusContainer.innerText = msg;
+            statusContainer.className = "status-container";
+            statusContainer.style.display = "block";
+            
+            if (type === "success") {
+                statusContainer.classList.add("status-success");
+            } else if (type === "error") {
+                statusContainer.classList.add("status-error");
+            } else if (type === "loading") {
+                statusContainer.classList.add("status-loading");
+            }
+        }
+    </script>
+</body>
+</html>
