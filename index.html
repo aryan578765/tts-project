@@ -246,15 +246,54 @@
 
         .audio-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 1.5rem;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
+            .audio-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 600px) {
             .audio-grid {
                 grid-template-columns: 1fr;
                 gap: 1rem;
             }
+        }
+
+        .no-audio-notice {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            padding: 0.75rem;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            border: 1px dashed var(--card-border);
+            text-align: center;
+        }
+
+        .micro-pause-demo {
+            margin-top: 1rem;
+            padding: 1.25rem;
+            background-color: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            border-radius: 8px;
+        }
+
+        .micro-pause-demo h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        .micro-pause-demo .demo-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            line-height: 1.5;
         }
 
         .audio-player-wrapper {
@@ -427,6 +466,44 @@
             </div>
         </section>
 
+        <!-- Micro-Pause Demo Section -->
+        <section class="card">
+            <h2 class="card-title">Micro-Pause (&lt;10ms) Word-by-Word Demo</h2>
+            <div class="micro-pause-demo">
+                <h3>Test Sentence: Every word separated by &lt;10ms break</h3>
+                <div class="demo-text">
+                    <strong>Original text:</strong> "I didn't rush this decision. I took my time, listened carefully, and chose what felt right."<br>
+                    <strong>SSML version:</strong> Each word is separated by a <code>&lt;break time="10ms"/&gt;</code> tag to insert a micro-pause between every word.
+                </div>
+                <div class="audio-grid">
+                    <div class="audio-player-wrapper">
+                        <div class="audio-label">
+                            <span class="badge badge-kokoro">Kokoro v1.0</span>
+                            <span style="color: var(--success); font-size: 0.75rem;">SSML Supported ✓</span>
+                        </div>
+                        <audio src="audio_output/kokoro/ssml_tests/micro_pause_every_word.wav" controls preload="metadata"></audio>
+                    </div>
+                    <div class="audio-player-wrapper">
+                        <div class="audio-label">
+                            <span class="badge badge-cosyvoice">CosyVoice 2.0</span>
+                            <span style="color: var(--warning); font-size: 0.75rem;">SSML Not Supported ✗</span>
+                        </div>
+                        <div class="no-audio-notice">CosyVoice does not support SSML &lt;break&gt; tags. Micro-pause control is not available.</div>
+                    </div>
+                    <div class="audio-player-wrapper">
+                        <div class="audio-label">
+                            <span class="badge badge-styletts">StyleTTS 2</span>
+                            <span style="color: var(--text-muted); font-size: 0.75rem;">Pending audio</span>
+                        </div>
+                        <div class="no-audio-notice">StyleTTS 2 audio pending — awaiting endpoint access.</div>
+                    </div>
+                </div>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">
+                * The micro-pause demo inserts a &lt;10ms silence between every word. This tests whether the model can add subtle word-level spacing without disrupting overall sentence intonation.
+            </p>
+        </section>
+
         <!-- Test Cases Section -->
         <section class="card">
             <h2 class="card-title">Standardized Test Cases (13 Monologues)</h2>
@@ -556,6 +633,8 @@
             const kokoroUrl = `audio_output/kokoro/${c.id}.wav`;
             const cosyvoiceUrl = `audio_output/cosyvoice/${c.id}.wav`;
 
+            const stylettsUrl = `audio_output/styletts2/${c.id}.wav`;
+
             item.innerHTML = `
                 <div class="test-header">
                     <span class="test-title">${c.id.toUpperCase()}: ${c.title}</span>
@@ -565,15 +644,21 @@
                 <div class="audio-grid">
                     <div class="audio-player-wrapper">
                         <div class="audio-label">
-                            <span>Kokoro v1.0</span>
+                            <span class="badge badge-kokoro">Kokoro v1.0</span>
                         </div>
                         <audio src="${kokoroUrl}" controls preload="metadata"></audio>
                     </div>
                     <div class="audio-player-wrapper">
                         <div class="audio-label">
-                            <span>CosyVoice 2.0</span>
+                            <span class="badge badge-cosyvoice">CosyVoice 2.0</span>
                         </div>
                         <audio src="${cosyvoiceUrl}" controls preload="metadata"></audio>
+                    </div>
+                    <div class="audio-player-wrapper">
+                        <div class="audio-label">
+                            <span class="badge badge-styletts">StyleTTS 2</span>
+                        </div>
+                        <audio src="${stylettsUrl}" controls preload="metadata" onerror="this.parentElement.innerHTML='<div class=no-audio-notice>Audio pending — awaiting StyleTTS 2 endpoint access</div>';"></audio>
                     </div>
                 </div>
             `;
