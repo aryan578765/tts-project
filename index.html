@@ -414,7 +414,7 @@
         <section class="card">
             <h2 class="card-title">Interactive TTS Playground</h2>
             <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
-                Generate custom speech on-the-fly using the deployed serverless endpoints. All requests are sent directly from your browser to RunPod, ensuring your credentials are kept secure.
+                Generate custom speech on-the-fly using the deployed serverless endpoints. All requests are sent directly from your browser to RunPod.
             </p>
             
             <div class="form-group">
@@ -426,31 +426,37 @@
                 <div class="form-group">
                     <label for="modelSelect">Select Model</label>
                     <select id="modelSelect" class="form-control">
-                        <option value="kokoro">Kokoro v1.0 (US Female, High Priority)</option>
-                        <option value="cosyvoice">CosyVoice 2.0 (SFT English Female)</option>
+                        <option value="kokoro">Kokoro v1.0 (High Priority)</option>
+                        <option value="cosyvoice">CosyVoice 2.0</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="voiceSelect">Select Voice / Speaker ID</label>
+                    <label for="voiceSelect">Select Voice</label>
                     <select id="voiceSelect" class="form-control">
                         <!-- Kokoro voices -->
-                        <option class="kokoro-opt" value="af_heart">af_heart (US Female - Default)</option>
-                        <option class="kokoro-opt" value="af_bella">af_bella (US Female)</option>
-                        <option class="kokoro-opt" value="bf_emma">bf_emma (UK Female)</option>
-                        <option class="kokoro-opt" value="ef_dora">ef_dora (Spanish Female)</option>
-                        <option class="kokoro-opt" value="ff_sixtine">ff_sixtine (French Female)</option>
-                        <option class="kokoro-opt" value="zf_xiaobei">zf_xiaobei (Chinese Female)</option>
+                        <option class="kokoro-opt" value="af_heart" data-lang="a">af_heart (US Female - Default)</option>
+                        <option class="kokoro-opt" value="af_bella" data-lang="a">af_bella (US Female)</option>
+                        <option class="kokoro-opt" value="bf_emma" data-lang="b">bf_emma (UK Female)</option>
+                        <option class="kokoro-opt" value="ef_dora" data-lang="e">ef_dora (Spanish Female)</option>
+                        <option class="kokoro-opt" value="ff_sixtine" data-lang="f">ff_sixtine (French Female)</option>
+                        <option class="kokoro-opt" value="if_sara" data-lang="i">if_sara (Italian Female)</option>
+                        <option class="kokoro-opt" value="zf_xiaobei" data-lang="z">zf_xiaobei (Chinese Female)</option>
                         <!-- CosyVoice voices -->
-                        <option class="cosy-opt" value="英文女" style="display:none;">英文女 (English Female - Default)</option>
-                        <option class="cosy-opt" value="中文女" style="display:none;">中文女 (Chinese Female)</option>
-                        <option class="cosy-opt" value="英文男" style="display:none;">英文男 (English Male)</option>
+                        <option class="cosy-opt" value="英文女" data-lang="en" style="display:none;">English Female (Default)</option>
+                        <option class="cosy-opt" value="中文女" data-lang="zh" style="display:none;">Chinese Female</option>
+                        <option class="cosy-opt" value="英文男" data-lang="en" style="display:none;">English Male</option>
                     </select>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="textPrompt">Input Text</label>
-                <textarea id="textPrompt" class="form-control" rows="3" placeholder="Type custom text to synthesize... (e.g. Test pause support by adding: This is a <break time='500ms'/> pause test.)"></textarea>
+                <textarea id="textPrompt" class="form-control" rows="3" placeholder="Type text to synthesize..."></textarea>
+            </div>
+
+            <div style="background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; padding: 0.75rem; margin-bottom: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+                <strong style="color: var(--primary);">SSML Pause Syntax:</strong> Use <code>&lt;break time="10ms"/&gt;</code> or <code>&lt;break time="500ms"/&gt;</code> to insert pauses.<br>
+                Example: <em>Hello <code>&lt;break time="250ms"/&gt;</code> world</em>
             </div>
 
             <button id="generateBtn" class="btn">Generate Speech</button>
@@ -466,6 +472,31 @@
             </div>
         </section>
 
+
+        <!-- SSML Micro-Pause Comparison -->
+        <section class="card">
+            <h2 class="card-title">SSML Micro-Pause Comparison</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Sentence with <code>&lt;break time="10ms"/&gt;</code> between every word vs. the original (no pauses). Tests whether micro-gaps alter sentence intonation.
+            </p>
+            <div class="audio-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="audio-player-wrapper">
+                    <div class="audio-label">
+                        <span class="badge badge-kokoro">Kokoro — Original (no pauses)</span>
+                    </div>
+                    <audio src="audio_output/kokoro/test_1.wav" controls preload="metadata"></audio>
+                </div>
+                <div class="audio-player-wrapper">
+                    <div class="audio-label">
+                        <span class="badge badge-kokoro">Kokoro — With &lt;10ms pauses</span>
+                    </div>
+                    <audio src="audio_output/kokoro/ssml_tests/micro_pause_every_word.wav" controls preload="metadata"></audio>
+                </div>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem;">
+                * Test sentence: "I didn't rush this decision. I took my time, listened carefully, and chose what felt right."
+            </p>
+        </section>
 
         <!-- Test Cases Section -->
         <section class="card">
@@ -559,6 +590,12 @@
             }
         ];
 
+        // Get selected language code from voice dropdown data-lang attribute
+        function getSelectedLang() {
+            const sel = document.getElementById("voiceSelect");
+            return sel.options[sel.selectedIndex]?.dataset?.lang || "a";
+        }
+
         // Endpoint routing mapping
         const endpointMapping = {
             kokoro: {
@@ -568,7 +605,7 @@
                         text: text,
                         voice: voice,
                         speed: 1.0,
-                        lang_code: voice.startsWith("bf") ? "b" : voice.startsWith("ef") ? "e" : voice.startsWith("ff") ? "f" : voice.startsWith("zf") ? "z" : "a",
+                        lang_code: getSelectedLang(),
                         ssml: text.includes("<break")
                     }
                 })
@@ -580,7 +617,7 @@
                         text: text,
                         voice: voice,
                         speed: 1.0,
-                        language: voice === "中文女" ? "zh" : "en",
+                        language: getSelectedLang(),
                         mode: "sft"
                     }
                 })
