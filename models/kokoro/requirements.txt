@@ -1,5 +1,9 @@
 # Kokoro TTS v2 - RunPod Serverless Dependencies
 # ================================================
+# Note: torch and torchaudio are NOT listed here because:
+#   - torch 2.5.1+cu124 comes pre-installed in the base Docker image
+#   - torchaudio 2.5.1+cu124 is installed separately from the cu124 index
+# Listing them here would risk pip installing CPU-only versions.
 
 # Core TTS engine
 kokoro>=0.9.4
@@ -10,9 +14,8 @@ misaki[ja]
 # Chinese language support
 misaki[zh]
 
-# PyTorch + torchaudio (for synthesis + forced alignment)
-torch>=2.2.1
-torchaudio>=2.2.1
+# HuggingFace Hub (for model downloads)
+huggingface_hub
 
 # Audio I/O
 soundfile>=0.12.1
