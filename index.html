@@ -352,6 +352,7 @@
         <header>
             <h1>TTS Model Evaluation</h1>
             <p>Interactive Audio Evaluation Dashboard & Serverless Playground</p>
+            <p style="color: var(--success); font-size: 0.9rem; margin-top: 0.5rem;">Latest: Kokoro V2 (ONNX FP16 + CUDA) - 14-15x real-time on L4 GPU</p>
         </header>
 
         <!-- Benchmark Section -->
@@ -377,6 +378,14 @@
                             <td>$0.1600</td>
                             <td>$2.96</td>
                             <td><strong>8.0x savings</strong></td>
+                        </tr>
+                        <tr style="background-color: rgba(236, 72, 153, 0.05);">
+                            <td><span class="badge badge-kokoro">Kokoro V2 (ONNX)</span></td>
+                            <td>82M FP16</td>
+                            <td><strong>0.07</strong> (14-15x speed)</td>
+                            <td>$0.0483</td>
+                            <td>$0.90</td>
+                            <td><strong>26.5x savings</strong></td>
                         </tr>
                         <tr>
                             <td><span class="badge badge-styletts">StyleTTS 2</span></td>
@@ -426,7 +435,8 @@
                 <div class="form-group">
                     <label for="modelSelect">Select Model</label>
                     <select id="modelSelect" class="form-control">
-                        <option value="kokoro">Kokoro v1.0 (High Priority)</option>
+                        <option value="kokoro_v2">Kokoro V2 (ONNX - Production)</option>
+                        <option value="kokoro">Kokoro v1.0 (PyTorch)</option>
                         <option value="cosyvoice">CosyVoice 2.0</option>
                     </select>
                 </div>
@@ -479,18 +489,24 @@
             <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
                 Sentence with <code>&lt;break time="10ms"/&gt;</code> between every word vs. the original (no pauses). Tests whether micro-gaps alter sentence intonation.
             </p>
-            <div class="audio-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="audio-grid" style="grid-template-columns: 1fr 1fr 1fr;">
                 <div class="audio-player-wrapper">
                     <div class="audio-label">
-                        <span class="badge badge-kokoro">Kokoro — Original (no pauses)</span>
+                        <span class="badge badge-kokoro">V1 - Original (no pauses)</span>
                     </div>
                     <audio src="audio_output/kokoro/test_1.wav" controls preload="metadata"></audio>
                 </div>
                 <div class="audio-player-wrapper">
                     <div class="audio-label">
-                        <span class="badge badge-kokoro">Kokoro — With &lt;10ms pauses</span>
+                        <span class="badge badge-kokoro">V2 - 10ms micro-pause</span>
                     </div>
-                    <audio src="audio_output/kokoro/ssml_tests/micro_pause_every_word.wav" controls preload="metadata"></audio>
+                    <audio src="V2/output/test_1_micro_pause_10ms.wav" controls preload="metadata"></audio>
+                </div>
+                <div class="audio-player-wrapper">
+                    <div class="audio-label">
+                        <span class="badge badge-kokoro">V2 - 50ms micro-pause</span>
+                    </div>
+                    <audio src="V2/output/test_1_micro_pause_50ms.wav" controls preload="metadata"></audio>
                 </div>
             </div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem;">
@@ -598,6 +614,19 @@
 
         // Endpoint routing mapping
         const endpointMapping = {
+            kokoro_v2: {
+                id: "54td14oe86jexh",
+                payloadBuilder: (text, voice) => ({
+                    input: {
+                        text: text,
+                        voice: voice,
+                        speed: 1.0,
+                        lang_code: getSelectedLang(),
+                        timestamps: true,
+                        word_boundaries: true
+                    }
+                })
+            },
             kokoro: {
                 id: "3z59kpduf0vkil",
                 payloadBuilder: (text, voice) => ({
@@ -631,6 +660,7 @@
             item.className = "test-item";
             
             const kokoroUrl = `audio_output/kokoro/${c.id}.wav`;
+            const kokoroV2Url = `V2/output/${c.id}_v2.wav`;
             const cosyvoiceUrl = `audio_output/cosyvoice/${c.id}.wav`;
 
             const stylettsUrl = `audio_output/styletts2/${c.id}.wav`;
@@ -650,6 +680,12 @@
                     </div>
                     <div class="audio-player-wrapper">
                         <div class="audio-label">
+                            <span class="badge badge-kokoro">Kokoro V2 (ONNX)</span>
+                        </div>
+                        <audio src="${kokoroV2Url}" controls preload="metadata"></audio>
+                    </div>
+                    <div class="audio-player-wrapper">
+                        <div class="audio-label">
                             <span class="badge badge-cosyvoice">CosyVoice 2.0</span>
                         </div>
                         <audio src="${cosyvoiceUrl}" controls preload="metadata"></audio>
@@ -658,7 +694,7 @@
                         <div class="audio-label">
                             <span class="badge badge-styletts">StyleTTS 2</span>
                         </div>
-                        <audio src="${stylettsUrl}" controls preload="metadata" onerror="this.parentElement.innerHTML='<div class=no-audio-notice>Audio pending — awaiting StyleTTS 2 endpoint access</div>';"></audio>
+                        <audio src="${stylettsUrl}" controls preload="metadata" onerror="this.parentElement.innerHTML='<div class=no-audio-notice>Audio pending</div>';"></audio>
                     </div>
                 </div>
             `;
@@ -672,14 +708,14 @@
         modelSelect.addEventListener("change", () => {
             const val = modelSelect.value;
             document.querySelectorAll(".kokoro-opt").forEach(opt => {
-                opt.style.display = val === "kokoro" ? "block" : "none";
+                opt.style.display = (val === "kokoro" || val === "kokoro_v2") ? "block" : "none";
             });
             document.querySelectorAll(".cosy-opt").forEach(opt => {
                 opt.style.display = val === "cosyvoice" ? "block" : "none";
             });
             
             // Set default voice based on selected model
-            if (val === "kokoro") {
+            if (val === "kokoro" || val === "kokoro_v2") {
                 voiceSelect.value = "af_heart";
             } else {
                 voiceSelect.value = "英文女";
