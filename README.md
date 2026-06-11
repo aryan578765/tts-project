@@ -2,11 +2,20 @@
 
 Production-ready text-to-speech evaluation, benchmarking, and RunPod serverless deployment pipeline. Compares open-source TTS models (Kokoro, CosyVoice, StyleTTS 2) across 30 quality dimensions using 13 standardized test texts.
 
+**Latest: Kokoro V2 (ONNX FP16 + CUDA) deployed - 14-15x real-time on L4 GPU**
+
 ## Directory Structure
 
 ```
 TTS/
 ├── README.md                          # This file
+├── V2/                                # Kokoro V2 - ONNX optimized (production)
+│   ├── handler.py                     # RunPod handler (ONNX FP16 + CUDA + FA)
+│   ├── Dockerfile                     # Docker build with GPU support
+│   ├── test_handler.py                # 10-test suite
+│   ├── requirements.txt               # Python dependencies
+│   ├── README.md                      # V2 API docs + test results
+│   └── output/                        # Test audio samples + results JSON
 ├── test_texts/
 │   └── test_texts.json                # 13 standardized evaluation texts
 ├── benchmark/
@@ -18,7 +27,7 @@ TTS/
 │   ├── test_ssml.py                   # SSML <break> tag support tester
 │   └── test_multilingual.py           # Multi-language support tester
 ├── models/
-│   ├── kokoro/                        # Kokoro TTS model files & handler
+│   ├── kokoro/                        # Kokoro TTS v1 model files & handler
 │   │   ├── Dockerfile
 │   │   ├── handler.py                 # RunPod serverless handler
 │   │   └── ...
@@ -111,6 +120,41 @@ docker run --gpus all -p 8000:8000 kokoro-tts
 docker tag kokoro-tts your-registry/kokoro-tts:latest
 docker push your-registry/kokoro-tts:latest
 ```
+
+### Kokoro TTS V2 (ONNX - Production)
+
+Optimized ONNX FP16 handler with word timestamps, micro-pause insertion, and multilingual forced alignment.
+
+```bash
+cd V2
+
+# Build Docker image
+docker build -t kokoro-tts-v2 .
+
+# Push to DockerHub
+docker tag kokoro-tts-v2 patelaryan777/kokoro-tts-v2:final
+docker push patelaryan777/kokoro-tts-v2:final
+```
+
+**V2 Features:**
+- ONNX Runtime FP16 + CUDA (14-15x real-time on L4)
+- Word-level timestamps via MMS forced alignment
+- Word boundary analysis (clean/tight gap detection)
+- Micro-pause insertion with equal-power crossfade
+- Multilingual FA support (English, French, Spanish, Italian, Portuguese)
+- 8 language codes supported
+
+**V2 Production Test Results (L4 GPU):**
+
+| Metric | Result |
+|--------|--------|
+| RTF (25s audio) | 0.07 (14x real-time) |
+| Synthesis time (25s audio) | 1.73s |
+| Long text (158s audio) | 10.7s |
+| Word timestamps | 23 words, accurate |
+| Word boundaries | 15 clean, 7 tight |
+| All 13 test texts | Pass |
+| Edge cases | All handled |
 
 ### CosyVoice 2
 
