@@ -2,7 +2,7 @@
   {
     "id": "test_1",
     "title": "Calm confidence monologue",
-    "text": "I didn't rush this decision.\nI took my time, listened carefully, and chose what felt right.\nIt's not dramatic. It's just calm confidence.",
+    "text": "I didn't rush this decision. I took my time, listened carefully, and chose what felt right. It's not dramatic. It's just calm confidence.",
     "covers": [
       "1:Base voice naturalness",
       "6:Emotional subtlety",
@@ -15,7 +15,7 @@
   {
     "id": "test_2",
     "title": "Descriptive scene with pacing",
-    "text": "The room was quiet, almost still.\nOutside, traffic moved slowly, patiently, as if the city itself was thinking.\nNothing was urgent. Everything was deliberate.",
+    "text": "The room was quiet, almost still. Outside, traffic moved slowly, patiently, as if the city itself was thinking. Nothing was urgent. Everything was deliberate.",
     "covers": [
       "2:Prosody continuity",
       "4:Pause realism",
@@ -28,7 +28,7 @@
   {
     "id": "test_3",
     "title": "Long-form stability test",
-    "text": "This explanation is intentionally calm and steady.\nIt is meant to be listened to without effort or tension.\nThe goal is not to impress, persuade, or entertain, but to remain clear and consistent over time.\nAs the minutes pass, nothing important should change.\nThe voice should not drift.\nThe pacing should not collapse.\nIf this becomes tiring, irritating, or unstable, that will be noticeable before the end.",
+    "text": "This explanation is intentionally calm and steady. It is meant to be listened to without effort or tension. The goal is not to impress, persuade, or entertain, but to remain clear and consistent over time. As the minutes pass, nothing important should change. The voice should not drift. The pacing should not collapse. If this becomes tiring, irritating, or unstable, that will be noticeable before the end.",
     "covers": [
       "8:Voice stability",
       "9:Long-form coherence",
@@ -41,7 +41,7 @@
   {
     "id": "test_4",
     "title": "Structured list with question",
-    "text": "Here are the key principles to remember:\n– Focus matters more than speed.\n– Clarity beats complexity.\n– Consistency builds trust.\nDoes this sound obvious\nIt should",
+    "text": "Here are the key principles to remember: – Focus matters more than speed. – Clarity beats complexity. – Consistency builds trust. Does this sound obvious? It should.",
     "covers": [
       "11:Structural awareness",
       "12:Question intonation",
@@ -53,7 +53,7 @@
   {
     "id": "test_5",
     "title": "Quoted speech with hesitation",
-    "text": "He paused and said, \"This will not work,\" then added, \"at least not yet.\"\nThat hesitation mattered more than the words themselves.",
+    "text": "He paused and said, \"This will not work,\" then added, \"at least not yet.\" That hesitation mattered more than the words themselves.",
     "covers": [
       "15:Quoted speech prosody",
       "14:Negation audibility",
@@ -76,7 +76,7 @@
   {
     "id": "test_7",
     "title": "Sibilance stress test",
-    "text": "Strategic systems scale slowly, especially sophisticated solutions serving sensitive situations.\nSynchronization, specificity, and sustainability matter.",
+    "text": "Strategic systems scale slowly, especially sophisticated solutions serving sensitive situations. Synchronization, specificity, and sustainability matter.",
     "covers": [
       "18:Phonetic robustness",
       "21:Sibilance control",
@@ -98,7 +98,7 @@
   {
     "id": "test_9",
     "title": "Acronyms and technical terms",
-    "text": "Our API connects to the CRM, then writes events to SQL.\nNASA is unrelated, but it is a good acronym test.\nIn practice, most teams say \"A P I\" and sometimes say \"sequel\" for SQL.",
+    "text": "Our API connects to the CRM, then writes events to SQL. NASA is unrelated, but it is a good acronym test. In practice, most teams say \"A P I\" and sometimes say \"sequel\" for SQL.",
     "covers": [
       "25:Acronym handling",
       "15:Quoted speech prosody",
@@ -109,7 +109,7 @@
   {
     "id": "test_10",
     "title": "Numbers, decimals, and currency",
-    "text": "The amount is $1,250.75, not $1250.\nThe price is €19.99, and the budget is AMD 25,000.\nThe interest rate is 3.5 percent, and the margin is 0.75.",
+    "text": "The amount is $1,250.75, not $1250. The price is €19.99, and the budget is AMD 25,000. The interest rate is 3.5 percent, and the margin is 0.75.",
     "covers": [
       "26:Numbers and decimals",
       "27:Currency and amounts",
@@ -120,7 +120,7 @@
   {
     "id": "test_11",
     "title": "Dates and times",
-    "text": "The meeting is on 12/07/2025 at 7:45 PM.\nThe same date can be written as 2025-12-07, and the time can be 07:45.\nIf the date format is ambiguous, the reading should still sound confident and consistent.",
+    "text": "The meeting is on 12/07/2025 at 7:45 PM. The same date can be written as 2025-12-07, and the time can be 07:45. If the date format is ambiguous, the reading should still sound confident and consistent.",
     "covers": [
       "28:Dates and times",
       "8:Voice stability",
@@ -131,7 +131,7 @@
   {
     "id": "test_12",
     "title": "URLs and emails",
-    "text": "For details, visit https://help.vbout.com and then open the article.\nIf you need support, email support@vbout.com.\nThe URL and the email should not become a long character-by-character spelling test.",
+    "text": "For details, visit https://help.vbout.com and then open the article. If you need support, email support@vbout.com. The URL and the email should not become a long character-by-character spelling test.",
     "covers": [
       "29:URLs and emails",
       "18:Phonetic robustness",
@@ -142,7 +142,7 @@
   {
     "id": "test_13",
     "title": "Mixed technical strings",
-    "text": "We deployed version v2.1.0 to staging.\nThe RunPod endpoint is 6bfcpifl87zlax, and the job ID is 9f2a1c7e.\nThese strings should not break pacing or pronunciation.",
+    "text": "We deployed version v2.1.0 to staging. The RunPod endpoint is 6bfcpifl87zlax, and the job ID is 9f2a1c7e. These strings should not break pacing or pronunciation.",
     "covers": [
       "30:Mixed technical strings",
       "25:Acronym handling",

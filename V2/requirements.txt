@@ -1,0 +1,19 @@
+# Kokoro TTS v2 - RunPod Serverless Dependencies (ONNX)
+# ======================================================
+# Note: torch/torchaudio pre-installed in Docker base image (for FA only).
+# Note: onnxruntime-gpu installed separately in Dockerfile.
+
+# Kokoro ONNX inference engine
+kokoro-onnx
+
+# HuggingFace Hub (for model management)
+huggingface_hub
+
+# Audio I/O
+soundfile>=0.12.1
+
+# RunPod serverless SDK
+runpod>=1.7.0
+
+# Numpy
+numpy>=1.24.0

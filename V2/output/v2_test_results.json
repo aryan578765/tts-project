@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-06-11 11:43:41",
+  "endpoint_id": "54td14oe86jexh",
+  "passed": 21,
+  "failed": 1,
+  "rtf_benchmark": {
+    "runs": [
+      0.0705,
+      0.0689,
+      0.0738
+    ],
+    "average_rtf": 0.0711,
+    "speed_multiplier": 14.1
+  }
+}
