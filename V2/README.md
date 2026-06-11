@@ -1,4 +1,4 @@
-# Kokoro TTS v2 — ONNX Optimized
+# Kokoro TTS v2 - ONNX Optimized
 
 Optimized Kokoro handler for RunPod serverless deployment.
 
@@ -7,11 +7,10 @@ Optimized Kokoro handler for RunPod serverless deployment.
 | Feature | v1 (PyTorch) | v2 (ONNX) |
 |---------|-------------|-----------|
 | Inference | PyTorch KPipeline | ONNX Runtime FP16 + CUDA |
-| RTF on L4 | ~0.23 (4.3x) | ~0.03-0.05 (20x-33x) |
-| Cost/hour | $0.16 | $0.02-0.04 |
-| Timestamps | ❌ None | ✅ Word-level (MMS_FA) |
-| Word separation | ❌ None | ✅ Crossfade + analysis |
-| VRAM usage | ~1 GB | ~0.4 GB |
+| RTF on L4 | ~0.23 (4.3x) | ~0.07 (14-15x) |
+| Timestamps | None | Word-level (MMS_FA) |
+| Word separation | None | Crossfade + boundary analysis |
+| Languages (FA) | N/A | English, French, Spanish, Italian, Portuguese |
 
 ## Files
 
@@ -31,8 +30,8 @@ V2/
 docker build -t kokoro-tts-v2 .
 
 # Push to DockerHub
-docker tag kokoro-tts-v2 yourusername/kokoro-tts-v2:latest
-docker push yourusername/kokoro-tts-v2:latest
+docker tag kokoro-tts-v2 patelaryan777/kokoro-tts-v2:final
+docker push patelaryan777/kokoro-tts-v2:final
 
 # Deploy to RunPod (create new serverless endpoint with this image)
 ```
@@ -61,7 +60,8 @@ docker push yourusername/kokoro-tts-v2:latest
     "audio_base64": "<base64 WAV>",
     "sample_rate": 24000,
     "duration_seconds": 2.35,
-    "rtf": 0.04,
+    "rtf": 0.07,
+    "synth_rtf": 0.07,
     "word_timestamps": [
         {"word": "Hello", "start": 0.12, "end": 0.45},
         {"word": "world", "start": 0.52, "end": 0.89}
@@ -98,9 +98,24 @@ docker push yourusername/kokoro-tts-v2:latest
 
 ```bash
 # Set environment variables
-export RUNPOD_API_KEY=rpa_xxx
-export KOKORO_ENDPOINT_ID=xxx
+set RUNPOD_API_KEY=rpa_xxx
+set KOKORO_ENDPOINT_ID=xxx
 
 # Run tests
 python test_handler.py
 ```
+
+## Production Test Results (L4 GPU)
+
+| Test | Result |
+|------|--------|
+| Basic synthesis (13 texts) | All pass |
+| Word timestamps | 23 words, ordered |
+| Word boundaries | 15 clean, 7 tight |
+| Micro-pause 10ms | Working |
+| Micro-pause 50ms | Working |
+| French (ff_siwis) | 11 word timestamps |
+| Spanish (ef_dora) | 13 word timestamps |
+| RTF benchmark (3 runs) | 0.07 avg (14x real-time) |
+| Long text (362 words) | 157.9s audio in 10.7s |
+| Edge cases | All handled |
