@@ -1,0 +1,1002 @@
+[
+  {
+    "test_id": "test_1",
+    "title": "Calm confidence monologue",
+    "duration": 8.704,
+    "demo_duration": 16.64,
+    "word_count": 23,
+    "timestamps": [
+      {
+        "end": 0.1003,
+        "start": 0.0802,
+        "word": "I"
+      },
+      {
+        "end": 0.361,
+        "start": 0.1404,
+        "word": "didn't"
+      },
+      {
+        "end": 0.6819,
+        "start": 0.4412,
+        "word": "rush"
+      },
+      {
+        "end": 0.9025,
+        "start": 0.742,
+        "word": "this"
+      },
+      {
+        "end": 1.4039,
+        "start": 0.9627,
+        "word": "decision."
+      },
+      {
+        "end": 2.0456,
+        "start": 2.0256,
+        "word": "I"
+      },
+      {
+        "end": 2.2462,
+        "start": 2.0858,
+        "word": "took"
+      },
+      {
+        "end": 2.4267,
+        "start": 2.3064,
+        "word": "my"
+      },
+      {
+        "end": 2.908,
+        "start": 2.5069,
+        "word": "time,"
+      },
+      {
+        "end": 3.4696,
+        "start": 3.1487,
+        "word": "listened"
+      },
+      {
+        "end": 3.991,
+        "start": 3.5498,
+        "word": "carefully,"
+      },
+      {
+        "end": 4.2517,
+        "start": 4.1514,
+        "word": "and"
+      },
+      {
+        "end": 4.5927,
+        "start": 4.2918,
+        "word": "chose"
+      },
+      {
+        "end": 4.7732,
+        "start": 4.6328,
+        "word": "what"
+      },
+      {
+        "end": 5.0339,
+        "start": 4.8333,
+        "word": "felt"
+      },
+      {
+        "end": 5.3548,
+        "start": 5.074,
+        "word": "right."
+      },
+      {
+        "end": 6.0366,
+        "start": 5.8963,
+        "word": "It's"
+      },
+      {
+        "end": 6.2573,
+        "start": 6.0968,
+        "word": "not"
+      },
+      {
+        "end": 6.8389,
+        "start": 6.2974,
+        "word": "dramatic."
+      },
+      {
+        "end": 7.3001,
+        "start": 7.1798,
+        "word": "It's"
+      },
+      {
+        "end": 7.5207,
+        "start": 7.3402,
+        "word": "just"
+      },
+      {
+        "end": 7.8817,
+        "start": 7.601,
+        "word": "calm"
+      },
+      {
+        "end": 8.6037,
+        "start": 7.962,
+        "word": "confidence."
+      }
+    ],
+    "boundaries": [
+      {
+        "can_separate": true,
+        "gap_ms": 40.1,
+        "pair": "I|didnt",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80.2,
+        "pair": "didnt|rush",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 60.1,
+        "pair": "rush|this",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 60.2,
+        "pair": "this|decision",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 621.7,
+        "pair": "decision|I",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40.2,
+        "pair": "I|took",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 60.2,
+        "pair": "took|my",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80.2,
+        "pair": "my|time",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 240.7,
+        "pair": "time|listened",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80.2,
+        "pair": "listened|carefully",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 160.4,
+        "pair": "carefully|and",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40.1,
+        "pair": "and|chose",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40.1,
+        "pair": "chose|what",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 60.1,
+        "pair": "what|felt",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40.1,
+        "pair": "felt|right",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 541.5,
+        "pair": "right|Its",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 60.2,
+        "pair": "Its|not",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40.1,
+        "pair": "not|dramatic",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 340.9,
+        "pair": "dramatic|Its",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40.1,
+        "pair": "Its|just",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80.3,
+        "pair": "just|calm",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80.3,
+        "pair": "calm|confidence",
+        "status": "clean"
+      }
+    ]
+  },
+  {
+    "test_id": "test_3",
+    "title": "Long-form stability test",
+    "duration": 25.173,
+    "demo_duration": 50.09,
+    "word_count": 67,
+    "timestamps": [
+      {
+        "end": 0.1801,
+        "start": 0.04,
+        "word": "This"
+      },
+      {
+        "end": 0.9205,
+        "start": 0.2201,
+        "word": "explanation"
+      },
+      {
+        "end": 1.1006,
+        "start": 1.0205,
+        "word": "is"
+      },
+      {
+        "end": 1.821,
+        "start": 1.1406,
+        "word": "intentionally"
+      },
+      {
+        "end": 2.2412,
+        "start": 1.901,
+        "word": "calm"
+      },
+      {
+        "end": 2.4213,
+        "start": 2.3212,
+        "word": "and"
+      },
+      {
+        "end": 2.7214,
+        "start": 2.4613,
+        "word": "steady."
+      },
+      {
+        "end": 3.4418,
+        "start": 3.3818,
+        "word": "It"
+      },
+      {
+        "end": 3.5619,
+        "start": 3.4818,
+        "word": "is"
+      },
+      {
+        "end": 3.782,
+        "start": 3.6219,
+        "word": "meant"
+      },
+      {
+        "end": 3.8821,
+        "start": 3.822,
+        "word": "to"
+      },
+      {
+        "end": 3.9821,
+        "start": 3.9221,
+        "word": "be"
+      },
+      {
+        "end": 4.3623,
+        "start": 4.0622,
+        "word": "listened"
+      },
+      {
+        "end": 4.4624,
+        "start": 4.3823,
+        "word": "to"
+      },
+      {
+        "end": 4.8226,
+        "start": 4.5424,
+        "word": "without"
+      },
+      {
+        "end": 5.2628,
+        "start": 4.9426,
+        "word": "effort"
+      },
+      {
+        "end": 5.4629,
+        "start": 5.3829,
+        "word": "or"
+      },
+      {
+        "end": 5.9632,
+        "start": 5.5429,
+        "word": "tension."
+      },
+      {
+        "end": 6.6836,
+        "start": 6.6035,
+        "word": "The"
+      },
+      {
+        "end": 6.9637,
+        "start": 6.7036,
+        "word": "goal"
+      },
+      {
+        "end": 7.1238,
+        "start": 7.0437,
+        "word": "is"
+      },
+      {
+        "end": 7.3439,
+        "start": 7.1838,
+        "word": "not"
+      },
+      {
+        "end": 7.464,
+        "start": 7.4039,
+        "word": "to"
+      },
+      {
+        "end": 8.0443,
+        "start": 7.544,
+        "word": "impress,"
+      },
+      {
+        "end": 8.7847,
+        "start": 8.1843,
+        "word": "persuade,"
+      },
+      {
+        "end": 8.9648,
+        "start": 8.8847,
+        "word": "or"
+      },
+      {
+        "end": 9.6251,
+        "start": 9.0448,
+        "word": "entertain,"
+      },
+      {
+        "end": 10.0053,
+        "start": 9.9253,
+        "word": "but"
+      },
+      {
+        "end": 10.1054,
+        "start": 10.0453,
+        "word": "to"
+      },
+      {
+        "end": 10.4455,
+        "start": 10.1654,
+        "word": "remain"
+      },
+      {
+        "end": 10.9258,
+        "start": 10.5456,
+        "word": "clear"
+      },
+      {
+        "end": 11.1659,
+        "start": 11.0659,
+        "word": "and"
+      },
+      {
+        "end": 11.8463,
+        "start": 11.206,
+        "word": "consistent"
+      },
+      {
+        "end": 12.0664,
+        "start": 11.8863,
+        "word": "over"
+      },
+      {
+        "end": 12.4866,
+        "start": 12.1064,
+        "word": "time."
+      },
+      {
+        "end": 13.187,
+        "start": 13.087,
+        "word": "As"
+      },
+      {
+        "end": 13.3071,
+        "start": 13.227,
+        "word": "the"
+      },
+      {
+        "end": 13.6072,
+        "start": 13.3471,
+        "word": "minutes"
+      },
+      {
+        "end": 14.0475,
+        "start": 13.6673,
+        "word": "pass,"
+      },
+      {
+        "end": 14.6278,
+        "start": 14.3076,
+        "word": "nothing"
+      },
+      {
+        "end": 15.1681,
+        "start": 14.6878,
+        "word": "important"
+      },
+      {
+        "end": 15.3482,
+        "start": 15.2081,
+        "word": "should"
+      },
+      {
+        "end": 15.7884,
+        "start": 15.3682,
+        "word": "change."
+      },
+      {
+        "end": 16.3287,
+        "start": 16.2486,
+        "word": "The"
+      },
+      {
+        "end": 16.6689,
+        "start": 16.3687,
+        "word": "voice"
+      },
+      {
+        "end": 16.869,
+        "start": 16.6889,
+        "word": "should"
+      },
+      {
+        "end": 17.0691,
+        "start": 16.909,
+        "word": "not"
+      },
+      {
+        "end": 17.5293,
+        "start": 17.1491,
+        "word": "drift."
+      },
+      {
+        "end": 18.1096,
+        "start": 18.0496,
+        "word": "The"
+      },
+      {
+        "end": 18.5298,
+        "start": 18.1496,
+        "word": "pacing"
+      },
+      {
+        "end": 18.73,
+        "start": 18.5699,
+        "word": "should"
+      },
+      {
+        "end": 18.89,
+        "start": 18.75,
+        "word": "not"
+      },
+      {
+        "end": 19.4904,
+        "start": 18.9501,
+        "word": "collapse."
+      },
+      {
+        "end": 20.0707,
+        "start": 19.9906,
+        "word": "If"
+      },
+      {
+        "end": 20.2508,
+        "start": 20.1107,
+        "word": "this"
+      },
+      {
+        "end": 20.711,
+        "start": 20.3108,
+        "word": "becomes"
+      },
+      {
+        "end": 21.3313,
+        "start": 20.771,
+        "word": "tiring,"
+      },
+      {
+        "end": 22.1518,
+        "start": 21.5715,
+        "word": "irritating,"
+      },
+      {
+        "end": 22.4119,
+        "start": 22.3119,
+        "word": "or"
+      },
+      {
+        "end": 23.0723,
+        "start": 22.492,
+        "word": "unstable,"
+      },
+      {
+        "end": 23.5925,
+        "start": 23.4325,
+        "word": "that"
+      },
+      {
+        "end": 23.7126,
+        "start": 23.5925,
+        "word": "will"
+      },
+      {
+        "end": 23.7726,
+        "start": 23.7326,
+        "word": "be"
+      },
+      {
+        "end": 24.3529,
+        "start": 23.8527,
+        "word": "noticeable"
+      },
+      {
+        "end": 24.6731,
+        "start": 24.393,
+        "word": "before"
+      },
+      {
+        "end": 24.7532,
+        "start": 24.6731,
+        "word": "the"
+      },
+      {
+        "end": 25.0533,
+        "start": 24.8532,
+        "word": "end."
+      }
+    ],
+    "boundaries": [
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "This|explanation",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 100,
+        "pair": "explanation|is",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "is|intentionally",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80,
+        "pair": "intentionally|calm",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80,
+        "pair": "calm|and",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "and|steady",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 660.4,
+        "pair": "steady|It",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "It|is",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 60,
+        "pair": "is|meant",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "meant|to",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "to|be",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80.1,
+        "pair": "be|listened",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 20,
+        "pair": "listened|to",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80,
+        "pair": "to|without",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 120,
+        "pair": "without|effort",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 120.1,
+        "pair": "effort|or",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80,
+        "pair": "or|tension",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 640.3,
+        "pair": "tension|The",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 20,
+        "pair": "The|goal",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80,
+        "pair": "goal|is",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 60,
+        "pair": "is|not",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 60,
+        "pair": "not|to",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80,
+        "pair": "to|impress",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 140,
+        "pair": "impress|persuade",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 100,
+        "pair": "persuade|or",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80,
+        "pair": "or|entertain",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 300.2,
+        "pair": "entertain|but",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "but|to",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 60,
+        "pair": "to|remain",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 100.1,
+        "pair": "remain|clear",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 140.1,
+        "pair": "clear|and",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40.1,
+        "pair": "and|consistent",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "consistent|over",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "over|time",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 600.4,
+        "pair": "time|As",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "As|the",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "the|minutes",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 60.1,
+        "pair": "minutes|pass",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 260.1,
+        "pair": "pass|nothing",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 60,
+        "pair": "nothing|important",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "important|should",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 20,
+        "pair": "should|change",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 460.2,
+        "pair": "change|The",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "The|voice",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 20,
+        "pair": "voice|should",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "should|not",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80,
+        "pair": "not|drift",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 520.3,
+        "pair": "drift|The",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "The|pacing",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40.1,
+        "pair": "pacing|should",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 20,
+        "pair": "should|not",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 60.1,
+        "pair": "not|collapse",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 500.2,
+        "pair": "collapse|If",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40,
+        "pair": "If|this",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 60,
+        "pair": "this|becomes",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 60,
+        "pair": "becomes|tiring",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 240.2,
+        "pair": "tiring|irritating",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 160.1,
+        "pair": "irritating|or",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80.1,
+        "pair": "or|unstable",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 360.2,
+        "pair": "unstable|that",
+        "status": "clean"
+      },
+      {
+        "can_separate": false,
+        "gap_ms": 0,
+        "pair": "that|will",
+        "status": "coarticulated"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 20,
+        "pair": "will|be",
+        "status": "tight"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 80.1,
+        "pair": "be|noticeable",
+        "status": "clean"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 40.1,
+        "pair": "noticeable|before",
+        "status": "tight"
+      },
+      {
+        "can_separate": false,
+        "gap_ms": 0,
+        "pair": "before|the",
+        "status": "coarticulated"
+      },
+      {
+        "can_separate": true,
+        "gap_ms": 100,
+        "pair": "the|end",
+        "status": "clean"
+      }
+    ]
+  }
+]

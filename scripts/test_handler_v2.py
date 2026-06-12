@@ -1,9 +1,10 @@
 """
-Test script for Kokoro handler v2 features:
+Test script for Kokoro handler v2 (ONNX optimized):
+  - ONNX FP16 synthesis speed (RTF benchmark)
   - Word-level timestamps
   - Word boundary analysis
   - Micro-pause insertion with crossfade
-  - RTF benchmarking
+  - French language
 
 Usage:
   RUNPOD_API_KEY=rpa_xxx python scripts/test_handler_v2.py
@@ -17,10 +18,14 @@ import os
 
 RUNPOD_BASE_URL = "https://api.runpod.ai/v2"
 API_KEY = os.environ.get("RUNPOD_API_KEY", "")
-ENDPOINT_ID = os.environ.get("KOKORO_ENDPOINT_ID", "3z59kpduf0vkil")
+ENDPOINT_ID = os.environ.get("KOKORO_ENDPOINT_ID", "")
 
 if not API_KEY:
     print("ERROR: Set RUNPOD_API_KEY environment variable")
+    exit(1)
+
+if not ENDPOINT_ID:
+    print("ERROR: Set KOKORO_ENDPOINT_ID environment variable")
     exit(1)
 
 HEADERS = {
@@ -38,7 +43,7 @@ def submit_job(payload, timeout=300):
     if data.get("status") in ("IN_QUEUE", "IN_PROGRESS"):
         job_id = data.get("id")
         print(f"  Polling job {job_id}...")
-        for i in range(60):
+        for _ in range(60):
             time.sleep(3)
             poll = requests.get(
                 f"{RUNPOD_BASE_URL}/{ENDPOINT_ID}/status/{job_id}",
@@ -53,18 +58,18 @@ def submit_job(payload, timeout=300):
 
 def save_audio(b64_data, path):
     """Save base64 audio to file."""
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     audio_bytes = base64.b64decode(b64_data)
     with open(path, "wb") as f:
         f.write(audio_bytes)
-    print(f"  Saved {len(audio_bytes)} bytes → {path}")
+    print(f"  Saved {len(audio_bytes)} bytes -> {path}")
 
 
 # =========================================================================
-# Test 1: Basic synthesis with timestamps
+# Test 1: ONNX synthesis + timestamps + boundary analysis
 # =========================================================================
 print("=" * 60)
-print("TEST 1: Word-level timestamps")
+print("TEST 1: ONNX synthesis with timestamps & boundary analysis")
 print("=" * 60)
 
 test_text = "I didn't rush this decision. I took my time, listened carefully, and chose what felt right."
@@ -84,6 +89,7 @@ result = submit_job(payload)
 if result.get("status") == "COMPLETED":
     output = result["output"]
     print(f"\n  Duration: {output.get('duration_seconds')}s")
+    print(f"  RTF: {output.get('rtf')} (lower = faster)")
 
     if "word_timestamps" in output:
         print(f"\n  Word Timestamps ({len(output['word_timestamps'])} words):")
@@ -93,17 +99,17 @@ if result.get("status") == "COMPLETED":
     if "word_boundaries" in output:
         print(f"\n  Word Boundaries ({len(output['word_boundaries'])} pairs):")
         for wb in output["word_boundaries"]:
-            status_icon = "✅" if wb["can_separate"] else "⚠️"
-            print(f"    {status_icon} {wb['pair']:30s} gap={wb['gap_ms']:6.1f}ms  {wb['status']}")
+            icon = "✅" if wb["can_separate"] else "⚠️"
+            print(f"    {icon} {wb['pair']:30s} gap={wb['gap_ms']:6.1f}ms  {wb['status']}")
 
     if "audio_base64" in output:
-        save_audio(output["audio_base64"], "audio_output/kokoro/v2_tests/test1_timestamps.wav")
+        save_audio(output["audio_base64"], "audio_output/kokoro/v2_tests/test1_onnx_timestamps.wav")
 else:
-    print(f"  FAILED: {result.get('error', result.get('status'))}")
+    print(f"  FAILED: {result.get('output', {}).get('error', result.get('status'))}")
 
 
 # =========================================================================
-# Test 2: Micro-pause insertion (10ms with crossfade)
+# Test 2: Micro-pause insertion (10ms with 5ms crossfade)
 # =========================================================================
 print("\n" + "=" * 60)
 print("TEST 2: Micro-pause insertion (10ms gaps, 5ms crossfade)")
@@ -126,56 +132,24 @@ result = submit_job(payload)
 if result.get("status") == "COMPLETED":
     output = result["output"]
     print(f"\n  Duration with pauses: {output.get('duration_seconds')}s")
-    print(f"  (Original was ~8s, with 10ms×16 words should be ~8.16s)")
-
+    print(f"  RTF: {output.get('rtf')}")
     if "audio_base64" in output:
         save_audio(output["audio_base64"], "audio_output/kokoro/v2_tests/test2_micro_pause_10ms.wav")
 else:
-    print(f"  FAILED: {result.get('error', result.get('status'))}")
+    print(f"  FAILED: {result.get('output', {}).get('error', result.get('status'))}")
 
 
 # =========================================================================
-# Test 3: Larger pause (50ms) to hear the effect
-# =========================================================================
-print("\n" + "=" * 60)
-print("TEST 3: Micro-pause insertion (50ms gaps, 10ms crossfade)")
-print("=" * 60)
-
-payload = {
-    "input": {
-        "text": test_text,
-        "voice": "af_heart",
-        "speed": 1.0,
-        "lang_code": "a",
-        "timestamps": True,
-        "word_boundaries": True,
-        "micro_pause_ms": 50,
-        "crossfade_ms": 10,
-    }
-}
-
-result = submit_job(payload)
-if result.get("status") == "COMPLETED":
-    output = result["output"]
-    print(f"\n  Duration with pauses: {output.get('duration_seconds')}s")
-
-    if "audio_base64" in output:
-        save_audio(output["audio_base64"], "audio_output/kokoro/v2_tests/test3_micro_pause_50ms.wav")
-else:
-    print(f"  FAILED: {result.get('error', result.get('status'))}")
-
-
-# =========================================================================
-# Test 4: French language
+# Test 3: French language
 # =========================================================================
 print("\n" + "=" * 60)
-print("TEST 4: French generation with timestamps")
+print("TEST 3: French generation with timestamps")
 print("=" * 60)
 
 payload = {
     "input": {
         "text": "Bonjour, comment allez-vous aujourd'hui?",
-        "voice": "ff_sixtine",
+        "voice": "ff_siwis",
         "speed": 1.0,
         "lang_code": "f",
         "timestamps": True,
@@ -186,13 +160,40 @@ result = submit_job(payload)
 if result.get("status") == "COMPLETED":
     output = result["output"]
     print(f"\n  Duration: {output.get('duration_seconds')}s")
+    print(f"  RTF: {output.get('rtf')}")
     if "word_timestamps" in output:
         for wt in output["word_timestamps"]:
             print(f"    {wt['start']:.3f}s - {wt['end']:.3f}s  '{wt['word']}'")
     if "audio_base64" in output:
-        save_audio(output["audio_base64"], "audio_output/kokoro/v2_tests/test4_french.wav")
+        save_audio(output["audio_base64"], "audio_output/kokoro/v2_tests/test3_french.wav")
 else:
-    print(f"  FAILED: {result.get('error', result.get('status'))}")
+    print(f"  FAILED: {result.get('output', {}).get('error', result.get('status'))}")
+
+
+# =========================================================================
+# Test 4: RTF Benchmark (multiple runs)
+# =========================================================================
+print("\n" + "=" * 60)
+print("TEST 4: RTF Benchmark (3 runs, no timestamps)")
+print("=" * 60)
+
+benchmark_text = "The quick brown fox jumps over the lazy dog. " * 5
+
+rtfs = []
+for run in range(3):
+    payload = {"input": {"text": benchmark_text, "voice": "af_heart", "speed": 1.0, "lang_code": "a"}}
+    result = submit_job(payload)
+    if result.get("status") == "COMPLETED":
+        output = result["output"]
+        rtf = output.get("rtf", 0)
+        dur = output.get("duration_seconds", 0)
+        rtfs.append(rtf)
+        print(f"  Run {run+1}: duration={dur}s, RTF={rtf}")
+
+if rtfs:
+    avg_rtf = sum(rtfs) / len(rtfs)
+    speed_x = 1.0 / avg_rtf if avg_rtf > 0 else 0
+    print(f"\n  Average RTF: {avg_rtf:.4f} ({speed_x:.1f}x real-time)")
 
 
 print("\n" + "=" * 60)

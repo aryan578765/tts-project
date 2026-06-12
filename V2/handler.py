@@ -382,10 +382,14 @@ def _insert_micro_pauses(
     pause_ms: float = 10.0,
     crossfade_ms: float = 5.0,
     sample_rate: int = SAMPLE_RATE,
+    boundaries: list[dict] | None = None,
+    smart: bool = False,
 ) -> tuple[np.ndarray, list[dict]]:
     """Insert micro-pauses between words using equal-power crossfade.
 
     Preserves original intonation by working on the already-synthesised audio.
+    When smart=True, only inserts pauses at tight/coarticulated boundaries,
+    leaving clean natural gaps untouched.
     Returns (modified_audio, updated_timestamps).
     """
     if not word_timestamps or len(word_timestamps) < 2:
@@ -397,6 +401,17 @@ def _insert_micro_pauses(
     pause_samples = int(sample_rate * pause_ms / 1000)
     crossfade_samples = max(int(sample_rate * crossfade_ms / 1000), 4)
     fade_out, fade_in = _equal_power_fades(crossfade_samples)
+
+    # Build set of word-pair indices that need pauses
+    needs_pause: set[int] = set()
+    if smart and boundaries:
+        for idx, b in enumerate(boundaries):
+            if b["status"] in ("tight", "coarticulated", "overlapping"):
+                needs_pause.add(idx)
+        logger.info("Smart pause: %d/%d word pairs need pauses", len(needs_pause), len(boundaries))
+    else:
+        # Non-smart: insert pauses between ALL word pairs
+        needs_pause = set(range(len(word_timestamps) - 1))
 
     parts = []
     updated_timestamps = []
@@ -410,7 +425,7 @@ def _insert_micro_pauses(
 
         if i == 0:
             chunk = audio[:end_sample].copy()
-            if len(chunk) > crossfade_samples:
+            if (i in needs_pause) and len(chunk) > crossfade_samples:
                 chunk[-crossfade_samples:] *= fade_out
             parts.append(chunk)
             updated_timestamps.append({
@@ -419,17 +434,27 @@ def _insert_micro_pauses(
                 "end": round(wt["end"] + cumulative_offset, 4),
             })
         else:
-            silence = np.zeros(pause_samples, dtype=np.float32)
-            parts.append(silence)
-            cumulative_offset += pause_ms / 1000.0
+            pair_idx = i - 1  # boundary index for word pair (i-1, i)
+            if pair_idx in needs_pause:
+                # Insert pause at this boundary
+                silence = np.zeros(pause_samples, dtype=np.float32)
+                parts.append(silence)
+                cumulative_offset += pause_ms / 1000.0
 
-            cut_start = _find_zero_crossing(audio, start_sample)
-            chunk = audio[cut_start:end_sample].copy()
+                cut_start = _find_zero_crossing(audio, start_sample)
+                chunk = audio[cut_start:end_sample].copy()
 
-            if len(chunk) > crossfade_samples:
-                chunk[:crossfade_samples] *= fade_in
-                if i < len(word_timestamps) - 1:
-                    chunk[-crossfade_samples:] *= fade_out
+                if len(chunk) > crossfade_samples:
+                    chunk[:crossfade_samples] *= fade_in
+                    if i < len(word_timestamps) - 1 and (i in needs_pause):
+                        chunk[-crossfade_samples:] *= fade_out
+            else:
+                # Clean boundary - keep original audio segment
+                prev_end = int(word_timestamps[i - 1]["end"] * sample_rate)
+                chunk = audio[prev_end:end_sample].copy()
+                if i < len(word_timestamps) - 1 and (i in needs_pause):
+                    if len(chunk) > crossfade_samples:
+                        chunk[-crossfade_samples:] *= fade_out
 
             parts.append(chunk)
             updated_timestamps.append({
@@ -487,7 +512,8 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
                 "timestamps": true,                    # optional, return word timestamps
                 "word_boundaries": true,               # optional, return boundary analysis
                 "micro_pause_ms": 0,                   # optional, insert pauses (0 = off)
-                "crossfade_ms": 5.0                    # optional, crossfade duration
+                "crossfade_ms": 5.0,                   # optional, crossfade duration
+                "smart_pause": false                   # optional, only pause at tight boundaries
             }
         }
     """
@@ -508,6 +534,7 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         want_boundaries: bool = bool(job_input.get("word_boundaries", False))
         micro_pause_ms: float = float(job_input.get("micro_pause_ms", 0))
         crossfade_ms: float = float(job_input.get("crossfade_ms", 5.0))
+        smart_pause: bool = bool(job_input.get("smart_pause", False))
 
         if micro_pause_ms > 0:
             want_timestamps = True
@@ -554,12 +581,14 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
 
         # ---- Step 3: Insert micro-pauses if requested ----
         if micro_pause_ms > 0 and word_ts:
-            logger.info("Inserting %.1fms pauses with %.1fms crossfade", micro_pause_ms, crossfade_ms)
+            logger.info("Inserting %.1fms pauses with %.1fms crossfade (smart=%s)", micro_pause_ms, crossfade_ms, smart_pause)
             audio, word_ts = _insert_micro_pauses(
                 audio, word_ts,
                 pause_ms=micro_pause_ms,
                 crossfade_ms=crossfade_ms,
                 sample_rate=SAMPLE_RATE,
+                boundaries=boundaries if smart_pause else None,
+                smart=smart_pause,
             )
             if want_boundaries and word_ts:
                 boundaries = _analyze_word_boundaries(word_ts)

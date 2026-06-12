@@ -1,8 +1,9 @@
 """
-Kokoro TTS v2 - RunPod Serverless Handler
-==========================================
+Kokoro TTS v2 - RunPod Serverless Handler (ONNX Optimized)
+============================================================
 
 Optimized handler with:
+  - ONNX Runtime FP16 inference via CUDAExecutionProvider (25x-40x RTF on L4)
   - Word-level timestamps via torchaudio MMS forced alignment
   - Crossfade-based micro-pause insertion (preserves intonation)
   - Word spacing analysis (reports which word pairs can be cleanly separated)
@@ -37,7 +38,7 @@ import os
 import re
 import time
 import threading
-from typing import Any, Optional
+from typing import Any
 
 import runpod
 import soundfile as sf
@@ -45,7 +46,7 @@ import torch
 import torchaudio
 import numpy as np
 
-from kokoro import KPipeline
+from kokoro_onnx import Kokoro
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -59,6 +60,19 @@ logger = logging.getLogger("kokoro-handler-v2")
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
+
+# Map single-letter lang codes (user-facing) → kokoro-onnx locale strings
+LANG_CODE_MAP: dict[str, str] = {
+    "a": "en-us",
+    "b": "en-gb",
+    "e": "es",
+    "f": "fr-fr",
+    "i": "it",
+    "j": "ja",
+    "p": "pt-br",
+    "z": "cmn",
+}
+
 VALID_LANG_CODES: dict[str, str] = {
     "a": "American English",
     "b": "British English",
@@ -77,14 +91,18 @@ SAMPLE_RATE: int = 24000  # Kokoro outputs 24 kHz audio
 FA_SAMPLE_RATE: int = 16000  # MMS_FA expects 16 kHz
 
 # Threshold (ms) for classifying word boundaries
-CLEAN_BOUNDARY_THRESHOLD_MS = 50   # gap >= 50ms -> clean, safe to cut
-COARTICULATED_THRESHOLD_MS = 20    # gap < 20ms -> coarticulated, needs crossfade
+CLEAN_BOUNDARY_THRESHOLD_MS = 50
+COARTICULATED_THRESHOLD_MS = 20
+
+# Model file paths (downloaded in Dockerfile)
+ONNX_MODEL_PATH = os.environ.get("ONNX_MODEL_PATH", "/app/model/kokoro-v1.0.fp16.onnx")
+VOICES_PATH = os.environ.get("VOICES_PATH", "/app/model/voices-v1.0.bin")
 
 # ---------------------------------------------------------------------------
-# Thread-safe global caches
+# Global model caches (thread-safe)
 # ---------------------------------------------------------------------------
-_pipelines: dict[str, KPipeline] = {}
-_pipeline_lock = threading.Lock()
+_kokoro_model = None
+_kokoro_lock = threading.Lock()
 
 _fa_model = None
 _fa_tokenizer = None
@@ -93,29 +111,28 @@ _fa_dict = None
 _fa_lock = threading.Lock()
 
 
-def _get_pipeline(lang_code: str) -> KPipeline:
-    """Return a cached KPipeline for the given language code (thread-safe)."""
-    if lang_code not in _pipelines:
-        with _pipeline_lock:
-            if lang_code not in _pipelines:  # double-check after lock
-                logger.info("Initialising KPipeline for lang_code='%s' ...", lang_code)
+def _get_kokoro() -> Kokoro:
+    """Return cached Kokoro ONNX model (thread-safe)."""
+    global _kokoro_model
+    if _kokoro_model is None:
+        with _kokoro_lock:
+            if _kokoro_model is None:
+                logger.info("Loading Kokoro ONNX model (FP16 + CUDA)...")
                 start = time.perf_counter()
-                _pipelines[lang_code] = KPipeline(lang_code=lang_code)
+                _kokoro_model = Kokoro(
+                    ONNX_MODEL_PATH,
+                    VOICES_PATH,
+                    providers=["CUDAExecutionProvider", "CPUExecutionProvider"],
+                )
                 elapsed = time.perf_counter() - start
-                logger.info("KPipeline for '%s' ready in %.2fs", lang_code, elapsed)
-    return _pipelines[lang_code]
+                logger.info("Kokoro ONNX ready in %.2fs", elapsed)
+    return _kokoro_model
 
 
 def _get_fa_components():
-    """Load forced alignment model, tokenizer, aligner, and dict (thread-safe).
+    """Load forced alignment model, tokenizer, aligner (thread-safe).
 
-    Uses torchaudio MMS_FA high-level API:
-      - get_model(with_star=False): Wav2Vec2 model for emission generation
-      - get_tokenizer(): converts word lists to token sequences
-      - get_aligner(): aligns emissions with tokens, returns TokenSpan lists
-      - get_dict(): {char: index} mapping for manual tokenization if needed
-
-    Model runs on CPU (fast enough, saves GPU VRAM for Kokoro).
+    Uses torchaudio MMS_FA high-level API. Runs on CPU to save GPU for ONNX.
     """
     global _fa_model, _fa_tokenizer, _fa_aligner, _fa_dict
 
@@ -140,12 +157,13 @@ def _get_fa_components():
 
 # Pre-warm models at import time
 try:
-    logger.info("Pre-warming default pipeline (lang_code='a') ...")
-    _get_pipeline("a")
+    logger.info("Pre-warming Kokoro ONNX model...")
+    _get_kokoro()
 except Exception:
-    logger.exception("Failed to pre-warm default pipeline")
+    logger.exception("Failed to pre-warm Kokoro ONNX model")
 
 try:
+    logger.info("Pre-warming FA model...")
     _get_fa_components()
 except Exception:
     logger.exception("Failed to pre-warm FA model")
@@ -164,22 +182,17 @@ def _audio_to_base64_wav(audio: np.ndarray, sample_rate: int = SAMPLE_RATE) -> s
 
 
 def _find_zero_crossing(audio: np.ndarray, index: int, search_range: int = 120) -> int:
-    """Find nearest zero-crossing to index within search_range samples.
-    Cuts at zero-crossings prevent clicks/pops in audio splicing.
-    """
-    best = index
+    """Find nearest zero-crossing to prevent clicks at cut points."""
     for offset in range(1, search_range):
-        # Search forward
         fwd = index + offset
         if fwd < len(audio) - 1:
             if audio[fwd] * audio[fwd + 1] <= 0:
                 return fwd
-        # Search backward
         bwd = index - offset
         if bwd >= 0 and bwd < len(audio) - 1:
             if audio[bwd] * audio[bwd + 1] <= 0:
                 return bwd
-    return best  # fallback to original index
+    return index
 
 
 # ---------------------------------------------------------------------------
@@ -188,7 +201,6 @@ def _find_zero_crossing(audio: np.ndarray, index: int, search_range: int = 120) 
 
 def _clean_word(word: str) -> str:
     """Strip punctuation from a word for alignment matching."""
-    # Remove common punctuation (including unicode variants)
     return re.sub(r'[^\w\s]', '', word, flags=re.UNICODE).strip()
 
 
@@ -197,26 +209,14 @@ def _get_word_timestamps(
     transcript: str,
     sample_rate: int = SAMPLE_RATE,
 ) -> list[dict]:
-    """Get word-level timestamps using torchaudio MMS_FA high-level API.
-
-    Uses get_tokenizer() + get_aligner() for robust alignment instead of
-    manual tokenization + raw forced_align().
-
-    Args:
-        audio: numpy audio array (24kHz from Kokoro)
-        transcript: the known text transcript
-        sample_rate: audio sample rate
-
-    Returns:
-        List of {"word": str, "start": float, "end": float} dicts
-    """
+    """Get word-level timestamps using torchaudio MMS_FA high-level API."""
     model, tokenizer, aligner, fa_dict = _get_fa_components()
     start_time = time.perf_counter()
 
     # Convert numpy to torch tensor [1, T]
     waveform = torch.from_numpy(audio).float().unsqueeze(0)
 
-    # Resample from 24kHz -> 16kHz (required by MMS_FA)
+    # Resample 24kHz -> 16kHz
     if sample_rate != FA_SAMPLE_RATE:
         waveform = torchaudio.functional.resample(
             waveform, sample_rate, FA_SAMPLE_RATE
@@ -226,14 +226,14 @@ def _get_word_timestamps(
     if waveform.shape[0] > 1:
         waveform = waveform.mean(dim=0, keepdim=True)
 
-    # Step 1: Generate emission probabilities from wav2vec2
+    # Step 1: Generate emissions
     with torch.inference_mode():
         emission, _ = model(waveform)
 
-    # CRITICAL: Convert to log probabilities (required by forced_align)
+    # CRITICAL: Convert to log probabilities
     emission = torch.log_softmax(emission, dim=-1)
 
-    # Step 2: Prepare word list for tokenization
+    # Step 2: Prepare word list
     words_raw = transcript.split()
     words_clean = []
     words_display = []
@@ -241,28 +241,27 @@ def _get_word_timestamps(
         cleaned = _clean_word(w)
         if cleaned:
             words_clean.append(cleaned)
-            words_display.append(w)  # preserve original for display
+            words_display.append(w)
 
     if not words_clean:
-        logger.warning("No valid words found for alignment in: %s", transcript[:50])
+        logger.warning("No valid words for alignment in: %s", transcript[:50])
         return []
 
-    # Step 3: Tokenize using the high-level tokenizer
+    # Step 3: Tokenize
     try:
         token_spans = tokenizer(words_clean)
     except Exception as e:
         logger.warning("Tokenization failed: %s", e)
         return []
 
-    # Step 4: Align using the high-level aligner
+    # Step 4: Align
     try:
         alignment = aligner(emission[0], token_spans)
     except Exception as e:
         logger.warning("Alignment failed: %s", e)
         return []
 
-    # Step 5: Convert frame indices to timestamps
-    # ratio = samples per emission frame
+    # Step 5: Convert frames to timestamps
     ratio = waveform.shape[1] / emission.shape[1]
 
     word_timestamps = []
@@ -272,9 +271,8 @@ def _get_word_timestamps(
         if not word_spans:
             continue
 
-        # word_spans is a list of TokenSpan for each character in the word
         start_frame = word_spans[0].start
-        end_frame = word_spans[-1].end  # end is exclusive
+        end_frame = word_spans[-1].end
 
         start_sec = (start_frame * ratio) / FA_SAMPLE_RATE
         end_sec = (end_frame * ratio) / FA_SAMPLE_RATE
@@ -286,10 +284,7 @@ def _get_word_timestamps(
         })
 
     elapsed = time.perf_counter() - start_time
-    logger.info(
-        "Forced alignment completed in %.3fs for %d words",
-        elapsed, len(word_timestamps),
-    )
+    logger.info("FA completed in %.3fs for %d words", elapsed, len(word_timestamps))
 
     return word_timestamps
 
@@ -298,14 +293,8 @@ def _get_word_timestamps(
 # Word Boundary Analysis
 # ---------------------------------------------------------------------------
 
-def _analyze_word_boundaries(
-    word_timestamps: list[dict],
-) -> list[dict]:
-    """Analyze gaps between consecutive words.
-
-    Returns a list of boundary reports indicating which word pairs
-    can be cleanly separated and which are coarticulated.
-    """
+def _analyze_word_boundaries(word_timestamps: list[dict]) -> list[dict]:
+    """Analyze gaps between consecutive words."""
     boundaries = []
     for i in range(len(word_timestamps) - 1):
         w1 = word_timestamps[i]
@@ -323,7 +312,6 @@ def _analyze_word_boundaries(
             status = "coarticulated"
             can_separate = False
         else:
-            # Negative gap means alignment overlap (words overlap in time)
             status = "overlapping"
             can_separate = False
 
@@ -342,15 +330,9 @@ def _analyze_word_boundaries(
 # ---------------------------------------------------------------------------
 
 def _equal_power_fades(fade_len: int) -> tuple[np.ndarray, np.ndarray]:
-    """Generate equal-power (cos/sin) fade curves.
-
-    Equal-power crossfades maintain constant energy across the transition,
-    preventing the ~3dB volume dip that linear fades produce.
-    """
+    """Generate equal-power (cos/sin) fade curves."""
     t = np.linspace(0, np.pi / 2, fade_len, dtype=np.float32)
-    fade_out = np.cos(t).astype(np.float32)
-    fade_in = np.sin(t).astype(np.float32)
-    return fade_out, fade_in
+    return np.cos(t).astype(np.float32), np.sin(t).astype(np.float32)
 
 
 def _insert_micro_pauses(
@@ -360,101 +342,70 @@ def _insert_micro_pauses(
     crossfade_ms: float = 5.0,
     sample_rate: int = SAMPLE_RATE,
 ) -> tuple[np.ndarray, list[dict]]:
-    """Insert micro-pauses between words using crossfade blending.
+    """Insert micro-pauses between words using equal-power crossfade.
 
-    Generates the full sentence with natural intonation first (already done),
-    then inserts tiny silences at word boundaries using equal-power crossfade
-    to prevent abrupt starts/ends.
-
-    Args:
-        audio: original full-sentence audio (natural intonation preserved)
-        word_timestamps: word-level timestamps from forced alignment
-        pause_ms: duration of silence to insert between words
-        crossfade_ms: duration of crossfade at cut points
-        sample_rate: audio sample rate
-
-    Returns:
-        Tuple of (modified_audio, updated_word_timestamps)
+    Preserves original intonation by working on the already-synthesised audio.
+    Returns (modified_audio, updated_timestamps).
     """
     if not word_timestamps or len(word_timestamps) < 2:
         return audio, word_timestamps
 
-    # Ensure float32
     audio = audio.astype(np.float32)
-
-    # Remove DC offset
-    audio = audio - np.mean(audio)
+    audio = audio - np.mean(audio)  # DC offset removal
 
     pause_samples = int(sample_rate * pause_ms / 1000)
-    crossfade_samples = int(sample_rate * crossfade_ms / 1000)
-    crossfade_samples = max(crossfade_samples, 4)  # minimum 4 samples
-
-    # Generate equal-power fade curves
+    crossfade_samples = max(int(sample_rate * crossfade_ms / 1000), 4)
     fade_out, fade_in = _equal_power_fades(crossfade_samples)
 
-    # Build output by cutting between words and inserting pauses
     parts = []
     updated_timestamps = []
-    cumulative_offset = 0.0  # track time shift from inserted pauses
+    cumulative_offset = 0.0
 
     for i, wt in enumerate(word_timestamps):
         start_sample = int(wt["start"] * sample_rate)
         end_sample = int(wt["end"] * sample_rate)
-
-        # Clamp to audio bounds
         start_sample = max(0, min(start_sample, len(audio)))
         end_sample = max(start_sample, min(end_sample, len(audio)))
 
         if i == 0:
-            # First word: include everything from start of audio to end of word
             chunk = audio[:end_sample].copy()
-            # Apply fade-out at the end
             if len(chunk) > crossfade_samples:
                 chunk[-crossfade_samples:] *= fade_out
             parts.append(chunk)
-
             updated_timestamps.append({
                 "word": wt["word"],
                 "start": round(wt["start"] + cumulative_offset, 4),
                 "end": round(wt["end"] + cumulative_offset, 4),
             })
         else:
-            # Insert silence between previous word and this word
             silence = np.zeros(pause_samples, dtype=np.float32)
             parts.append(silence)
             cumulative_offset += pause_ms / 1000.0
 
-            # Extract this word's audio with fade-in at start
-            # Find best cut point near word start using zero-crossing
             cut_start = _find_zero_crossing(audio, start_sample)
             chunk = audio[cut_start:end_sample].copy()
 
             if len(chunk) > crossfade_samples:
                 chunk[:crossfade_samples] *= fade_in
-                # Apply fade-out at end (for next pause insertion)
                 if i < len(word_timestamps) - 1:
                     chunk[-crossfade_samples:] *= fade_out
 
             parts.append(chunk)
-
             updated_timestamps.append({
                 "word": wt["word"],
                 "start": round(wt["start"] + cumulative_offset, 4),
                 "end": round(wt["end"] + cumulative_offset, 4),
             })
 
-    # Include trailing audio after the last word
     last_end = int(word_timestamps[-1]["end"] * sample_rate)
     if last_end < len(audio):
-        trailing = audio[last_end:].copy()
-        parts.append(trailing)
+        parts.append(audio[last_end:])
 
-    result = np.concatenate(parts)
-    return result, updated_timestamps
+    return np.concatenate(parts), updated_timestamps
 
 
 # ---------------------------------------------------------------------------
-# Core synthesis
+# Core synthesis (ONNX)
 # ---------------------------------------------------------------------------
 
 def _synthesise(
@@ -463,24 +414,18 @@ def _synthesise(
     speed: float,
     lang_code: str,
 ) -> np.ndarray:
-    """Run Kokoro TTS and return the concatenated audio numpy array."""
-    pipeline = _get_pipeline(lang_code)
+    """Run Kokoro ONNX TTS and return numpy audio array."""
+    kokoro = _get_kokoro()
+    onnx_lang = LANG_CODE_MAP.get(lang_code, "en-us")
 
-    audio_chunks: list[np.ndarray] = []
-    for _gs, _ps, audio_chunk in pipeline(
+    samples, sr = kokoro.create(
         text,
         voice=voice,
         speed=speed,
-    ):
-        if audio_chunk is not None:
-            if isinstance(audio_chunk, torch.Tensor):
-                audio_chunk = audio_chunk.cpu().numpy()
-            audio_chunks.append(audio_chunk.astype(np.float32))
+        lang=onnx_lang,
+    )
 
-    if not audio_chunks:
-        raise ValueError("Kokoro produced no audio for the given input.")
-
-    return np.concatenate(audio_chunks)
+    return samples.astype(np.float32)
 
 
 # ---------------------------------------------------------------------------
@@ -504,17 +449,6 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
                 "crossfade_ms": 5.0                    # optional, crossfade duration
             }
         }
-
-    Returns::
-
-        {
-            "audio_base64": "<base64 WAV string>",
-            "sample_rate": 24000,
-            "duration_seconds": 2.35,
-            "rtf": 0.04,
-            "word_timestamps": [...],                  # if requested
-            "word_boundaries": [...]                   # if requested
-        }
     """
     start_time = time.perf_counter()
 
@@ -534,47 +468,39 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         micro_pause_ms: float = float(job_input.get("micro_pause_ms", 0))
         crossfade_ms: float = float(job_input.get("crossfade_ms", 5.0))
 
-        # If micro_pause requested, force timestamps and boundaries on
         if micro_pause_ms > 0:
             want_timestamps = True
             want_boundaries = True
 
-        # ---- Validate inputs ----
+        # ---- Validate ----
         if lang_code not in VALID_LANG_CODES:
             return {
-                "error": (
-                    f"Invalid lang_code '{lang_code}'. "
-                    f"Valid options: {list(VALID_LANG_CODES.keys())}"
-                ),
+                "error": f"Invalid lang_code '{lang_code}'. Valid: {list(VALID_LANG_CODES.keys())}",
             }
 
         if not (0.1 <= speed <= 5.0):
             return {"error": f"Speed must be between 0.1 and 5.0, got {speed}."}
 
-        # Check if timestamps are supported for this language
+        # Guard: FA not supported for non-Latin scripts
         if (want_timestamps or want_boundaries) and lang_code not in FA_SUPPORTED_LANG_CODES:
             logger.warning(
-                "Forced alignment not supported for lang_code='%s' (%s). "
-                "Timestamps will not be returned. Supported: %s",
-                lang_code, VALID_LANG_CODES[lang_code],
-                list(FA_SUPPORTED_LANG_CODES),
+                "FA not supported for lang_code='%s'. Timestamps disabled.", lang_code
             )
             want_timestamps = False
             want_boundaries = False
             micro_pause_ms = 0
 
         logger.info(
-            "Job received: text_len=%d, voice=%s, speed=%.2f, lang=%s, "
-            "timestamps=%s, boundaries=%s, micro_pause=%.1fms",
+            "Job: text_len=%d, voice=%s, speed=%.2f, lang=%s, ts=%s, bounds=%s, pause=%.1fms",
             len(text), voice, speed, lang_code,
             want_timestamps, want_boundaries, micro_pause_ms,
         )
 
-        # ---- Step 1: Synthesise full sentence (preserves natural intonation) ----
+        # ---- Step 1: Synthesise (ONNX FP16 + CUDA) ----
         synth_start = time.perf_counter()
         audio = _synthesise(text, voice, speed, lang_code)
         synth_elapsed = time.perf_counter() - synth_start
-        logger.info("Synthesis complete in %.3fs", synth_elapsed)
+        logger.info("ONNX synthesis complete in %.3fs", synth_elapsed)
 
         # ---- Step 2: Forced alignment for timestamps ----
         word_ts: list[dict] = []
@@ -582,23 +508,18 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
 
         if want_timestamps or want_boundaries:
             word_ts = _get_word_timestamps(audio, text, SAMPLE_RATE)
-
             if want_boundaries and word_ts:
                 boundaries = _analyze_word_boundaries(word_ts)
 
         # ---- Step 3: Insert micro-pauses if requested ----
         if micro_pause_ms > 0 and word_ts:
-            logger.info(
-                "Inserting %.1fms micro-pauses with %.1fms crossfade",
-                micro_pause_ms, crossfade_ms,
-            )
+            logger.info("Inserting %.1fms pauses with %.1fms crossfade", micro_pause_ms, crossfade_ms)
             audio, word_ts = _insert_micro_pauses(
                 audio, word_ts,
                 pause_ms=micro_pause_ms,
                 crossfade_ms=crossfade_ms,
                 sample_rate=SAMPLE_RATE,
             )
-            # Recalculate boundaries with updated timestamps
             if want_boundaries and word_ts:
                 boundaries = _analyze_word_boundaries(word_ts)
 
@@ -608,10 +529,7 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         elapsed = time.perf_counter() - start_time
         rtf = elapsed / max(duration, 0.001)
 
-        logger.info(
-            "Complete: duration=%.2fs, processing=%.2fs, RTF=%.4f",
-            duration, elapsed, rtf,
-        )
+        logger.info("Done: duration=%.2fs, processing=%.2fs, RTF=%.4f", duration, elapsed, rtf)
 
         result: dict[str, Any] = {
             "audio_base64": audio_b64,

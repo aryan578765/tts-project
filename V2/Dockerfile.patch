@@ -1,3 +1,2 @@
-FROM patelaryan777/kokoro-tts-v2:latest
+FROM patelaryan777/kokoro-tts-v2:final
 COPY handler.py /app/handler.py
-CMD ["python", "-u", "handler.py"]

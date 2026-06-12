@@ -464,7 +464,23 @@
                 <textarea id="textPrompt" class="form-control" rows="3" placeholder="Type text to synthesize..."></textarea>
             </div>
 
-            <div style="background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; padding: 0.75rem; margin-bottom: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+            <div id="v2Controls" style="background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; padding: 0.75rem; margin-bottom: 1rem; font-size: 0.85rem;">
+                <strong style="color: var(--primary);">V2 Pause Controls:</strong>
+                <div class="form-grid" style="margin-top: 0.5rem; margin-bottom: 0;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="microPauseMs">Micro-pause (ms): <span id="pauseValue">0</span></label>
+                        <input type="range" id="microPauseMs" class="form-control" min="0" max="100" value="0" step="5" style="padding: 0.25rem;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                            <input type="checkbox" id="smartPause" checked> Smart pause (only at tight boundaries)
+                        </label>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">Preserves natural sentence rhythm</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ssmlHint" style="background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; padding: 0.75rem; margin-bottom: 1rem; font-size: 0.8rem; color: var(--text-muted); display: none;">
                 <strong style="color: var(--primary);">SSML Pause Syntax:</strong> Use <code>&lt;break time="10ms"/&gt;</code> or <code>&lt;break time="500ms"/&gt;</code> to insert pauses.<br>
                 Example: <em>Hello <code>&lt;break time="250ms"/&gt;</code> world</em>
             </div>
@@ -483,34 +499,169 @@
         </section>
 
 
-        <!-- SSML Micro-Pause Comparison -->
+        <!-- Micro-Pause Comparison -->
         <section class="card">
-            <h2 class="card-title">SSML Micro-Pause Comparison</h2>
+            <h2 class="card-title">Micro-Pause Comparison</h2>
             <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
-                Sentence with <code>&lt;break time="10ms"/&gt;</code> between every word vs. the original (no pauses). Tests whether micro-gaps alter sentence intonation.
+                Comparing original audio vs uniform pauses (all words) vs smart pauses (only at tight boundaries). Smart pause preserves natural sentence rhythm by leaving clean word gaps untouched.
             </p>
-            <div class="audio-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+            <div class="audio-grid" style="grid-template-columns: 1fr 1fr;">
                 <div class="audio-player-wrapper">
                     <div class="audio-label">
-                        <span class="badge badge-kokoro">V1 - Original (no pauses)</span>
+                        <span class="badge badge-kokoro">Original (no pauses)</span>
                     </div>
-                    <audio src="audio_output/kokoro/test_1.wav" controls preload="metadata"></audio>
+                    <audio src="V2/output/test_1_v2.wav" controls preload="metadata"></audio>
                 </div>
                 <div class="audio-player-wrapper">
                     <div class="audio-label">
-                        <span class="badge badge-kokoro">V2 - 10ms micro-pause</span>
+                        <span class="badge badge-kokoro">Smart Pause (10ms at tight only)</span>
+                    </div>
+                    <audio src="V2/output/test_1_smart_pause.wav" controls preload="metadata"></audio>
+                </div>
+                <div class="audio-player-wrapper">
+                    <div class="audio-label">
+                        <span class="badge badge-kokoro">Uniform 10ms (all words)</span>
                     </div>
                     <audio src="V2/output/test_1_micro_pause_10ms.wav" controls preload="metadata"></audio>
                 </div>
                 <div class="audio-player-wrapper">
                     <div class="audio-label">
-                        <span class="badge badge-kokoro">V2 - 50ms micro-pause</span>
+                        <span class="badge badge-kokoro">Uniform 50ms (all words)</span>
                     </div>
                     <audio src="V2/output/test_1_micro_pause_50ms.wav" controls preload="metadata"></audio>
                 </div>
             </div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem;">
                 * Test sentence: "I didn't rush this decision. I took my time, listened carefully, and chose what felt right."
+            </p>
+        </section>
+
+        <!-- Timestamp Accuracy Demo -->
+        <section class="card">
+            <h2 class="card-title">Timestamp Accuracy Demo</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Audio split at word boundaries with <strong>500ms silence</strong> inserted between every word pair. If timestamps are accurate, each word chunk sounds clean. If wrong, words will be cut mid-syllable.
+            </p>
+            <div class="audio-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="audio-player-wrapper">
+                    <div class="audio-label">
+                        <span class="badge badge-kokoro">test_1 - Original</span>
+                    </div>
+                    <audio src="V2/output/test_1_v2.wav" controls preload="metadata"></audio>
+                </div>
+                <div class="audio-player-wrapper">
+                    <div class="audio-label">
+                        <span class="badge badge-kokoro">test_1 - 500ms gaps (timestamp proof)</span>
+                    </div>
+                    <audio src="V2/output/test_1_timestamp_demo.wav" controls preload="metadata"></audio>
+                </div>
+                <div class="audio-player-wrapper">
+                    <div class="audio-label">
+                        <span class="badge badge-kokoro">test_3 - Original (long text)</span>
+                    </div>
+                    <audio src="V2/output/test_3_v2.wav" controls preload="metadata"></audio>
+                </div>
+                <div class="audio-player-wrapper">
+                    <div class="audio-label">
+                        <span class="badge badge-kokoro">test_3 - 500ms gaps (timestamp proof)</span>
+                    </div>
+                    <audio src="V2/output/test_3_timestamp_demo.wav" controls preload="metadata"></audio>
+                </div>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem;">
+                * Listen for clean word boundaries. If any word sounds cut off or clipped, the timestamp is inaccurate at that position.
+            </p>
+        </section>
+
+        <!-- Word Timestamps Data -->
+        <section class="card">
+            <h2 class="card-title">Word Timestamps (test_1)</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Forced alignment timestamps for: <em>"I didn't rush this decision. I took my time, listened carefully, and chose what felt right. It's not dramatic. It's just calm confidence."</em>
+            </p>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border); text-align: left;">
+                            <th style="padding: 0.5rem;">#</th>
+                            <th style="padding: 0.5rem;">Word</th>
+                            <th style="padding: 0.5rem;">Start (s)</th>
+                            <th style="padding: 0.5rem;">End (s)</th>
+                            <th style="padding: 0.5rem;">Duration (ms)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">1</td><td style="padding: 0.4rem;">I</td><td style="padding: 0.4rem;">0.080</td><td style="padding: 0.4rem;">0.100</td><td style="padding: 0.4rem;">20</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">2</td><td style="padding: 0.4rem;">didn't</td><td style="padding: 0.4rem;">0.140</td><td style="padding: 0.4rem;">0.361</td><td style="padding: 0.4rem;">221</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">3</td><td style="padding: 0.4rem;">rush</td><td style="padding: 0.4rem;">0.441</td><td style="padding: 0.4rem;">0.682</td><td style="padding: 0.4rem;">241</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">4</td><td style="padding: 0.4rem;">this</td><td style="padding: 0.4rem;">0.742</td><td style="padding: 0.4rem;">0.903</td><td style="padding: 0.4rem;">161</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">5</td><td style="padding: 0.4rem;">decision.</td><td style="padding: 0.4rem;">0.963</td><td style="padding: 0.4rem;">1.404</td><td style="padding: 0.4rem;">441</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">6</td><td style="padding: 0.4rem;">I</td><td style="padding: 0.4rem;">2.026</td><td style="padding: 0.4rem;">2.046</td><td style="padding: 0.4rem;">20</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">7</td><td style="padding: 0.4rem;">took</td><td style="padding: 0.4rem;">2.086</td><td style="padding: 0.4rem;">2.246</td><td style="padding: 0.4rem;">160</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">8</td><td style="padding: 0.4rem;">my</td><td style="padding: 0.4rem;">2.306</td><td style="padding: 0.4rem;">2.427</td><td style="padding: 0.4rem;">121</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">9</td><td style="padding: 0.4rem;">time,</td><td style="padding: 0.4rem;">2.507</td><td style="padding: 0.4rem;">2.908</td><td style="padding: 0.4rem;">401</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">10</td><td style="padding: 0.4rem;">listened</td><td style="padding: 0.4rem;">3.149</td><td style="padding: 0.4rem;">3.470</td><td style="padding: 0.4rem;">321</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">11</td><td style="padding: 0.4rem;">carefully,</td><td style="padding: 0.4rem;">3.550</td><td style="padding: 0.4rem;">3.991</td><td style="padding: 0.4rem;">441</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">12</td><td style="padding: 0.4rem;">and</td><td style="padding: 0.4rem;">4.151</td><td style="padding: 0.4rem;">4.252</td><td style="padding: 0.4rem;">101</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">13</td><td style="padding: 0.4rem;">chose</td><td style="padding: 0.4rem;">4.292</td><td style="padding: 0.4rem;">4.593</td><td style="padding: 0.4rem;">301</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">14</td><td style="padding: 0.4rem;">what</td><td style="padding: 0.4rem;">4.633</td><td style="padding: 0.4rem;">4.773</td><td style="padding: 0.4rem;">140</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">15</td><td style="padding: 0.4rem;">felt</td><td style="padding: 0.4rem;">4.833</td><td style="padding: 0.4rem;">5.034</td><td style="padding: 0.4rem;">201</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">16</td><td style="padding: 0.4rem;">right.</td><td style="padding: 0.4rem;">5.074</td><td style="padding: 0.4rem;">5.355</td><td style="padding: 0.4rem;">281</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">17</td><td style="padding: 0.4rem;">It's</td><td style="padding: 0.4rem;">5.896</td><td style="padding: 0.4rem;">6.037</td><td style="padding: 0.4rem;">141</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">18</td><td style="padding: 0.4rem;">not</td><td style="padding: 0.4rem;">6.097</td><td style="padding: 0.4rem;">6.257</td><td style="padding: 0.4rem;">160</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">19</td><td style="padding: 0.4rem;">dramatic.</td><td style="padding: 0.4rem;">6.297</td><td style="padding: 0.4rem;">6.839</td><td style="padding: 0.4rem;">542</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">20</td><td style="padding: 0.4rem;">It's</td><td style="padding: 0.4rem;">7.180</td><td style="padding: 0.4rem;">7.300</td><td style="padding: 0.4rem;">120</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">21</td><td style="padding: 0.4rem;">just</td><td style="padding: 0.4rem;">7.340</td><td style="padding: 0.4rem;">7.521</td><td style="padding: 0.4rem;">181</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">22</td><td style="padding: 0.4rem;">calm</td><td style="padding: 0.4rem;">7.601</td><td style="padding: 0.4rem;">7.882</td><td style="padding: 0.4rem;">281</td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">23</td><td style="padding: 0.4rem;">confidence.</td><td style="padding: 0.4rem;">7.962</td><td style="padding: 0.4rem;">8.604</td><td style="padding: 0.4rem;">642</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Word Boundary Analysis -->
+        <section class="card">
+            <h2 class="card-title">Word Boundary Analysis (test_1)</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                Gap between consecutive words. <span style="color: var(--success);">Clean</span> (&ge;50ms) = natural pause. <span style="color: #f59e0b;">Tight</span> (20-49ms) = separable. <span style="color: var(--error);">Coarticulated</span> (&lt;20ms) = words blend together.
+            </p>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border); text-align: left;">
+                            <th style="padding: 0.5rem;">Word Pair</th>
+                            <th style="padding: 0.5rem;">Gap (ms)</th>
+                            <th style="padding: 0.5rem;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">I | didn't</td><td style="padding: 0.4rem;">40.1</td><td style="padding: 0.4rem;"><span style="color: #f59e0b;">tight</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">didn't | rush</td><td style="padding: 0.4rem;">80.2</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">rush | this</td><td style="padding: 0.4rem;">60.1</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">this | decision</td><td style="padding: 0.4rem;">60.2</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">decision | I</td><td style="padding: 0.4rem;">621.7</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">I | took</td><td style="padding: 0.4rem;">40.2</td><td style="padding: 0.4rem;"><span style="color: #f59e0b;">tight</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">took | my</td><td style="padding: 0.4rem;">60.2</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">my | time</td><td style="padding: 0.4rem;">80.2</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">time | listened</td><td style="padding: 0.4rem;">240.7</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">listened | carefully</td><td style="padding: 0.4rem;">80.2</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">carefully | and</td><td style="padding: 0.4rem;">160.4</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">and | chose</td><td style="padding: 0.4rem;">40.1</td><td style="padding: 0.4rem;"><span style="color: #f59e0b;">tight</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">chose | what</td><td style="padding: 0.4rem;">40.1</td><td style="padding: 0.4rem;"><span style="color: #f59e0b;">tight</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">what | felt</td><td style="padding: 0.4rem;">60.1</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">felt | right</td><td style="padding: 0.4rem;">40.1</td><td style="padding: 0.4rem;"><span style="color: #f59e0b;">tight</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">right | It's</td><td style="padding: 0.4rem;">541.5</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">It's | not</td><td style="padding: 0.4rem;">60.2</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">not | dramatic</td><td style="padding: 0.4rem;">40.1</td><td style="padding: 0.4rem;"><span style="color: #f59e0b;">tight</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">dramatic | It's</td><td style="padding: 0.4rem;">340.9</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">It's | just</td><td style="padding: 0.4rem;">40.1</td><td style="padding: 0.4rem;"><span style="color: #f59e0b;">tight</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">just | calm</td><td style="padding: 0.4rem;">80.3</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                        <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 0.4rem;">calm | confidence</td><td style="padding: 0.4rem;">80.3</td><td style="padding: 0.4rem;"><span style="color: var(--success);">clean</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem;">
+                Summary: 15 clean | 7 tight | 0 coarticulated | 0 overlapping (22 total boundaries)
             </p>
         </section>
 
@@ -616,16 +767,22 @@
         const endpointMapping = {
             kokoro_v2: {
                 id: "54td14oe86jexh",
-                payloadBuilder: (text, voice) => ({
-                    input: {
-                        text: text,
-                        voice: voice,
-                        speed: 1.0,
-                        lang_code: getSelectedLang(),
-                        timestamps: true,
-                        word_boundaries: true
-                    }
-                })
+                payloadBuilder: (text, voice) => {
+                    const pauseMs = parseInt(document.getElementById("microPauseMs").value) || 0;
+                    const smartPause = document.getElementById("smartPause").checked;
+                    return {
+                        input: {
+                            text: text,
+                            voice: voice,
+                            speed: 1.0,
+                            lang_code: getSelectedLang(),
+                            timestamps: true,
+                            word_boundaries: true,
+                            micro_pause_ms: pauseMs,
+                            smart_pause: smartPause
+                        }
+                    };
+                }
             },
             kokoro: {
                 id: "3z59kpduf0vkil",
@@ -714,13 +871,23 @@
                 opt.style.display = val === "cosyvoice" ? "block" : "none";
             });
             
+            // Toggle V2 controls vs SSML hint
+            document.getElementById("v2Controls").style.display = val === "kokoro_v2" ? "block" : "none";
+            document.getElementById("ssmlHint").style.display = val === "kokoro" ? "block" : "none";
+
             // Set default voice based on selected model
             if (val === "kokoro" || val === "kokoro_v2") {
                 voiceSelect.value = "af_heart";
             } else {
-                voiceSelect.value = "英文女";
+                voiceSelect.value = "\u82f1\u6587\u5973";
             }
         });
+
+        // Slider value display
+        document.getElementById("microPauseMs").addEventListener("input", (e) => {
+            document.getElementById("pauseValue").textContent = e.target.value;
+        });
+
 
         // Trigger TTS Request
         const generateBtn = document.getElementById("generateBtn");

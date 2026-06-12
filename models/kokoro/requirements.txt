@@ -1,20 +1,12 @@
-# Kokoro TTS v2 - RunPod Serverless Dependencies
-# ================================================
-# Note: torch and torchaudio are NOT listed here because:
-#   - torch 2.5.1+cu124 comes pre-installed in the base Docker image
-#   - torchaudio 2.5.1+cu124 is installed separately from the cu124 index
-# Listing them here would risk pip installing CPU-only versions.
+# Kokoro TTS v2 - RunPod Serverless Dependencies (ONNX)
+# ======================================================
+# Note: torch/torchaudio pre-installed in Docker base image (for FA only).
+# Note: onnxruntime-gpu installed separately in Dockerfile.
 
-# Core TTS engine
-kokoro>=0.9.4
+# Kokoro ONNX inference engine
+kokoro-onnx
 
-# Japanese language support
-misaki[ja]
-
-# Chinese language support
-misaki[zh]
-
-# HuggingFace Hub (for model downloads)
+# HuggingFace Hub (for model management)
 huggingface_hub
 
 # Audio I/O
