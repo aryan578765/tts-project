@@ -436,7 +436,6 @@
                     <label for="modelSelect">Select Model</label>
                     <select id="modelSelect" class="form-control">
                         <option value="kokoro_v2">Kokoro V2 (ONNX - Production)</option>
-                        <option value="kokoro">Kokoro v1.0 (PyTorch)</option>
                         <option value="cosyvoice">CosyVoice 2.0</option>
                     </select>
                 </div>
@@ -480,10 +479,7 @@
                 </div>
             </div>
 
-            <div id="ssmlHint" style="background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; padding: 0.75rem; margin-bottom: 1rem; font-size: 0.8rem; color: var(--text-muted); display: none;">
-                <strong style="color: var(--primary);">SSML Pause Syntax:</strong> Use <code>&lt;break time="10ms"/&gt;</code> or <code>&lt;break time="500ms"/&gt;</code> to insert pauses.<br>
-                Example: <em>Hello <code>&lt;break time="250ms"/&gt;</code> world</em>
-            </div>
+
 
             <button id="generateBtn" class="btn">Generate Speech</button>
 
@@ -784,18 +780,6 @@
                     };
                 }
             },
-            kokoro: {
-                id: "3z59kpduf0vkil",
-                payloadBuilder: (text, voice) => ({
-                    input: {
-                        text: text,
-                        voice: voice,
-                        speed: 1.0,
-                        lang_code: getSelectedLang(),
-                        ssml: text.includes("<break")
-                    }
-                })
-            },
             cosyvoice: {
                 id: "x3yzb0ve3mgx82",
                 payloadBuilder: (text, voice) => ({
@@ -873,7 +857,6 @@
             
             // Toggle V2 controls vs SSML hint
             document.getElementById("v2Controls").style.display = val === "kokoro_v2" ? "block" : "none";
-            document.getElementById("ssmlHint").style.display = val === "kokoro" ? "block" : "none";
 
             // Set default voice based on selected model
             if (val === "kokoro" || val === "kokoro_v2") {
