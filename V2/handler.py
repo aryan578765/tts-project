@@ -94,8 +94,8 @@ CJK_LANG_CODES = {"j", "z"}
 SAMPLE_RATE: int = 24000  # Kokoro outputs 24 kHz audio
 FA_SAMPLE_RATE: int = 16000  # MMS_FA expects 16 kHz
 
-# Threshold (ms) for classifying word boundaries
-CLEAN_BOUNDARY_THRESHOLD_MS = 50
+# Default threshold (ms) for classifying word boundaries
+DEFAULT_CLEAN_BOUNDARY_THRESHOLD_MS = 50
 COARTICULATED_THRESHOLD_MS = 20
 
 # Model file paths (downloaded in Dockerfile)
@@ -429,7 +429,7 @@ def _get_word_timestamps(
 # Word Boundary Analysis
 # ---------------------------------------------------------------------------
 
-def _analyze_word_boundaries(word_timestamps: list[dict]) -> list[dict]:
+def _analyze_word_boundaries(word_timestamps: list[dict], clean_threshold_ms: float = DEFAULT_CLEAN_BOUNDARY_THRESHOLD_MS) -> list[dict]:
     """Analyze gaps between consecutive words."""
     boundaries = []
     for i in range(len(word_timestamps) - 1):
@@ -438,7 +438,7 @@ def _analyze_word_boundaries(word_timestamps: list[dict]) -> list[dict]:
         gap_sec = w2["start"] - w1["end"]
         gap_ms = round(gap_sec * 1000, 1)
 
-        if gap_ms >= CLEAN_BOUNDARY_THRESHOLD_MS:
+        if gap_ms >= clean_threshold_ms:
             status = "clean"
             can_separate = True
         elif gap_ms >= COARTICULATED_THRESHOLD_MS:
@@ -479,12 +479,15 @@ def _insert_micro_pauses(
     sample_rate: int = SAMPLE_RATE,
     boundaries: list[dict] | None = None,
     smart: bool = False,
+    pause_after: list[int] | None = None,
 ) -> tuple[np.ndarray, list[dict]]:
     """Insert micro-pauses between words using equal-power crossfade.
 
     Preserves original intonation by working on the already-synthesised audio.
-    When smart=True, only inserts pauses at tight/coarticulated boundaries,
-    leaving clean natural gaps untouched.
+    Pause insertion modes (priority order):
+      1. pause_after=[0, 2, 5] -> insert pauses only after word indices 0, 2, 5
+      2. smart=True -> only at tight/coarticulated boundaries
+      3. Default -> insert pauses between ALL word pairs
     Returns (modified_audio, updated_timestamps).
     """
     if not word_timestamps or len(word_timestamps) < 2:
@@ -499,7 +502,13 @@ def _insert_micro_pauses(
 
     # Build set of word-pair indices that need pauses
     needs_pause: set[int] = set()
-    if smart and boundaries:
+    if pause_after is not None:
+        # Manual mode: only insert at specified word indices
+        for idx in pause_after:
+            if 0 <= idx < len(word_timestamps) - 1:
+                needs_pause.add(idx)
+        logger.info("Manual pause_after: %d positions specified", len(needs_pause))
+    elif smart and boundaries:
         for idx, b in enumerate(boundaries):
             if b["status"] in ("tight", "coarticulated", "overlapping"):
                 needs_pause.add(idx)
@@ -630,10 +639,17 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         micro_pause_ms: float = float(job_input.get("micro_pause_ms", 0))
         crossfade_ms: float = float(job_input.get("crossfade_ms", 5.0))
         smart_pause: bool = bool(job_input.get("smart_pause", False))
+        smart_pause_threshold_ms: float = float(job_input.get("smart_pause_threshold_ms", DEFAULT_CLEAN_BOUNDARY_THRESHOLD_MS))
+        pause_after: list[int] | None = job_input.get("pause_after", None)
 
         if micro_pause_ms > 0:
             want_timestamps = True
             want_boundaries = True
+        if pause_after is not None:
+            want_timestamps = True
+            want_boundaries = True
+            if micro_pause_ms <= 0:
+                micro_pause_ms = 10.0  # default pause for pause_after mode
 
         # ---- Validate ----
         if lang_code not in VALID_LANG_CODES:
@@ -672,11 +688,12 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         if want_timestamps or want_boundaries:
             word_ts = _get_word_timestamps(audio, text, SAMPLE_RATE, lang_code)
             if want_boundaries and word_ts:
-                boundaries = _analyze_word_boundaries(word_ts)
+                boundaries = _analyze_word_boundaries(word_ts, smart_pause_threshold_ms)
 
         # ---- Step 3: Insert micro-pauses if requested ----
         if micro_pause_ms > 0 and word_ts:
-            logger.info("Inserting %.1fms pauses with %.1fms crossfade (smart=%s)", micro_pause_ms, crossfade_ms, smart_pause)
+            logger.info("Inserting %.1fms pauses with %.1fms crossfade (smart=%s, threshold=%.1fms, pause_after=%s)",
+                        micro_pause_ms, crossfade_ms, smart_pause, smart_pause_threshold_ms, pause_after)
             audio, word_ts = _insert_micro_pauses(
                 audio, word_ts,
                 pause_ms=micro_pause_ms,
@@ -684,9 +701,10 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
                 sample_rate=SAMPLE_RATE,
                 boundaries=boundaries if smart_pause else None,
                 smart=smart_pause,
+                pause_after=pause_after,
             )
             if want_boundaries and word_ts:
-                boundaries = _analyze_word_boundaries(word_ts)
+                boundaries = _analyze_word_boundaries(word_ts, smart_pause_threshold_ms)
 
         # ---- Encode result ----
         audio_b64 = _audio_to_base64_wav(audio)
