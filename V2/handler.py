@@ -250,8 +250,8 @@ def _ensure_uroman():
     global _uroman_loaded, _uroman
     if not _uroman_loaded:
         try:
-            import uroman as ur
-            _uroman = ur
+            from uroman import Uroman
+            _uroman = Uroman()
             logger.info("uroman loaded successfully")
         except ImportError:
             logger.warning("uroman not installed, CJK alignment will be limited")
