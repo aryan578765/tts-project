@@ -1,2 +1,6 @@
 FROM patelaryan777/kokoro-tts-v2:final
+
+# Add CJK support dependencies
+RUN pip install --no-cache-dir jieba uroman fugashi unidic-lite
+
 COPY handler.py /app/handler.py

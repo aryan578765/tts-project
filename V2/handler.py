@@ -85,8 +85,11 @@ VALID_LANG_CODES: dict[str, str] = {
     "z": "Chinese",
 }
 
-# Languages where forced alignment works (Latin-script based)
-FA_SUPPORTED_LANG_CODES = {"a", "b", "e", "f", "i", "p"}
+# Languages where forced alignment works (all supported via uroman + segmentation)
+FA_SUPPORTED_LANG_CODES = {"a", "b", "e", "f", "i", "j", "p", "z"}
+
+# CJK language codes that need special segmentation + romanization
+CJK_LANG_CODES = {"j", "z"}
 
 SAMPLE_RATE: int = 24000  # Kokoro outputs 24 kHz audio
 FA_SAMPLE_RATE: int = 16000  # MMS_FA expects 16 kHz
@@ -227,26 +230,112 @@ def _find_zero_crossing(audio: np.ndarray, index: int, search_range: int = 120) 
 # Forced Alignment — Word-level timestamps
 # ---------------------------------------------------------------------------
 
-def _clean_word(word: str) -> str:
-    """Strip punctuation and accents from a word for alignment matching.
+# Lazy-loaded CJK segmentation and romanization tools
+_jieba_loaded = False
+_uroman_loaded = False
+_uroman = None
 
-    MMS_FA tokenizer only supports basic Latin a-z, so we normalize
-    accented characters: é→e, ñ→n, ü→u, etc.
+
+def _ensure_jieba():
+    """Lazy-load jieba for Chinese word segmentation."""
+    global _jieba_loaded
+    if not _jieba_loaded:
+        import jieba
+        jieba.setLogLevel(logging.WARNING)
+        _jieba_loaded = True
+
+
+def _ensure_uroman():
+    """Lazy-load uroman for CJK romanization."""
+    global _uroman_loaded, _uroman
+    if not _uroman_loaded:
+        try:
+            import uroman as ur
+            _uroman = ur
+            logger.info("uroman loaded successfully")
+        except ImportError:
+            logger.warning("uroman not installed, CJK alignment will be limited")
+            _uroman = None
+        _uroman_loaded = True
+
+
+def _segment_cjk_text(text: str, lang_code: str) -> list[str]:
+    """Segment CJK text into words (these languages have no spaces).
+
+    Returns list of word strings.
+    """
+    if lang_code == "z":  # Chinese
+        _ensure_jieba()
+        import jieba
+        words = list(jieba.cut(text))
+        # Filter out whitespace-only tokens
+        return [w.strip() for w in words if w.strip()]
+    elif lang_code == "j":  # Japanese
+        # Try fugashi/mecab first, fall back to character-level
+        try:
+            import fugashi
+            tagger = fugashi.Tagger()
+            words = [word.surface for word in tagger(text) if word.surface.strip()]
+            return words
+        except (ImportError, RuntimeError):
+            logger.warning("fugashi not available, using character-level segmentation for Japanese")
+            # Character-level fallback: each character is a "word"
+            return [ch for ch in text if ch.strip() and not re.match(r'[\s\p{P}]', ch)]
+    else:
+        return text.split()
+
+
+def _romanize_text(text: str) -> str:
+    """Romanize non-Latin text using uroman."""
+    _ensure_uroman()
+    if _uroman is None:
+        return text
+    try:
+        romanized = _uroman.romanize_string(text)
+        return romanized
+    except Exception as e:
+        logger.warning("uroman romanization failed: %s", e)
+        return text
+
+
+def _clean_word(word: str, lang_code: str = "a") -> str:
+    """Strip punctuation and normalize a word for alignment matching.
+
+    MMS_FA tokenizer only supports basic Latin a-z, so we:
+    - For Latin scripts: normalize accents (é→e, ñ→n, ü→u)
+    - For CJK scripts: romanize via uroman first, then normalize
     """
     # Remove punctuation
     cleaned = re.sub(r'[^\w\s]', '', word, flags=re.UNICODE).strip()
-    # Normalize accented characters to ASCII (NFD decomposes, then strip combining marks)
-    normalized = unicodedata.normalize('NFD', cleaned)
-    ascii_only = ''.join(c for c in normalized if unicodedata.category(c) != 'Mn')
-    return ascii_only
+    if not cleaned:
+        return ''
+
+    # Check if text contains CJK characters
+    has_cjk = any(ord(c) > 0x2E80 for c in cleaned)
+
+    if has_cjk and lang_code in CJK_LANG_CODES:
+        # Romanize CJK characters
+        cleaned = _romanize_text(cleaned)
+        # Remove any remaining non-Latin characters
+        cleaned = re.sub(r'[^a-zA-Z\s]', '', cleaned).strip()
+    else:
+        # Normalize accented characters to ASCII (NFD decomposes, then strip combining marks)
+        normalized = unicodedata.normalize('NFD', cleaned)
+        cleaned = ''.join(c for c in normalized if unicodedata.category(c) != 'Mn')
+
+    return cleaned
 
 
 def _get_word_timestamps(
     audio: np.ndarray,
     transcript: str,
     sample_rate: int = SAMPLE_RATE,
+    lang_code: str = "a",
 ) -> list[dict]:
-    """Get word-level timestamps using torchaudio MMS_FA high-level API."""
+    """Get word-level timestamps using torchaudio MMS_FA high-level API.
+
+    For CJK languages, performs word segmentation and romanization first.
+    """
     model, tokenizer, aligner, fa_dict = _get_fa_components()
     start_time = time.perf_counter()
 
@@ -271,11 +360,17 @@ def _get_word_timestamps(
     emission = torch.log_softmax(emission, dim=-1)
 
     # Step 2: Prepare word list (MMS_FA requires lowercase)
-    words_raw = transcript.split()
+    # For CJK, segment first since there are no spaces
+    if lang_code in CJK_LANG_CODES:
+        words_raw = _segment_cjk_text(transcript, lang_code)
+        logger.info("CJK segmentation: %d words from '%s...'", len(words_raw), transcript[:30])
+    else:
+        words_raw = transcript.split()
+
     words_clean = []
     words_display = []
     for w in words_raw:
-        cleaned = _clean_word(w).lower()
+        cleaned = _clean_word(w, lang_code).lower()
         if cleaned:
             words_clean.append(cleaned)
             words_display.append(w)
@@ -575,7 +670,7 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         boundaries: list[dict] = []
 
         if want_timestamps or want_boundaries:
-            word_ts = _get_word_timestamps(audio, text, SAMPLE_RATE)
+            word_ts = _get_word_timestamps(audio, text, SAMPLE_RATE, lang_code)
             if want_boundaries and word_ts:
                 boundaries = _analyze_word_boundaries(word_ts)
 
