@@ -468,15 +468,24 @@
             <div id="v2Controls" style="background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2); border-radius: 6px; padding: 0.75rem; margin-bottom: 1rem; font-size: 0.85rem;">
                 <strong style="color: var(--primary);">V2 Pause Controls:</strong>
                 <div class="form-grid" style="margin-top: 0.5rem; margin-bottom: 0;">
-                    <div class="form-group" style="margin-bottom: 0;">
+                    <div class="form-group" style="margin-bottom: 0.5rem;">
                         <label for="microPauseMs">Micro-pause (ms): <span id="pauseValue">0</span></label>
                         <input type="range" id="microPauseMs" class="form-control" min="0" max="100" value="0" step="5" style="padding: 0.25rem;">
                     </div>
-                    <div class="form-group" style="margin-bottom: 0;">
+                    <div class="form-group" style="margin-bottom: 0.5rem;">
+                        <label for="thresholdMs">Smart threshold (ms): <span id="thresholdValue">50</span></label>
+                        <input type="range" id="thresholdMs" class="form-control" min="20" max="100" value="50" step="5" style="padding: 0.25rem;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0.5rem;">
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
                             <input type="checkbox" id="smartPause" checked> Smart pause (only at tight boundaries)
                         </label>
-                        <span style="font-size: 0.75rem; color: var(--text-muted);">Preserves natural sentence rhythm</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">Gaps below threshold get pauses; clean gaps stay untouched</span>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="pauseAfter">Pause after words (indices, comma-separated):</label>
+                        <input type="text" id="pauseAfter" class="form-control" placeholder="e.g. 1,3,5 (leave empty for auto)" style="font-size: 0.8rem;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">Overrides smart pause. 0-based word index.</span>
                     </div>
                 </div>
             </div>
@@ -768,7 +777,9 @@
                 payloadBuilder: (text, voice) => {
                     const pauseMs = parseInt(document.getElementById("microPauseMs").value) || 0;
                     const smartPause = document.getElementById("smartPause").checked;
-                    return {
+                    const thresholdMs = parseInt(document.getElementById("thresholdMs").value) || 50;
+                    const pauseAfterRaw = document.getElementById("pauseAfter").value.trim();
+                    const payload = {
                         input: {
                             text: text,
                             voice: voice,
@@ -777,9 +788,14 @@
                             timestamps: true,
                             word_boundaries: true,
                             micro_pause_ms: pauseMs,
-                            smart_pause: smartPause
+                            smart_pause: smartPause,
+                            smart_pause_threshold_ms: thresholdMs
                         }
                     };
+                    if (pauseAfterRaw) {
+                        payload.input.pause_after = pauseAfterRaw.split(",").map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+                    }
+                    return payload;
                 }
             },
             cosyvoice: {
@@ -871,6 +887,9 @@
         // Slider value display
         document.getElementById("microPauseMs").addEventListener("input", (e) => {
             document.getElementById("pauseValue").textContent = e.target.value;
+        });
+        document.getElementById("thresholdMs").addEventListener("input", (e) => {
+            document.getElementById("thresholdValue").textContent = e.target.value;
         });
 
 
