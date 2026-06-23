@@ -626,12 +626,14 @@ def _insert_micro_pauses(
             pair_idx = i - 1  # boundary index for word pair (i-1, i)
             if pair_idx in needs_pause:
                 # Insert pause at this boundary
+                # Track actual sample position BEFORE appending silence
+                total_samples_before = sum(len(p) for p in parts)
                 silence = np.zeros(pause_samples, dtype=np.float32)
                 parts.append(silence)
-                # Record the center of this inserted pause
-                pause_center = wt["start"] + cumulative_offset + (pause_ms / 2000.0)
+                # Record the center of this inserted pause (sample-accurate)
+                pause_center_sample = total_samples_before + pause_samples // 2
                 pause_positions.append({
-                    "time": round(pause_center, 4),
+                    "time": round(pause_center_sample / sample_rate, 4),
                     "duration_ms": pause_ms,
                     "after_word_idx": pair_idx,
                     "after_word": word_timestamps[pair_idx]["word"],
