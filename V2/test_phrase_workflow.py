@@ -1,4 +1,4 @@
-"""End-to-end test matching Mariam's exact workflow:
+"""End-to-end test for phrase cutting workflow:
 1. Generate long audio with pause_after
 2. Get phrase_cut_points (silence-detected)
 3. Use cut_points to insert 1s silence at phrase boundaries
@@ -14,13 +14,13 @@ ENDPOINT = "54td14oe86jexh"
 URL = "https://api.runpod.ai/v2/{}/runsync".format(ENDPOINT)
 HEADERS = {"Authorization": "Bearer " + API_KEY, "Content-Type": "application/json"}
 
-# Same text Mariam used
+# Test text
 TEXT = """Siri's AI overhaul may have been the headline announcement at Apple's Worldwide Developers Conference earlier this month, but Apple's broader AI strategy is taking shape through a series of smaller features embedded across its software.
 Rather than asking consumers to adopt the new AI-powered version of Siri to get all the benefits that AI brings, the company is weaving AI into the apps and services people already use, with a focus on solving real-world problems. The result is that your iPhone will be able to split restaurant bills among friends, secure your passwords after data breaches, automate tasks, and organize information with less manual effort, among other things.
 Individually, these features may not be as dramatic as a Siri that finally understands your personal context and can take action on your behalf. But combined, they showcase a vision for AI that's less about chatting with a bot and more about making Apple's software itself feel smarter and more capable.
 Beyond Siri AI, here are the smaller AI features in iOS twenty-seven that we're most looking forward to using. The features are live now in the developer beta and will soon arrive in the public beta, before iOS twenty-seven's general public release later this fall."""
 
-# Mariam's phrase boundary indices
+# Phrase boundary indices
 PAUSE_AFTER = [2, 8, 13, 16, 21, 30, 34, 46, 54, 62, 67, 74, 87, 95, 100, 107,
                115, 124, 131, 139, 146, 153, 158, 167, 177, 186, 194, 203]
 
@@ -48,9 +48,9 @@ print("Duration: {}s | Words: {} | Cut points: {}".format(
 
 # Save original audio
 audio_bytes = base64.b64decode(out["audio_base64"])
-with open("output/mariam_step1_paused.wav", "wb") as f:
+with open("output/test_step1_paused.wav", "wb") as f:
     f.write(audio_bytes)
-print("Saved: output/mariam_step1_paused.wav")
+print("Saved: output/test_step1_paused.wav")
 
 print("\n" + "=" * 70)
 print("STEP 2: Match cut_points to pause_after word boundaries")
@@ -109,7 +109,7 @@ print("\n" + "=" * 70)
 print("STEP 3: Insert 1s silence at matched cut points")
 print("=" * 70)
 
-with wave.open("output/mariam_step1_paused.wav", "rb") as wf:
+with wave.open("output/test_step1_paused.wav", "rb") as wf:
     sr = wf.getframerate()
     raw = wf.readframes(wf.getnframes())
     audio = np.frombuffer(raw, dtype=np.int16).astype(np.float32)
@@ -129,12 +129,12 @@ pieces.append(audio[cursor:])
 
 result = np.concatenate(pieces)
 result_int16 = np.clip(result, -32768, 32767).astype(np.int16)
-with wave.open("output/mariam_step3_phrases.wav", "wb") as wf:
+with wave.open("output/test_step3_phrases.wav", "wb") as wf:
     wf.setnchannels(1)
     wf.setsampwidth(2)
     wf.setframerate(sr)
     wf.writeframes(result_int16.tobytes())
-print("Saved: output/mariam_step3_phrases.wav ({:.1f}s)".format(len(result) / sr))
+print("Saved: output/test_step3_phrases.wav ({:.1f}s)".format(len(result) / sr))
 
 print("\n" + "=" * 70)
 print("STEP 4: Verify all cuts land in silence")
@@ -157,5 +157,5 @@ for mc in matched_cuts:
 
 print("\n" + "=" * 70)
 print("RESULT: {}/{} cuts are CLEAN ({:.0f}%)".format(clean, len(matched_cuts), clean/max(len(matched_cuts),1)*100))
-print("Audio: output/mariam_step3_phrases.wav")
+print("Audio: output/test_step3_phrases.wav")
 print("=" * 70)
