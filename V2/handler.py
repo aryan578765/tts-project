@@ -469,7 +469,7 @@ def _detect_silence_cut_points(
     audio: np.ndarray,
     sample_rate: int = SAMPLE_RATE,
     min_silence_ms: float = 20.0,
-    energy_threshold: float = 100.0,
+    energy_threshold_ratio: float = 0.01,
     window_ms: float = 10.0,
 ) -> list[dict]:
     """Detect silence regions in audio and return safe cut points.
@@ -478,10 +478,20 @@ def _detect_silence_cut_points(
     regions and returns the center of each as a guaranteed-safe cut point.
     Much more reliable than alignment timestamps for phrase cutting.
 
-    Returns list of {"time": float, "duration_ms": float, "before_word_idx": int}.
+    Args:
+        energy_threshold_ratio: Fraction of peak amplitude below which audio
+            is considered silence (default 0.01 = 1% of peak).
+
+    Returns list of {"time": float, "duration_ms": float}.
     """
     window_samples = max(int(sample_rate * window_ms / 1000), 1)
     min_silence_samples = int(sample_rate * min_silence_ms / 1000)
+
+    # Adaptive threshold: 1% of peak amplitude
+    peak = float(np.max(np.abs(audio)))
+    if peak == 0:
+        return []
+    energy_threshold = peak * energy_threshold_ratio
 
     # Compute RMS energy per window
     n_windows = len(audio) // window_samples
