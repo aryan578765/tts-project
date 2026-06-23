@@ -462,6 +462,80 @@ def _analyze_word_boundaries(word_timestamps: list[dict], clean_threshold_ms: fl
 
 
 # ---------------------------------------------------------------------------
+# Silence-based phrase cut point detection
+# ---------------------------------------------------------------------------
+
+def _detect_silence_cut_points(
+    audio: np.ndarray,
+    sample_rate: int = SAMPLE_RATE,
+    min_silence_ms: float = 20.0,
+    energy_threshold: float = 100.0,
+    window_ms: float = 10.0,
+) -> list[dict]:
+    """Detect silence regions in audio and return safe cut points.
+
+    After micro-pauses are inserted, this scans the actual waveform for silence
+    regions and returns the center of each as a guaranteed-safe cut point.
+    Much more reliable than alignment timestamps for phrase cutting.
+
+    Returns list of {"time": float, "duration_ms": float, "before_word_idx": int}.
+    """
+    window_samples = max(int(sample_rate * window_ms / 1000), 1)
+    min_silence_samples = int(sample_rate * min_silence_ms / 1000)
+
+    # Compute RMS energy per window
+    n_windows = len(audio) // window_samples
+    if n_windows == 0:
+        return []
+
+    energies = np.array([
+        np.sqrt(np.mean(audio[i * window_samples:(i + 1) * window_samples] ** 2))
+        for i in range(n_windows)
+    ])
+
+    # Find silence regions (consecutive low-energy windows)
+    is_silent = energies < energy_threshold
+    cut_points = []
+    in_silence = False
+    silence_start_win = 0
+
+    for i in range(n_windows):
+        if is_silent[i]:
+            if not in_silence:
+                silence_start_win = i
+                in_silence = True
+        else:
+            if in_silence:
+                silence_end_win = i
+                silence_len = (silence_end_win - silence_start_win) * window_samples
+                if silence_len >= min_silence_samples:
+                    # Center of silence region = safest cut point
+                    center_sample = ((silence_start_win + silence_end_win) // 2) * window_samples
+                    center_time = center_sample / sample_rate
+                    duration_ms = round(silence_len / sample_rate * 1000, 1)
+                    cut_points.append({
+                        "time": round(center_time, 4),
+                        "duration_ms": duration_ms,
+                    })
+                in_silence = False
+
+    # Handle silence at end
+    if in_silence:
+        silence_end_win = n_windows
+        silence_len = (silence_end_win - silence_start_win) * window_samples
+        if silence_len >= min_silence_samples:
+            center_sample = ((silence_start_win + silence_end_win) // 2) * window_samples
+            center_time = center_sample / sample_rate
+            duration_ms = round(silence_len / sample_rate * 1000, 1)
+            cut_points.append({
+                "time": round(center_time, 4),
+                "duration_ms": duration_ms,
+            })
+
+    return cut_points
+
+
+# ---------------------------------------------------------------------------
 # Crossfade-based micro-pause insertion
 # ---------------------------------------------------------------------------
 
@@ -706,6 +780,12 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
             if want_boundaries and word_ts:
                 boundaries = _analyze_word_boundaries(word_ts, smart_pause_threshold_ms)
 
+        # ---- Step 4: Detect silence-based cut points ----
+        cut_points: list[dict] = []
+        if (pause_after is not None or micro_pause_ms > 0) and word_ts:
+            cut_points = _detect_silence_cut_points(audio, SAMPLE_RATE, min_silence_ms=max(micro_pause_ms * 0.5, 15))
+            logger.info("Detected %d silence-based cut points", len(cut_points))
+
         # ---- Encode result ----
         audio_b64 = _audio_to_base64_wav(audio)
         duration = len(audio) / SAMPLE_RATE
@@ -727,6 +807,8 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
             result["word_timestamps"] = word_ts
         if want_boundaries:
             result["word_boundaries"] = boundaries
+        if cut_points:
+            result["phrase_cut_points"] = cut_points
 
         return result
 
