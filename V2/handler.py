@@ -564,7 +564,7 @@ def _insert_micro_pauses(
     boundaries: list[dict] | None = None,
     smart: bool = False,
     pause_after: list[int] | None = None,
-) -> tuple[np.ndarray, list[dict]]:
+) -> tuple[np.ndarray, list[dict], list[dict]]:
     """Insert micro-pauses between words using equal-power crossfade.
 
     Preserves original intonation by working on the already-synthesised audio.
@@ -572,10 +572,10 @@ def _insert_micro_pauses(
       1. pause_after=[0, 2, 5] -> insert pauses only after word indices 0, 2, 5
       2. smart=True -> only at tight/coarticulated boundaries
       3. Default -> insert pauses between ALL word pairs
-    Returns (modified_audio, updated_timestamps).
+    Returns (modified_audio, updated_timestamps, pause_positions).
     """
     if not word_timestamps or len(word_timestamps) < 2:
-        return audio, word_timestamps
+        return audio, word_timestamps, []
 
     audio = audio.astype(np.float32)
     audio = audio - np.mean(audio)  # DC offset removal
@@ -603,6 +603,7 @@ def _insert_micro_pauses(
 
     parts = []
     updated_timestamps = []
+    pause_positions = []  # Track exact positions of inserted pauses
     cumulative_offset = 0.0
 
     for i, wt in enumerate(word_timestamps):
@@ -627,6 +628,14 @@ def _insert_micro_pauses(
                 # Insert pause at this boundary
                 silence = np.zeros(pause_samples, dtype=np.float32)
                 parts.append(silence)
+                # Record the center of this inserted pause
+                pause_center = wt["start"] + cumulative_offset + (pause_ms / 2000.0)
+                pause_positions.append({
+                    "time": round(pause_center, 4),
+                    "duration_ms": pause_ms,
+                    "after_word_idx": pair_idx,
+                    "after_word": word_timestamps[pair_idx]["word"],
+                })
                 cumulative_offset += pause_ms / 1000.0
 
                 cut_start = _find_zero_crossing(audio, start_sample)
@@ -655,7 +664,7 @@ def _insert_micro_pauses(
     if last_end < len(audio):
         parts.append(audio[last_end:])
 
-    return np.concatenate(parts), updated_timestamps
+    return np.concatenate(parts), updated_timestamps, pause_positions
 
 
 # ---------------------------------------------------------------------------
@@ -768,6 +777,7 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         # ---- Step 2: Forced alignment for timestamps ----
         word_ts: list[dict] = []
         boundaries: list[dict] = []
+        pause_positions: list[dict] = []
 
         if want_timestamps or want_boundaries:
             word_ts = _get_word_timestamps(audio, text, SAMPLE_RATE, lang_code)
@@ -778,7 +788,7 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         if micro_pause_ms > 0 and word_ts:
             logger.info("Inserting %.1fms pauses with %.1fms crossfade (smart=%s, threshold=%.1fms, pause_after=%s)",
                         micro_pause_ms, crossfade_ms, smart_pause, smart_pause_threshold_ms, pause_after)
-            audio, word_ts = _insert_micro_pauses(
+            audio, word_ts, pause_positions = _insert_micro_pauses(
                 audio, word_ts,
                 pause_ms=micro_pause_ms,
                 crossfade_ms=crossfade_ms,
@@ -792,7 +802,10 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
 
         # ---- Step 4: Detect silence-based cut points ----
         cut_points: list[dict] = []
-        if (pause_after is not None or micro_pause_ms > 0) and word_ts:
+        if pause_positions:
+            cut_points = pause_positions
+            logger.info("Returning %d deterministic pause positions", len(cut_points))
+        elif (pause_after is not None or micro_pause_ms > 0) and word_ts:
             cut_points = _detect_silence_cut_points(audio, SAMPLE_RATE, min_silence_ms=max(micro_pause_ms * 0.5, 15))
             logger.info("Detected %d silence-based cut points", len(cut_points))
 
