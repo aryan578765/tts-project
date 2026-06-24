@@ -559,7 +559,8 @@ def _insert_micro_pauses(
     audio: np.ndarray,
     word_timestamps: list[dict],
     pause_ms: float = 10.0,
-    crossfade_ms: float = 5.0,
+    crossfade_ms: float = 15.0,
+    tail_ms: float = 30.0,
     sample_rate: int = SAMPLE_RATE,
     boundaries: list[dict] | None = None,
     smart: bool = False,
@@ -568,6 +569,9 @@ def _insert_micro_pauses(
     """Insert micro-pauses between words using equal-power crossfade.
 
     Preserves original intonation by working on the already-synthesised audio.
+    Includes a tail buffer (tail_ms) past each word end so final phonemes
+    decay naturally before the silence gap.
+
     Pause insertion modes (priority order):
       1. pause_after=[0, 2, 5] -> insert pauses only after word indices 0, 2, 5
       2. smart=True -> only at tight/coarticulated boundaries
@@ -582,6 +586,7 @@ def _insert_micro_pauses(
 
     pause_samples = int(sample_rate * pause_ms / 1000)
     crossfade_samples = max(int(sample_rate * crossfade_ms / 1000), 4)
+    tail_samples = int(sample_rate * tail_ms / 1000)
     fade_out, fade_in = _equal_power_fades(crossfade_samples)
 
     # Build set of word-pair indices that need pauses
@@ -613,9 +618,16 @@ def _insert_micro_pauses(
         end_sample = max(start_sample, min(end_sample, len(audio)))
 
         if i == 0:
-            chunk = audio[:end_sample].copy()
-            if (i in needs_pause) and len(chunk) > crossfade_samples:
-                chunk[-crossfade_samples:] *= fade_out
+            # First word: include tail buffer if pause follows
+            if i in needs_pause:
+                # Extend past word end by tail_ms so final phoneme decays
+                next_start = int(word_timestamps[1]["start"] * sample_rate) if len(word_timestamps) > 1 else len(audio)
+                tail_end = min(end_sample + tail_samples, next_start, len(audio))
+                chunk = audio[:tail_end].copy()
+                if len(chunk) > crossfade_samples:
+                    chunk[-crossfade_samples:] *= fade_out
+            else:
+                chunk = audio[:end_sample].copy()
             parts.append(chunk)
             updated_timestamps.append({
                 "word": wt["word"],
@@ -641,7 +653,13 @@ def _insert_micro_pauses(
                 cumulative_offset += pause_ms / 1000.0
 
                 cut_start = _find_zero_crossing(audio, start_sample)
-                chunk = audio[cut_start:end_sample].copy()
+                # Include tail buffer if this word also has a pause after it
+                if i < len(word_timestamps) - 1 and (i in needs_pause):
+                    next_start = int(word_timestamps[i + 1]["start"] * sample_rate)
+                    tail_end = min(end_sample + tail_samples, next_start, len(audio))
+                    chunk = audio[cut_start:tail_end].copy()
+                else:
+                    chunk = audio[cut_start:end_sample].copy()
 
                 if len(chunk) > crossfade_samples:
                     chunk[:crossfade_samples] *= fade_in
@@ -650,10 +668,15 @@ def _insert_micro_pauses(
             else:
                 # Clean boundary - keep original audio segment
                 prev_end = int(word_timestamps[i - 1]["end"] * sample_rate)
-                chunk = audio[prev_end:end_sample].copy()
-                if i < len(word_timestamps) - 1 and (i in needs_pause):
+                # Include tail buffer if this word has a pause after it
+                if i in needs_pause and i < len(word_timestamps) - 1:
+                    next_start = int(word_timestamps[i + 1]["start"] * sample_rate)
+                    tail_end = min(end_sample + tail_samples, next_start, len(audio))
+                    chunk = audio[prev_end:tail_end].copy()
                     if len(chunk) > crossfade_samples:
                         chunk[-crossfade_samples:] *= fade_out
+                else:
+                    chunk = audio[prev_end:end_sample].copy()
 
             parts.append(chunk)
             updated_timestamps.append({
@@ -667,6 +690,7 @@ def _insert_micro_pauses(
         parts.append(audio[last_end:])
 
     return np.concatenate(parts), updated_timestamps, pause_positions
+
 
 
 # ---------------------------------------------------------------------------
