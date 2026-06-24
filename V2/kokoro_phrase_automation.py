@@ -17,7 +17,7 @@ import numpy as np
 import os
 
 # ---- Configuration ----
-API_KEY = "YOUR_RUNPOD_API_KEY"  # Replace with your API key
+API_KEY = os.environ.get("RUNPOD_API_KEY", "YOUR_RUNPOD_API_KEY")  # Set env var or replace here
 ENDPOINT_ID = "54td14oe86jexh"   # Replace with your endpoint ID
 API_URL = f"https://api.runpod.ai/v2/{ENDPOINT_ID}/runsync"
 HEADERS = {
@@ -49,6 +49,10 @@ payload = {
 
 response = requests.post(API_URL, headers=HEADERS, json=payload, timeout=300)
 result = response.json()
+
+if "output" not in result:
+    print(f"API Error: {result}")
+    exit(1)
 
 if "error" in result.get("output", {}):
     print(f"Error: {result['output']['error']}")
