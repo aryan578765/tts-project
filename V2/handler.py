@@ -886,30 +886,8 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
             logger.info("Returning %d deterministic pause positions", len(cut_points))
         elif pause_after is not None and pause_mode == "punctuation":
             # Detect natural silence regions created by punctuation injection
-            raw_cuts = _detect_silence_cut_points(audio, SAMPLE_RATE, min_silence_ms=50)
-            logger.info("Punctuation mode: detected %d raw silence regions", len(raw_cuts))
-            # Map each pause_after index to its nearest silence region
-            if word_ts and raw_cuts:
-                for idx in sorted(pause_after):
-                    if idx >= len(word_ts):
-                        continue
-                    word_end_t = word_ts[idx]["end"]
-                    # Find the closest silence AFTER the word end
-                    best_cp = None
-                    best_dist = float("inf")
-                    for rc in raw_cuts:
-                        dist = rc["time"] - word_end_t
-                        if -0.1 <= dist <= 1.0 and abs(dist) < best_dist:
-                            best_dist = abs(dist)
-                            best_cp = rc
-                    if best_cp:
-                        cut_points.append({
-                            "time": best_cp["time"],
-                            "duration_ms": best_cp["duration_ms"],
-                            "after_word_idx": idx,
-                            "after_word": word_ts[idx]["word"],
-                        })
-            logger.info("Punctuation mode: mapped %d/%d pause_after positions", len(cut_points), len(pause_after))
+            cut_points = _detect_silence_cut_points(audio, SAMPLE_RATE, min_silence_ms=80)
+            logger.info("Punctuation mode: detected %d natural silence regions", len(cut_points))
         elif (pause_after is not None or micro_pause_ms > 0) and word_ts:
             cut_points = _detect_silence_cut_points(audio, SAMPLE_RATE, min_silence_ms=max(micro_pause_ms * 0.5, 15))
             logger.info("Detected %d silence-based cut points", len(cut_points))
