@@ -546,6 +546,48 @@ def _detect_silence_cut_points(
 
 
 # ---------------------------------------------------------------------------
+# Punctuation-based pause injection (pre-synthesis)
+# ---------------------------------------------------------------------------
+
+def _inject_punctuation_pauses(text: str, pause_after: list[int]) -> str:
+    """Inject periods at word boundaries so the model generates natural
+    prosodic breaks. This modifies the text BEFORE synthesis.
+
+    Words at pause_after indices get a period appended (if they don't
+    already end with sentence-ending punctuation). The next word is
+    capitalised so it reads as a new sentence.
+
+    Returns the modified text.
+    """
+    import re
+    # Split text into words preserving whitespace structure
+    words = text.split()
+    if not words:
+        return text
+
+    valid_indices = sorted(set(
+        idx for idx in pause_after
+        if 0 <= idx < len(words) - 1  # Don't modify last word
+    ))
+
+    for idx in valid_indices:
+        word = words[idx]
+        # Skip if word already ends with sentence-ending punctuation
+        if word.rstrip().endswith(('.', '!', '?')):
+            continue
+        # Strip trailing comma/semicolon and add period
+        word_stripped = word.rstrip(',;:')
+        words[idx] = word_stripped + '.'
+        # Capitalise the next word
+        if idx + 1 < len(words):
+            next_word = words[idx + 1]
+            if next_word and next_word[0].isalpha():
+                words[idx + 1] = next_word[0].upper() + next_word[1:]
+
+    return ' '.join(words)
+
+
+# ---------------------------------------------------------------------------
 # Crossfade-based micro-pause insertion
 # ---------------------------------------------------------------------------
 
@@ -760,6 +802,7 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         smart_pause: bool = bool(job_input.get("smart_pause", False))
         smart_pause_threshold_ms: float = float(job_input.get("smart_pause_threshold_ms", DEFAULT_CLEAN_BOUNDARY_THRESHOLD_MS))
         pause_after: list[int] | None = job_input.get("pause_after", None)
+        pause_mode: str = job_input.get("pause_mode", "punctuation")  # "punctuation" or "crossfade"
 
         if micro_pause_ms > 0:
             want_timestamps = True
@@ -794,9 +837,16 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
             want_timestamps, want_boundaries, micro_pause_ms,
         )
 
+        # ---- Step 0: Punctuation injection (pre-synthesis) ----
+        synth_text = text  # Original text for alignment
+        if pause_after is not None and pause_mode == "punctuation":
+            synth_text = _inject_punctuation_pauses(text, pause_after)
+            logger.info("Punctuation mode: injected periods at %d positions", len(pause_after))
+            logger.info("Modified text (first 200 chars): %s", synth_text[:200])
+
         # ---- Step 1: Synthesise (ONNX FP16 + CUDA) ----
         synth_start = time.perf_counter()
-        audio = _synthesise(text, voice, speed, lang_code)
+        audio = _synthesise(synth_text, voice, speed, lang_code)
         synth_elapsed = time.perf_counter() - synth_start
         logger.info("ONNX synthesis complete in %.3fs", synth_elapsed)
 
@@ -806,13 +856,16 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         pause_positions: list[dict] = []
 
         if want_timestamps or want_boundaries:
-            word_ts = _get_word_timestamps(audio, text, SAMPLE_RATE, lang_code)
+            # Use original text (without injected punctuation) for alignment
+            # so word indices match the user's original text
+            align_text = synth_text  # Align against what was actually synthesised
+            word_ts = _get_word_timestamps(audio, align_text, SAMPLE_RATE, lang_code)
             if want_boundaries and word_ts:
                 boundaries = _analyze_word_boundaries(word_ts, smart_pause_threshold_ms)
 
-        # ---- Step 3: Insert micro-pauses if requested ----
-        if micro_pause_ms > 0 and word_ts:
-            logger.info("Inserting %.1fms pauses with %.1fms crossfade (smart=%s, threshold=%.1fms, pause_after=%s)",
+        # ---- Step 3: Insert micro-pauses if requested (crossfade mode only) ----
+        if pause_mode == "crossfade" and micro_pause_ms > 0 and word_ts:
+            logger.info("Crossfade mode: Inserting %.1fms pauses with %.1fms crossfade (smart=%s, threshold=%.1fms, pause_after=%s)",
                         micro_pause_ms, crossfade_ms, smart_pause, smart_pause_threshold_ms, pause_after)
             audio, word_ts, pause_positions = _insert_micro_pauses(
                 audio, word_ts,
@@ -828,9 +881,13 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
 
         # ---- Step 4: Detect silence-based cut points ----
         cut_points: list[dict] = []
-        if pause_positions:
+        if pause_mode == "crossfade" and pause_positions:
             cut_points = pause_positions
             logger.info("Returning %d deterministic pause positions", len(cut_points))
+        elif pause_after is not None and pause_mode == "punctuation":
+            # Detect natural silence regions created by punctuation injection
+            cut_points = _detect_silence_cut_points(audio, SAMPLE_RATE, min_silence_ms=80)
+            logger.info("Punctuation mode: detected %d natural silence regions", len(cut_points))
         elif (pause_after is not None or micro_pause_ms > 0) and word_ts:
             cut_points = _detect_silence_cut_points(audio, SAMPLE_RATE, min_silence_ms=max(micro_pause_ms * 0.5, 15))
             logger.info("Detected %d silence-based cut points", len(cut_points))
