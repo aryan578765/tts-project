@@ -90,7 +90,7 @@ for idx in PAUSE_AFTER:
             if dist < best_dist:
                 best_dist = dist
                 best_cp = cp
-        if best_cp and best_dist < 0.3:
+        if best_cp and best_dist < 0.6:
             matched_cuts.append({
                 "word_idx": idx,
                 "word": word,
