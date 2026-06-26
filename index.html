@@ -506,6 +506,123 @@
         </section>
 
 
+        <!-- Phrase Audio Generator -->
+        <section class="card" id="phraseModeSection">
+            <h2 class="card-title">Phrase Audio Generator</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+                Enter phrases line by line. Each row is treated as a separate phrase. The system adds natural prosodic pauses at phrase boundaries and provides cut points for splitting.
+            </p>
+
+            <div class="form-group">
+                <label for="phraseApiKey">RunPod API Key</label>
+                <input type="password" id="phraseApiKey" class="form-control" placeholder="Enter your rpa_... API key">
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="phraseVoice">Voice</label>
+                    <select id="phraseVoice" class="form-control">
+                        <option value="af_heart" data-lang="a">af_heart (US Female - Default)</option>
+                        <option value="af_bella" data-lang="a">af_bella (US Female)</option>
+                        <option value="bf_emma" data-lang="b">bf_emma (UK Female)</option>
+                        <option value="ef_dora" data-lang="e">ef_dora (Spanish Female)</option>
+                        <option value="ff_sixtine" data-lang="f">ff_sixtine (French Female)</option>
+                        <option value="if_sara" data-lang="i">if_sara (Italian Female)</option>
+                        <option value="jf_alpha" data-lang="j">jf_alpha (Japanese Female)</option>
+                        <option value="pf_dora" data-lang="p">pf_dora (Portuguese Female)</option>
+                        <option value="zf_xiaobei" data-lang="z">zf_xiaobei (Chinese Female)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="phraseSpeed">Speed</label>
+                    <select id="phraseSpeed" class="form-control">
+                        <option value="0.8">0.8x (Slow)</option>
+                        <option value="1.0" selected>1.0x (Normal)</option>
+                        <option value="1.2">1.2x (Fast)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="phraseInput">Phrases (one per line)</label>
+                <textarea id="phraseInput" class="form-control" rows="8" placeholder="Enter phrases, one per line. Example:
+
+Siri's AI overhaul may have been the headline announcement
+at Apple's Worldwide Developers Conference
+earlier this month
+but Apple's broader AI strategy is taking shape
+through a series of smaller features embedded across its software"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap;">
+                <button id="phraseGenerateBtn" class="btn">Generate Phrase Audio</button>
+                <span id="phraseWordPreview" style="font-size: 0.8rem; color: var(--text-muted);"></span>
+            </div>
+
+            <div id="phraseStatusContainer" class="status-container"></div>
+
+            <!-- Results Area -->
+            <div id="phraseResults" style="display: none; margin-top: 1.5rem;">
+                <!-- Full Audio -->
+                <div class="audio-player-wrapper" style="margin-bottom: 1.5rem;">
+                    <div class="audio-label">
+                        <span>Full Audio (with natural pauses)</span>
+                        <span id="phraseDuration" style="color: var(--success)"></span>
+                    </div>
+                    <audio id="phraseFullAudio" controls style="width: 100%;"></audio>
+                    <button id="downloadFullAudio" class="btn" style="margin-top: 0.5rem; font-size: 0.8rem; padding: 0.4rem 0.8rem; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3);">
+                        &#11015; Download Full Audio
+                    </button>
+                </div>
+
+                <!-- Phrase Cut Points Table -->
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1rem; margin-bottom: 0.75rem; color: var(--text-color);">Phrase Segments</h3>
+                    <div style="overflow-x: auto;">
+                        <table id="phraseCutTable" style="width: 100%; border-collapse: collapse; font-size: 0.8rem;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--card-border); text-align: left;">
+                                    <th style="padding: 0.5rem;">#</th>
+                                    <th style="padding: 0.5rem;">Phrase</th>
+                                    <th style="padding: 0.5rem;">Start</th>
+                                    <th style="padding: 0.5rem;">End</th>
+                                    <th style="padding: 0.5rem;">Duration</th>
+                                    <th style="padding: 0.5rem;">Play</th>
+                                    <th style="padding: 0.5rem;">Download</th>
+                                </tr>
+                            </thead>
+                            <tbody id="phraseCutBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Word Timestamps -->
+                <details style="margin-top: 1rem;">
+                    <summary style="cursor: pointer; font-size: 0.9rem; color: var(--primary); padding: 0.5rem 0;">Show Word Timestamps</summary>
+                    <div style="overflow-x: auto; margin-top: 0.5rem;">
+                        <table id="phraseWordTable" style="width: 100%; border-collapse: collapse; font-size: 0.75rem;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--card-border); text-align: left;">
+                                    <th style="padding: 0.4rem;">#</th>
+                                    <th style="padding: 0.4rem;">Word</th>
+                                    <th style="padding: 0.4rem;">Start</th>
+                                    <th style="padding: 0.4rem;">End</th>
+                                    <th style="padding: 0.4rem;">Phrase</th>
+                                </tr>
+                            </thead>
+                            <tbody id="phraseWordBody"></tbody>
+                        </table>
+                    </div>
+                </details>
+
+                <!-- JSON Response -->
+                <details style="margin-top: 0.5rem;">
+                    <summary style="cursor: pointer; font-size: 0.9rem; color: var(--primary); padding: 0.5rem 0;">Show API Response (JSON)</summary>
+                    <pre id="phraseJsonResponse" style="background: rgba(0,0,0,0.3); border-radius: 6px; padding: 1rem; font-size: 0.75rem; overflow-x: auto; margin-top: 0.5rem; max-height: 400px;"></pre>
+                </details>
+            </div>
+        </section>
+
         <!-- Micro-Pause Comparison -->
         <section class="card">
             <h2 class="card-title">Micro-Pause Comparison</h2>
@@ -1021,6 +1138,356 @@
                 statusContainer.classList.add("status-loading");
             }
         }
+
+        // ================================================================
+        // PHRASE AUDIO GENERATOR
+        // ================================================================
+        
+        const phraseInput = document.getElementById("phraseInput");
+        const phraseGenBtn = document.getElementById("phraseGenerateBtn");
+        const phraseStatus = document.getElementById("phraseStatusContainer");
+        const phraseResults = document.getElementById("phraseResults");
+        const phraseWordPreview = document.getElementById("phraseWordPreview");
+
+        // Store audio data globally for phrase cutting
+        let phraseAudioBase64 = null;
+        let phraseAudioContext = null;
+        let phraseAudioBuffer = null;
+
+        // Live preview: show word count and pause_after as user types
+        phraseInput.addEventListener("input", () => {
+            const lines = phraseInput.value.split("\n").filter(l => l.trim());
+            if (lines.length === 0) {
+                phraseWordPreview.textContent = "";
+                return;
+            }
+            let totalWords = 0;
+            const pauseAfter = [];
+            lines.forEach((line, i) => {
+                const words = line.trim().split(/\s+/).filter(w => w);
+                totalWords += words.length;
+                if (i < lines.length - 1) {
+                    pauseAfter.push(totalWords - 1);
+                }
+            });
+            phraseWordPreview.textContent = `${totalWords} words, ${lines.length} phrases, pause_after: [${pauseAfter.join(", ")}]`;
+        });
+
+        function showPhraseStatus(msg, type) {
+            phraseStatus.innerText = msg;
+            phraseStatus.className = "status-container";
+            phraseStatus.style.display = "block";
+            if (type === "success") phraseStatus.classList.add("status-success");
+            else if (type === "error") phraseStatus.classList.add("status-error");
+            else if (type === "loading") phraseStatus.classList.add("status-loading");
+        }
+
+        // Convert base64 WAV to AudioBuffer
+        async function base64ToAudioBuffer(b64) {
+            if (!phraseAudioContext) {
+                phraseAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            const binary = atob(b64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            return await phraseAudioContext.decodeAudioData(bytes.buffer);
+        }
+
+        // Extract a segment from AudioBuffer and return as WAV blob
+        function extractSegment(buffer, startSec, endSec) {
+            const sr = buffer.sampleRate;
+            const startSample = Math.max(0, Math.floor(startSec * sr));
+            const endSample = Math.min(buffer.length, Math.floor(endSec * sr));
+            const length = endSample - startSample;
+            if (length <= 0) return null;
+
+            const offlineCtx = new OfflineAudioContext(1, length, sr);
+            const source = offlineCtx.createBufferSource();
+            const segBuf = offlineCtx.createBuffer(1, length, sr);
+            const data = buffer.getChannelData(0);
+            segBuf.getChannelData(0).set(data.slice(startSample, endSample));
+            source.buffer = segBuf;
+            source.connect(offlineCtx.destination);
+            source.start();
+            return offlineCtx.startRendering();
+        }
+
+        // AudioBuffer to WAV blob
+        function audioBufferToWav(buffer) {
+            const numChannels = 1;
+            const sr = buffer.sampleRate;
+            const data = buffer.getChannelData(0);
+            const length = data.length;
+            const wavBuffer = new ArrayBuffer(44 + length * 2);
+            const view = new DataView(wavBuffer);
+
+            function writeString(offset, str) {
+                for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+            }
+            writeString(0, "RIFF");
+            view.setUint32(4, 36 + length * 2, true);
+            writeString(8, "WAVE");
+            writeString(12, "fmt ");
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sr, true);
+            view.setUint32(28, sr * numChannels * 2, true);
+            view.setUint16(32, numChannels * 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, "data");
+            view.setUint32(40, length * 2, true);
+            for (let i = 0; i < length; i++) {
+                const s = Math.max(-1, Math.min(1, data[i]));
+                view.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+            }
+            return new Blob([wavBuffer], { type: "audio/wav" });
+        }
+
+        function downloadBlob(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        phraseGenBtn.addEventListener("click", async () => {
+            const apiKey = document.getElementById("phraseApiKey").value.trim();
+            const rawText = phraseInput.value;
+            const voiceEl = document.getElementById("phraseVoice");
+            const voice = voiceEl.value;
+            const langCode = voiceEl.options[voiceEl.selectedIndex]?.dataset?.lang || "a";
+            const speed = parseFloat(document.getElementById("phraseSpeed").value);
+
+            if (!apiKey) { showPhraseStatus("Please enter your RunPod API key.", "error"); return; }
+
+            // Parse phrases from lines
+            const lines = rawText.split("\n").filter(l => l.trim());
+            if (lines.length < 2) {
+                showPhraseStatus("Please enter at least 2 phrases (one per line).", "error");
+                return;
+            }
+
+            // Build full text and calculate pause_after indices
+            const allWords = [];
+            const phraseRanges = []; // { start: wordIdx, end: wordIdx, text: "..." }
+            const pauseAfter = [];
+
+            lines.forEach((line, lineIdx) => {
+                const words = line.trim().split(/\s+/).filter(w => w);
+                const startIdx = allWords.length;
+                allWords.push(...words);
+                const endIdx = allWords.length - 1;
+                phraseRanges.push({ start: startIdx, end: endIdx, text: line.trim() });
+                if (lineIdx < lines.length - 1) {
+                    pauseAfter.push(endIdx);
+                }
+            });
+
+            const fullText = allWords.join(" ");
+
+            showPhraseStatus(`Generating audio for ${allWords.length} words, ${lines.length} phrases...`, "loading");
+            phraseGenBtn.disabled = true;
+            phraseResults.style.display = "none";
+
+            try {
+                const payload = {
+                    input: {
+                        text: fullText,
+                        voice: voice,
+                        speed: speed,
+                        lang_code: langCode,
+                        timestamps: true,
+                        pause_after: pauseAfter,
+                        pause_mode: "punctuation"
+                    }
+                };
+
+                const response = await fetch(`https://api.runpod.ai/v2/54td14oe86jexh/runsync`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.status === 401) throw new Error("Unauthorized: Invalid API Key");
+                if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+
+                let jobData = await response.json();
+
+                // Poll if queued
+                if (jobData.status === "IN_QUEUE" || jobData.status === "IN_PROGRESS") {
+                    showPhraseStatus("Job in progress, polling...", "loading");
+                    const pollUrl = `https://api.runpod.ai/v2/54td14oe86jexh/status/${jobData.id}`;
+                    let attempts = 0;
+                    while (attempts < 100) {
+                        await new Promise(r => setTimeout(r, 2000));
+                        const pr = await fetch(pollUrl, { headers: { "Authorization": `Bearer ${apiKey}` } });
+                        jobData = await pr.json();
+                        if (jobData.status === "COMPLETED" || jobData.status === "FAILED") break;
+                        attempts++;
+                    }
+                }
+
+                if (jobData.status !== "COMPLETED") {
+                    throw new Error(`Job failed: ${jobData.error || "Unknown error"}`);
+                }
+
+                const output = jobData.output || {};
+                phraseAudioBase64 = output.audio_base64;
+                if (!phraseAudioBase64) throw new Error("No audio returned");
+
+                const wordTs = output.word_timestamps || [];
+                const cutPoints = output.phrase_cut_points || [];
+                const duration = output.duration_seconds || 0;
+
+                // Set full audio player
+                const audioSrc = `data:audio/wav;base64,${phraseAudioBase64}`;
+                document.getElementById("phraseFullAudio").src = audioSrc;
+                document.getElementById("phraseDuration").textContent = `${duration.toFixed(1)}s`;
+
+                // Decode audio for segment extraction
+                phraseAudioBuffer = await base64ToAudioBuffer(phraseAudioBase64);
+
+                // Match cut points to pause_after positions
+                const matchedCuts = [];
+                for (const idx of pauseAfter) {
+                    if (idx >= wordTs.length) continue;
+                    const wordEnd = wordTs[idx].end;
+                    // Try after_word_idx match
+                    let match = cutPoints.find(cp => cp.after_word_idx === idx);
+                    if (!match) {
+                        // Proximity match
+                        let bestDist = Infinity;
+                        for (const cp of cutPoints) {
+                            const dist = Math.abs(cp.time - wordEnd);
+                            if (dist < bestDist) { bestDist = dist; match = cp; }
+                        }
+                        if (bestDist > 0.6) match = null;
+                    }
+                    if (match) {
+                        matchedCuts.push({ wordIdx: idx, time: match.time });
+                    }
+                }
+
+                // Build phrase segments: start/end times
+                const segments = [];
+                const cutTimes = [0, ...matchedCuts.map(m => m.time), duration];
+                for (let i = 0; i < lines.length; i++) {
+                    const start = cutTimes[i] || 0;
+                    const end = cutTimes[i + 1] || duration;
+                    segments.push({
+                        idx: i + 1,
+                        text: lines[i].trim(),
+                        start: start,
+                        end: end,
+                        duration: end - start
+                    });
+                }
+
+                // Render phrase segments table
+                const cutBody = document.getElementById("phraseCutBody");
+                cutBody.innerHTML = "";
+                for (const seg of segments) {
+                    const tr = document.createElement("tr");
+                    tr.style.borderBottom = "1px solid var(--card-border)";
+                    tr.innerHTML = `
+                        <td style="padding: 0.4rem;">${seg.idx}</td>
+                        <td style="padding: 0.4rem; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${seg.text}">${seg.text}</td>
+                        <td style="padding: 0.4rem;">${seg.start.toFixed(2)}s</td>
+                        <td style="padding: 0.4rem;">${seg.end.toFixed(2)}s</td>
+                        <td style="padding: 0.4rem;">${seg.duration.toFixed(1)}s</td>
+                        <td style="padding: 0.4rem;">
+                            <button class="btn phrase-play-btn" data-start="${seg.start}" data-end="${seg.end}" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3);">&#9654;</button>
+                        </td>
+                        <td style="padding: 0.4rem;">
+                            <button class="btn phrase-dl-btn" data-start="${seg.start}" data-end="${seg.end}" data-idx="${seg.idx}" style="font-size: 0.7rem; padding: 0.2rem 0.5rem; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3);">&#11015;</button>
+                        </td>
+                    `;
+                    cutBody.appendChild(tr);
+                }
+
+                // Play buttons
+                cutBody.querySelectorAll(".phrase-play-btn").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        const audio = document.getElementById("phraseFullAudio");
+                        const start = parseFloat(btn.dataset.start);
+                        const end = parseFloat(btn.dataset.end);
+                        audio.currentTime = start;
+                        audio.play();
+                        const stopCheck = setInterval(() => {
+                            if (audio.currentTime >= end) {
+                                audio.pause();
+                                clearInterval(stopCheck);
+                            }
+                        }, 50);
+                    });
+                });
+
+                // Download buttons
+                cutBody.querySelectorAll(".phrase-dl-btn").forEach(btn => {
+                    btn.addEventListener("click", async () => {
+                        const start = parseFloat(btn.dataset.start);
+                        const end = parseFloat(btn.dataset.end);
+                        const idx = btn.dataset.idx;
+                        btn.textContent = "...";
+                        const segBuffer = await extractSegment(phraseAudioBuffer, start, end);
+                        if (segBuffer) {
+                            const wav = audioBufferToWav(segBuffer);
+                            downloadBlob(wav, `phrase_${idx}.wav`);
+                        }
+                        btn.innerHTML = "&#11015;";
+                    });
+                });
+
+                // Render word timestamps
+                const wordBody = document.getElementById("phraseWordBody");
+                wordBody.innerHTML = "";
+                wordTs.forEach((w, i) => {
+                    const phraseNum = phraseRanges.findIndex(pr => i >= pr.start && i <= pr.end) + 1;
+                    const isPausePoint = pauseAfter.includes(i);
+                    const tr = document.createElement("tr");
+                    tr.style.borderBottom = "1px solid var(--card-border)";
+                    if (isPausePoint) tr.style.background = "rgba(236, 72, 153, 0.08)";
+                    tr.innerHTML = `
+                        <td style="padding: 0.3rem;">${i}</td>
+                        <td style="padding: 0.3rem; font-weight: ${isPausePoint ? '600' : '400'};">${w.word}${isPausePoint ? ' ✂' : ''}</td>
+                        <td style="padding: 0.3rem;">${w.start.toFixed(3)}</td>
+                        <td style="padding: 0.3rem;">${w.end.toFixed(3)}</td>
+                        <td style="padding: 0.3rem;">Phrase ${phraseNum}</td>
+                    `;
+                    wordBody.appendChild(tr);
+                });
+
+                // JSON response
+                const jsonDisplay = { ...output };
+                delete jsonDisplay.audio_base64;
+                document.getElementById("phraseJsonResponse").textContent = JSON.stringify(jsonDisplay, null, 2);
+
+                // Download full audio button
+                document.getElementById("downloadFullAudio").onclick = () => {
+                    const binary = atob(phraseAudioBase64);
+                    const bytes = new Uint8Array(binary.length);
+                    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                    downloadBlob(new Blob([bytes], { type: "audio/wav" }), "full_audio.wav");
+                };
+
+                phraseResults.style.display = "block";
+                showPhraseStatus(`Generated ${segments.length} phrases (${duration.toFixed(1)}s total). Matched ${matchedCuts.length}/${pauseAfter.length} cut points.`, "success");
+
+            } catch (err) {
+                showPhraseStatus(err.message, "error");
+            } finally {
+                phraseGenBtn.disabled = false;
+            }
+        });
+
     </script>
 </body>
 </html>
