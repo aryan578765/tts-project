@@ -549,21 +549,25 @@ def _detect_silence_cut_points(
 # Punctuation-based pause injection (pre-synthesis)
 # ---------------------------------------------------------------------------
 
-def _inject_punctuation_pauses(text: str, pause_after: list[int]) -> str:
-    """Inject periods at word boundaries so the model generates natural
+def _inject_punctuation_pauses(text: str, pause_after: list[int], pause_char: str = ",") -> str:
+    """Inject punctuation at word boundaries so the model generates natural
     prosodic breaks. This modifies the text BEFORE synthesis.
 
-    Words at pause_after indices get a period appended (if they don't
-    already end with sentence-ending punctuation). The next word is
-    capitalised so it reads as a new sentence.
+    Words at pause_after indices get the pause_char appended (if they don't
+    already end with sentence-ending punctuation).
+
+    When pause_char is a sentence-ending mark (. ! ?), the next word is
+    capitalised. When it is a mid-sentence mark (, ; etc.), lowercase is
+    preserved to maintain continuous sentence-level intonation.
 
     Returns the modified text.
     """
-    import re
-    # Split text into words preserving whitespace structure
     words = text.split()
     if not words:
         return text
+
+    sentence_enders = {'.', '!', '?'}
+    capitalize_next = pause_char in sentence_enders
 
     valid_indices = sorted(set(
         idx for idx in pause_after
@@ -575,11 +579,11 @@ def _inject_punctuation_pauses(text: str, pause_after: list[int]) -> str:
         # Skip if word already ends with sentence-ending punctuation
         if word.rstrip().endswith(('.', '!', '?')):
             continue
-        # Strip trailing comma/semicolon and add period
+        # Strip trailing comma/semicolon/colon and add pause_char
         word_stripped = word.rstrip(',;:')
-        words[idx] = word_stripped + '.'
-        # Capitalise the next word
-        if idx + 1 < len(words):
+        words[idx] = word_stripped + pause_char
+        # Capitalise the next word only for sentence-ending punctuation
+        if capitalize_next and idx + 1 < len(words):
             next_word = words[idx + 1]
             if next_word and next_word[0].isalpha():
                 words[idx + 1] = next_word[0].upper() + next_word[1:]
@@ -803,6 +807,7 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         smart_pause_threshold_ms: float = float(job_input.get("smart_pause_threshold_ms", DEFAULT_CLEAN_BOUNDARY_THRESHOLD_MS))
         pause_after: list[int] | None = job_input.get("pause_after", None)
         pause_mode: str = job_input.get("pause_mode", "punctuation")  # "punctuation" or "crossfade"
+        pause_char: str = job_input.get("pause_char", ",")  # "," for flow, "." for isolation
 
         if micro_pause_ms > 0:
             want_timestamps = True
@@ -840,8 +845,8 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         # ---- Step 0: Punctuation injection (pre-synthesis) ----
         synth_text = text  # Original text for alignment
         if pause_after is not None and pause_mode == "punctuation":
-            synth_text = _inject_punctuation_pauses(text, pause_after)
-            logger.info("Punctuation mode: injected periods at %d positions", len(pause_after))
+            synth_text = _inject_punctuation_pauses(text, pause_after, pause_char=pause_char)
+            logger.info("Punctuation mode: injected '%s' at %d positions", pause_char, len(pause_after))
             logger.info("Modified text (first 200 chars): %s", synth_text[:200])
 
         # ---- Step 1: Synthesise (ONNX FP16 + CUDA) ----

@@ -541,6 +541,14 @@
                         <option value="1.2">1.2x (Fast)</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="pauseCharSelect">Pause Style</label>
+                    <select id="pauseCharSelect" class="form-control">
+                        <option value="," selected>Comma , (Continuous flow)</option>
+                        <option value=".">Period . (Separate sentences)</option>
+                        <option value=";">Semicolon ; (Mid-sentence break)</option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-group">
@@ -1295,6 +1303,7 @@ through a series of smaller features embedded across its software"></textarea>
             phraseResults.style.display = "none";
 
             try {
+                const pauseChar = document.getElementById("pauseCharSelect").value;
                 const payload = {
                     input: {
                         text: fullText,
@@ -1303,7 +1312,8 @@ through a series of smaller features embedded across its software"></textarea>
                         lang_code: langCode,
                         timestamps: true,
                         pause_after: pauseAfter,
-                        pause_mode: "punctuation"
+                        pause_mode: "punctuation",
+                        pause_char: pauseChar
                     }
                 };
 
