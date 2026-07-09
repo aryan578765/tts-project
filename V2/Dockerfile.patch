@@ -1,6 +1,7 @@
 FROM patelaryan777/kokoro-tts-v2:final
 
-# Add CJK support dependencies
+# CJK support dependencies (jieba, uroman, fugashi, unidic-lite)
 RUN pip install --no-cache-dir jieba uroman fugashi unidic-lite
 
+# Patch: only update handler.py
 COPY handler.py /app/handler.py
