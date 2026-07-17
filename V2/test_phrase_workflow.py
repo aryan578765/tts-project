@@ -31,15 +31,16 @@ payload = {
     "input": {
         "text": TEXT, "voice": "af_heart", "lang_code": "a", "speed": 1.0,
         "timestamps": True, "word_boundaries": True,
-        "pause_after": PAUSE_AFTER, "micro_pause_ms": 50, "crossfade_ms": 5.0
+        "pause_after": PAUSE_AFTER, "micro_pause_ms": 50
     }
 }
 r = requests.post(URL, headers=HEADERS, json=payload, timeout=300)
-out = r.json().get("output", {})
-
-if "error" in out:
-    print("ERROR: {}".format(out["error"]))
+resp = r.json()
+if "output" not in resp or "audio_base64" not in resp.get("output", {}):
+    print("ERROR: Bad API response")
+    print(json.dumps(resp, indent=2)[:500])
     sys.exit(1)
+out = resp["output"]
 
 word_ts = out.get("word_timestamps", [])
 cut_points = out.get("phrase_cut_points", [])
@@ -48,6 +49,7 @@ print("Duration: {}s | Words: {} | Cut points: {}".format(
 
 # Save original audio
 audio_bytes = base64.b64decode(out["audio_base64"])
+os.makedirs("output", exist_ok=True)
 with open("output/test_step1_paused.wav", "wb") as f:
     f.write(audio_bytes)
 print("Saved: output/test_step1_paused.wav")
