@@ -1,7 +1,7 @@
-FROM patelaryan777/kokoro-tts-v2:final
+FROM patelaryan777/kokoro-tts-v2:v20
 
-# CJK support dependencies (jieba, uroman, fugashi, unidic-lite)
-RUN pip install --no-cache-dir jieba uroman fugashi unidic-lite
+# Misaki G2P for phoneme-level comma injection
+RUN pip install --no-cache-dir "misaki[en]"
 
-# Patch: only update handler.py
+# Patch: update handler.py with phoneme comma injection support
 COPY handler.py /app/handler.py

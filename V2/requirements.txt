@@ -6,6 +6,9 @@
 # Kokoro ONNX inference engine
 kokoro-onnx
 
+# Misaki G2P (phonemizer for Kokoro) - needed for phoneme-level control
+misaki[en]
+
 # HuggingFace Hub (for model management)
 huggingface_hub
 

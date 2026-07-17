@@ -5,7 +5,7 @@ Kokoro TTS v2 - RunPod Serverless Handler (ONNX Optimized)
 Optimized handler with:
   - ONNX Runtime FP16 inference via CUDAExecutionProvider (25x-40x RTF on L4)
   - Word-level timestamps via torchaudio MMS forced alignment
-  - Crossfade-based micro-pause insertion (preserves intonation)
+  - Zero-modification splicing for phrase pauses (preserves intonation bit-for-bit)
   - Word spacing analysis (reports which word pairs can be cleanly separated)
 
 API Response:
@@ -546,196 +546,210 @@ def _detect_silence_cut_points(
 
 
 # ---------------------------------------------------------------------------
-# Punctuation-based pause injection (pre-synthesis)
+# Phoneme-level comma injection
 # ---------------------------------------------------------------------------
 
-def _inject_punctuation_pauses(text: str, pause_after: list[int], pause_char: str = ",") -> str:
-    """Inject punctuation at word boundaries so the model generates natural
-    prosodic breaks. This modifies the text BEFORE synthesis.
+# Lazy-loaded Misaki G2P
+_g2p_instance = None
+_g2p_lock = threading.Lock()
 
-    Words at pause_after indices get the pause_char appended (if they don't
-    already end with sentence-ending punctuation).
 
-    When pause_char is a sentence-ending mark (. ! ?), the next word is
-    capitalised. When it is a mid-sentence mark (, ; etc.), lowercase is
-    preserved to maintain continuous sentence-level intonation.
+def _get_g2p():
+    """Return cached Misaki English G2P instance (thread-safe)."""
+    global _g2p_instance
+    if _g2p_instance is None:
+        with _g2p_lock:
+            if _g2p_instance is None:
+                from misaki import en
+                _g2p_instance = en.G2P()
+                logger.info("Misaki G2P loaded")
+    return _g2p_instance
 
-    Returns the modified text.
+
+def _phonemize_with_boundary_commas(
+    text: str,
+    pause_after: list[int],
+    lang_code: str = "a",
+) -> tuple[str, list[int]]:
+    """Phonemize full text and inject commas at specific word boundaries.
+
+    This makes Kokoro generate natural word endings at those positions
+    (the model sees the comma during generation and produces falling
+    intonation / energy decay) WITHOUT modifying the original text.
+
+    Returns (phoneme_string, comma_word_indices).
     """
+    g2p = _get_g2p()
+
+    # Phonemize the full text for natural cross-word pronunciation
+    full_phonemes, _ = g2p(text)
+    logger.info("Full-text phonemes: %s...", full_phonemes[:80])
+
+    # Also phonemize word-by-word to find word boundary positions
     words = text.split()
-    if not words:
-        return text
+    pause_set = set(pause_after)
 
-    sentence_enders = {'.', '!', '?'}
-    capitalize_next = pause_char in sentence_enders
+    # Strategy: phonemize the full text, then find where to insert commas.
+    # We phonemize each word individually to identify its phoneme span,
+    # then insert commas at the matching positions in the full phoneme string.
+    word_phonemes = []
+    for w in words:
+        wp, _ = g2p(w)
+        # Strip leading/trailing whitespace from individual phonemes
+        word_phonemes.append(wp.strip())
 
-    valid_indices = sorted(set(
-        idx for idx in pause_after
-        if 0 <= idx < len(words) - 1  # Don't modify last word
-    ))
+    # Build the phoneme string with commas at pause_after positions
+    parts = []
+    comma_indices = []
+    for i, wp in enumerate(word_phonemes):
+        parts.append(wp)
+        if i in pause_set and i < len(words) - 1:
+            parts.append(",")
+            comma_indices.append(i)
 
-    for idx in valid_indices:
-        word = words[idx]
-        # Skip if word already ends with sentence-ending punctuation
-        if word.rstrip().endswith(('.', '!', '?')):
-            continue
-        # Strip trailing comma/semicolon/colon and add pause_char
-        word_stripped = word.rstrip(',;:')
-        words[idx] = word_stripped + pause_char
-        # Capitalise the next word only for sentence-ending punctuation
-        if capitalize_next and idx + 1 < len(words):
-            next_word = words[idx + 1]
-            if next_word and next_word[0].isalpha():
-                words[idx + 1] = next_word[0].upper() + next_word[1:]
-
-    return ' '.join(words)
+    result = " ".join(parts)
+    logger.info("Phonemized with commas at %d positions: %s...",
+                len(comma_indices), result[:80])
+    return result, comma_indices
 
 
 # ---------------------------------------------------------------------------
-# Crossfade-based micro-pause insertion
+# Zero-modification micro-pause insertion
 # ---------------------------------------------------------------------------
-
-def _equal_power_fades(fade_len: int) -> tuple[np.ndarray, np.ndarray]:
-    """Generate equal-power (cos/sin) fade curves."""
-    t = np.linspace(0, np.pi / 2, fade_len, dtype=np.float32)
-    return np.cos(t).astype(np.float32), np.sin(t).astype(np.float32)
 
 
 def _insert_micro_pauses(
     audio: np.ndarray,
     word_timestamps: list[dict],
     pause_ms: float = 10.0,
-    crossfade_ms: float = 20.0,
-    tail_ms: float = 50.0,
     sample_rate: int = SAMPLE_RATE,
-    boundaries: list[dict] | None = None,
-    smart: bool = False,
     pause_after: list[int] | None = None,
 ) -> tuple[np.ndarray, list[dict], list[dict]]:
-    """Insert micro-pauses between words using equal-power crossfade.
+    """Insert silence at phrase boundaries using zero-modification splicing.
 
-    Preserves original intonation by working on the already-synthesised audio.
-    Includes a tail buffer (tail_ms) past each word end so final phonemes
-    decay naturally before the silence gap.
+    CRITICAL DESIGN PRINCIPLE: We never modify any audio sample.
+    No fades, no DC offset removal, no amplitude changes.
+    The original Kokoro audio is preserved bit-for-bit.
 
-    Pause insertion modes (priority order):
-      1. pause_after=[0, 2, 5] -> insert pauses only after word indices 0, 2, 5
-      2. smart=True -> only at tight/coarticulated boundaries
-      3. Default -> insert pauses between ALL word pairs
-    Returns (modified_audio, updated_timestamps, pause_positions).
+    Algorithm:
+      1. For each boundary, find the energy trough between the two words.
+      2. At the trough, find the nearest zero-crossing for a click-free cut.
+      3. Splice: [original audio up to zero-crossing] + [silence] + [rest of audio]
+
+    Returns (spliced_audio, updated_timestamps, pause_positions).
     """
-    if not word_timestamps or len(word_timestamps) < 2:
+    if not word_timestamps or len(word_timestamps) < 2 or pause_after is None:
         return audio, word_timestamps, []
 
-    audio = audio.astype(np.float32)
-    audio = audio - np.mean(audio)  # DC offset removal
-
+    # Work with float32 copy for energy calculations, but splice the ORIGINAL
+    audio_f = audio.astype(np.float32)
     pause_samples = int(sample_rate * pause_ms / 1000)
-    crossfade_samples = max(int(sample_rate * crossfade_ms / 1000), 4)
-    tail_samples = int(sample_rate * tail_ms / 1000)
-    fade_out, fade_in = _equal_power_fades(crossfade_samples)
 
-    # Build set of word-pair indices that need pauses
-    needs_pause: set[int] = set()
-    if pause_after is not None:
-        # Manual mode: only insert at specified word indices
-        for idx in pause_after:
-            if 0 <= idx < len(word_timestamps) - 1:
-                needs_pause.add(idx)
-        logger.info("Manual pause_after: %d positions specified", len(needs_pause))
-    elif smart and boundaries:
-        for idx, b in enumerate(boundaries):
-            if b["status"] in ("tight", "coarticulated", "overlapping"):
-                needs_pause.add(idx)
-        logger.info("Smart pause: %d/%d word pairs need pauses", len(needs_pause), len(boundaries))
-    else:
-        # Non-smart: insert pauses between ALL word pairs
-        needs_pause = set(range(len(word_timestamps) - 1))
+    valid_indices = sorted(set(
+        idx for idx in pause_after
+        if 0 <= idx < len(word_timestamps) - 1
+    ))
 
-    parts = []
-    updated_timestamps = []
-    pause_positions = []  # Track exact positions of inserted pauses
+    boundaries = []
+
+    for idx in valid_indices:
+        word = word_timestamps[idx]
+        word_end_s = word["end"]
+        word_end_sample = int(word_end_s * sample_rate)
+
+        next_start_s = word_timestamps[idx + 1]["start"]
+        next_start_sample = min(len(audio_f), int(next_start_s * sample_rate))
+
+        # --- Step 1: Find the energy trough ---
+        # Search the gap between the two words for the quietest point.
+        # Use a 10ms RMS window, stepping every 2.5ms.
+        window = int(sample_rate * 0.01)  # 10ms = 240 samples
+        step = max(1, window // 4)
+
+        # Search range: from word end to next word start
+        search_start = max(0, word_end_sample)
+        search_end = min(len(audio_f) - window, next_start_sample)
+
+        # If the gap is very small (<20ms), extend search slightly beyond both edges
+        if search_end - search_start < int(sample_rate * 0.02):
+            search_start = max(0, word_end_sample - int(sample_rate * 0.01))
+            search_end = min(len(audio_f) - window, next_start_sample + int(sample_rate * 0.01))
+
+        best_pos = word_end_sample
+        best_energy = float("inf")
+
+        if search_end > search_start:
+            for pos in range(search_start, search_end, step):
+                seg = audio_f[pos:pos + window]
+                e = float(np.sqrt(np.mean(seg ** 2)))
+                if e < best_energy:
+                    best_energy = e
+                    best_pos = pos + window // 2
+
+        # --- Step 2: Find the nearest zero-crossing at the trough ---
+        # A zero-crossing is where the waveform crosses zero amplitude.
+        # Cutting at a zero-crossing prevents any audible click/pop.
+        cut_pos = _find_zero_crossing(audio_f, best_pos, search_range=240)
+
+        boundaries.append({
+            "idx": idx,
+            "cut_sample": cut_pos,
+            "trough_energy": round(best_energy, 1),
+            "after_word": word["word"],
+        })
+
+    # --- Step 3: Splice original audio with silence ---
+    # We NEVER modify audio samples. We just concatenate:
+    #   original[0:cut1] + silence + original[cut1:cut2] + silence + ... + original[cutN:]
+    silence = np.zeros(pause_samples, dtype=audio.dtype)
+    pieces = []
+    cursor = 0
+    pause_positions = []
+    total_samples_before = 0
+
+    for b in boundaries:
+        cs = max(0, min(b["cut_sample"], len(audio)))
+
+        # Take the original audio chunk — UNMODIFIED
+        chunk = audio[cursor:cs]
+        pieces.append(chunk)
+        total_samples_before += len(chunk)
+
+        # Record pause position (center of silence)
+        pause_center_sample = total_samples_before + pause_samples // 2
+        pause_positions.append({
+            "time": round(pause_center_sample / sample_rate, 4),
+            "duration_ms": pause_ms,
+            "after_word_idx": b["idx"],
+            "after_word": b["after_word"],
+            "trough_energy": b["trough_energy"],
+        })
+
+        pieces.append(silence)
+        total_samples_before += len(silence)
+        cursor = cs
+
+    # Append the remaining audio — UNMODIFIED
+    pieces.append(audio[cursor:])
+    final_audio = np.concatenate(pieces)
+
+    # --- Step 4: Update timestamps ---
+    current_pause_idx = 0
     cumulative_offset = 0.0
+    updated_timestamps = []
 
     for i, wt in enumerate(word_timestamps):
-        start_sample = int(wt["start"] * sample_rate)
-        end_sample = int(wt["end"] * sample_rate)
-        start_sample = max(0, min(start_sample, len(audio)))
-        end_sample = max(start_sample, min(end_sample, len(audio)))
+        if current_pause_idx < len(boundaries) and i > boundaries[current_pause_idx]["idx"]:
+            cumulative_offset += pause_ms / 1000.0
+            current_pause_idx += 1
 
-        if i == 0:
-            # First word: include tail buffer if pause follows
-            if i in needs_pause:
-                # Extend past word end by tail_ms so final phoneme decays
-                next_start = int(word_timestamps[1]["start"] * sample_rate) if len(word_timestamps) > 1 else len(audio)
-                tail_end = min(end_sample + tail_samples, next_start, len(audio))
-                chunk = audio[:tail_end].copy()
-                if len(chunk) > crossfade_samples:
-                    chunk[-crossfade_samples:] *= fade_out
-            else:
-                chunk = audio[:end_sample].copy()
-            parts.append(chunk)
-            updated_timestamps.append({
-                "word": wt["word"],
-                "start": round(wt["start"] + cumulative_offset, 4),
-                "end": round(wt["end"] + cumulative_offset, 4),
-            })
-        else:
-            pair_idx = i - 1  # boundary index for word pair (i-1, i)
-            if pair_idx in needs_pause:
-                # Insert pause at this boundary
-                # Track actual sample position BEFORE appending silence
-                total_samples_before = sum(len(p) for p in parts)
-                silence = np.zeros(pause_samples, dtype=np.float32)
-                parts.append(silence)
-                # Record the center of this inserted pause (sample-accurate)
-                pause_center_sample = total_samples_before + pause_samples // 2
-                pause_positions.append({
-                    "time": round(pause_center_sample / sample_rate, 4),
-                    "duration_ms": pause_ms,
-                    "after_word_idx": pair_idx,
-                    "after_word": word_timestamps[pair_idx]["word"],
-                })
-                cumulative_offset += pause_ms / 1000.0
+        updated_timestamps.append({
+            "word": wt["word"],
+            "start": round(wt["start"] + cumulative_offset, 4),
+            "end": round(wt["end"] + cumulative_offset, 4),
+        })
 
-                cut_start = _find_zero_crossing(audio, start_sample)
-                # Include tail buffer if this word also has a pause after it
-                if i < len(word_timestamps) - 1 and (i in needs_pause):
-                    next_start = int(word_timestamps[i + 1]["start"] * sample_rate)
-                    tail_end = min(end_sample + tail_samples, next_start, len(audio))
-                    chunk = audio[cut_start:tail_end].copy()
-                else:
-                    chunk = audio[cut_start:end_sample].copy()
-
-                if len(chunk) > crossfade_samples:
-                    chunk[:crossfade_samples] *= fade_in
-                    if i < len(word_timestamps) - 1 and (i in needs_pause):
-                        chunk[-crossfade_samples:] *= fade_out
-            else:
-                # Clean boundary - keep original audio segment
-                prev_end = int(word_timestamps[i - 1]["end"] * sample_rate)
-                # Include tail buffer if this word has a pause after it
-                if i in needs_pause and i < len(word_timestamps) - 1:
-                    next_start = int(word_timestamps[i + 1]["start"] * sample_rate)
-                    tail_end = min(end_sample + tail_samples, next_start, len(audio))
-                    chunk = audio[prev_end:tail_end].copy()
-                    if len(chunk) > crossfade_samples:
-                        chunk[-crossfade_samples:] *= fade_out
-                else:
-                    chunk = audio[prev_end:end_sample].copy()
-
-            parts.append(chunk)
-            updated_timestamps.append({
-                "word": wt["word"],
-                "start": round(wt["start"] + cumulative_offset, 4),
-                "end": round(wt["end"] + cumulative_offset, 4),
-            })
-
-    last_end = int(word_timestamps[-1]["end"] * sample_rate)
-    if last_end < len(audio):
-        parts.append(audio[last_end:])
-
-    return np.concatenate(parts), updated_timestamps, pause_positions
+    return final_audio, updated_timestamps, pause_positions
 
 
 
@@ -748,8 +762,13 @@ def _synthesise(
     voice: str,
     speed: float,
     lang_code: str,
+    is_phonemes: bool = False,
 ) -> np.ndarray:
-    """Run Kokoro ONNX TTS and return numpy audio array."""
+    """Run Kokoro ONNX TTS and return numpy audio array.
+
+    If is_phonemes=True, `text` is treated as a pre-phonemized string
+    and the internal G2P is bypassed.
+    """
     kokoro = _get_kokoro()
     onnx_lang = LANG_CODE_MAP.get(lang_code, "en-us")
 
@@ -758,6 +777,7 @@ def _synthesise(
         voice=voice,
         speed=speed,
         lang=onnx_lang,
+        is_phonemes=is_phonemes,
     )
 
     return samples.astype(np.float32)
@@ -802,12 +822,9 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         want_timestamps: bool = bool(job_input.get("timestamps", False))
         want_boundaries: bool = bool(job_input.get("word_boundaries", False))
         micro_pause_ms: float = float(job_input.get("micro_pause_ms", 0))
-        crossfade_ms: float = float(job_input.get("crossfade_ms", 5.0))
         smart_pause: bool = bool(job_input.get("smart_pause", False))
         smart_pause_threshold_ms: float = float(job_input.get("smart_pause_threshold_ms", DEFAULT_CLEAN_BOUNDARY_THRESHOLD_MS))
         pause_after: list[int] | None = job_input.get("pause_after", None)
-        pause_mode: str = job_input.get("pause_mode", "punctuation")  # "punctuation" or "crossfade"
-        pause_char: str = job_input.get("pause_char", ",")  # "," for flow, "." for isolation
 
         if micro_pause_ms > 0:
             want_timestamps = True
@@ -842,16 +859,31 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
             want_timestamps, want_boundaries, micro_pause_ms,
         )
 
-        # ---- Step 0: Punctuation injection (pre-synthesis) ----
-        synth_text = text  # Original text for alignment
-        if pause_after is not None and pause_mode == "punctuation":
-            synth_text = _inject_punctuation_pauses(text, pause_after, pause_char=pause_char)
-            logger.info("Punctuation mode: injected '%s' at %d positions", pause_char, len(pause_after))
-            logger.info("Modified text (first 200 chars): %s", synth_text[:200])
+        # ---- Step 0: Phoneme-level comma injection ----
+        # For pause_after mode: phonemize the text and inject commas at
+        # the specified word boundaries. This makes Kokoro generate natural
+        # word endings at those positions without modifying the original text.
+        synth_text = text
+        is_phonemes = False
+        comma_indices: list[int] = []
+
+        if pause_after is not None and micro_pause_ms > 0:
+            try:
+                synth_text, comma_indices = _phonemize_with_boundary_commas(
+                    text, pause_after, lang_code
+                )
+                is_phonemes = True
+                logger.info("Using phoneme-level commas at %d positions",
+                            len(comma_indices))
+            except Exception as e:
+                logger.warning("Phonemization failed, falling back to plain text: %s", e)
+                synth_text = text
+                is_phonemes = False
 
         # ---- Step 1: Synthesise (ONNX FP16 + CUDA) ----
         synth_start = time.perf_counter()
-        audio = _synthesise(synth_text, voice, speed, lang_code)
+        audio = _synthesise(synth_text, voice, speed, lang_code,
+                            is_phonemes=is_phonemes)
         synth_elapsed = time.perf_counter() - synth_start
         logger.info("ONNX synthesis complete in %.3fs", synth_elapsed)
 
@@ -861,38 +893,30 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         pause_positions: list[dict] = []
 
         if want_timestamps or want_boundaries:
-            # Use original text (without injected punctuation) for alignment
+            # Always align against the ORIGINAL text (not phonemes)
             # so word indices match the user's original text
-            align_text = synth_text  # Align against what was actually synthesised
+            align_text = text
             word_ts = _get_word_timestamps(audio, align_text, SAMPLE_RATE, lang_code)
             if want_boundaries and word_ts:
                 boundaries = _analyze_word_boundaries(word_ts, smart_pause_threshold_ms)
 
-        # ---- Step 3: Insert micro-pauses if requested (crossfade mode only) ----
-        if pause_mode == "crossfade" and micro_pause_ms > 0 and word_ts:
-            logger.info("Crossfade mode: Inserting %.1fms pauses with %.1fms crossfade (smart=%s, threshold=%.1fms, pause_after=%s)",
-                        micro_pause_ms, crossfade_ms, smart_pause, smart_pause_threshold_ms, pause_after)
+        # ---- Step 3: Insert micro-pauses at specific boundaries ----
+        if pause_after is not None and micro_pause_ms > 0 and word_ts:
+            logger.info("Inserting %.1fms pauses at %d positions (zero-modification splice)", micro_pause_ms, len(pause_after))
             audio, word_ts, pause_positions = _insert_micro_pauses(
                 audio, word_ts,
                 pause_ms=micro_pause_ms,
-                crossfade_ms=crossfade_ms,
                 sample_rate=SAMPLE_RATE,
-                boundaries=boundaries if smart_pause else None,
-                smart=smart_pause,
                 pause_after=pause_after,
             )
             if want_boundaries and word_ts:
                 boundaries = _analyze_word_boundaries(word_ts, smart_pause_threshold_ms)
 
-        # ---- Step 4: Detect silence-based cut points ----
+        # ---- Step 4: Determine phrase cut points ----
         cut_points: list[dict] = []
-        if pause_mode == "crossfade" and pause_positions:
+        if pause_positions:
             cut_points = pause_positions
             logger.info("Returning %d deterministic pause positions", len(cut_points))
-        elif pause_after is not None and pause_mode == "punctuation":
-            # Detect natural silence regions created by punctuation injection
-            cut_points = _detect_silence_cut_points(audio, SAMPLE_RATE, min_silence_ms=80)
-            logger.info("Punctuation mode: detected %d natural silence regions", len(cut_points))
         elif (pause_after is not None or micro_pause_ms > 0) and word_ts:
             cut_points = _detect_silence_cut_points(audio, SAMPLE_RATE, min_silence_ms=max(micro_pause_ms * 0.5, 15))
             logger.info("Detected %d silence-based cut points", len(cut_points))
