@@ -304,6 +304,7 @@ def _clean_word(word: str, lang_code: str = "a") -> str:
     MMS_FA tokenizer only supports basic Latin a-z, so we:
     - For Latin scripts: normalize accents (é→e, ñ→n, ü→u)
     - For CJK scripts: romanize via uroman first, then normalize
+    - Strip digits (the tokenizer crashes on 0-9)
     """
     # Remove punctuation
     cleaned = re.sub(r'[^\w\s]', '', word, flags=re.UNICODE).strip()
@@ -322,6 +323,13 @@ def _clean_word(word: str, lang_code: str = "a") -> str:
         # Normalize accented characters to ASCII (NFD decomposes, then strip combining marks)
         normalized = unicodedata.normalize('NFD', cleaned)
         cleaned = ''.join(c for c in normalized if unicodedata.category(c) != 'Mn')
+
+    # Strip digits — MMS_FA tokenizer only supports a-z
+    cleaned = re.sub(r'[0-9]', '', cleaned).strip()
+
+    # If word was all-digits (e.g. "18"), use placeholder to preserve index position
+    if not cleaned:
+        return 'num'
 
     return cleaned
 
@@ -920,6 +928,12 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         elif (pause_after is not None or micro_pause_ms > 0) and word_ts:
             cut_points = _detect_silence_cut_points(audio, SAMPLE_RATE, min_silence_ms=max(micro_pause_ms * 0.5, 15))
             logger.info("Detected %d silence-based cut points", len(cut_points))
+        elif pause_after is not None and not word_ts and comma_indices:
+            # Fallback: forced alignment failed but phoneme commas created
+            # natural pauses in the audio. Detect those silence regions.
+            logger.warning("FA failed — using silence detection on comma-injected audio")
+            cut_points = _detect_silence_cut_points(audio, SAMPLE_RATE, min_silence_ms=100)
+            logger.info("Detected %d silence-based cut points (fallback)", len(cut_points))
 
         # ---- Encode result ----
         audio_b64 = _audio_to_base64_wav(audio)

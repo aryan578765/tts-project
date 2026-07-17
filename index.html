@@ -541,7 +541,18 @@
                         <option value="1.2">1.2x (Fast)</option>
                     </select>
                 </div>
-
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="phrasePauseDuration">Pause Between Phrases</label>
+                    <select id="phrasePauseDuration" class="form-control">
+                        <option value="500">500ms</option>
+                        <option value="1000">1 second</option>
+                        <option value="2000" selected>2 seconds</option>
+                        <option value="3000">3 seconds</option>
+                        <option value="5000">5 seconds</option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-group">
@@ -1304,7 +1315,7 @@ through a series of smaller features embedded across its software"></textarea>
                         lang_code: langCode,
                         timestamps: true,
                         pause_after: pauseAfter,
-                        micro_pause_ms: 1000
+                        micro_pause_ms: parseInt(document.getElementById('phrasePauseDuration').value)
                     }
                 };
 
@@ -1357,24 +1368,38 @@ through a series of smaller features embedded across its software"></textarea>
                 phraseAudioBuffer = await base64ToAudioBuffer(phraseAudioBase64);
 
                 // Match cut points to pause_after positions
-                const matchedCuts = [];
-                for (const idx of pauseAfter) {
-                    if (idx >= wordTs.length) continue;
-                    const wordEnd = wordTs[idx].end;
-                    // Try after_word_idx match
-                    let match = cutPoints.find(cp => cp.after_word_idx === idx);
-                    if (!match) {
-                        // Proximity match
-                        let bestDist = Infinity;
-                        for (const cp of cutPoints) {
-                            const dist = Math.abs(cp.time - wordEnd);
-                            if (dist < bestDist) { bestDist = dist; match = cp; }
+                let matchedCuts = [];
+
+                if (wordTs.length > 0) {
+                    // Primary: use word timestamps for precise matching
+                    for (const idx of pauseAfter) {
+                        if (idx >= wordTs.length) continue;
+                        const wordEnd = wordTs[idx].end;
+                        let match = cutPoints.find(cp => cp.after_word_idx === idx);
+                        if (!match) {
+                            let bestDist = Infinity;
+                            for (const cp of cutPoints) {
+                                const dist = Math.abs(cp.time - wordEnd);
+                                if (dist < bestDist) { bestDist = dist; match = cp; }
+                            }
+                            if (bestDist > 0.6) match = null;
                         }
-                        if (bestDist > 0.6) match = null;
+                        if (match) {
+                            matchedCuts.push({ wordIdx: idx, time: match.time });
+                        }
                     }
-                    if (match) {
-                        matchedCuts.push({ wordIdx: idx, time: match.time });
-                    }
+                } else if (cutPoints.length > 0) {
+                    // Fallback: FA failed but silence detection found cut points.
+                    // Phrase boundaries have LONGER silences than natural micro-pauses,
+                    // so pick the N longest silences, then sort by time for correct order.
+                    const needed = pauseAfter.length;
+                    const byDuration = [...cutPoints].sort((a, b) => (b.duration_ms || 0) - (a.duration_ms || 0));
+                    const topN = byDuration.slice(0, needed);
+                    const sorted = topN.sort((a, b) => a.time - b.time);
+                    matchedCuts = sorted.map((cp, i) => ({
+                        wordIdx: pauseAfter[i] || i,
+                        time: cp.time
+                    }));
                 }
 
                 // Build phrase segments: start/end times

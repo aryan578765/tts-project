@@ -1,7 +1,4 @@
-FROM patelaryan777/kokoro-tts-v2:v20
+FROM patelaryan777/kokoro-tts-v2:v22
 
-# Misaki G2P for phoneme-level comma injection
-RUN pip install --no-cache-dir "misaki[en]"
-
-# Patch: update handler.py with phoneme comma injection support
+# Patch: fix FA digit crash + silence fallback
 COPY handler.py /app/handler.py
