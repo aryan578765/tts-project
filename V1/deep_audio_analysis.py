@@ -6,7 +6,7 @@ problematic word boundary to find exactly what's being destroyed.
 """
 import os, requests, json, base64, wave, struct, numpy as np
 
-API_KEY = os.environ.get("RUNPOD_API_KEY", "rpa_FM53IJS8SMMWARXINSDL5D9E706CT4GUYJAZL9DLhn48fy")
+API_KEY = os.environ.get("RUNPOD_API_KEY", "")
 URL = "https://api.runpod.ai/v2/54td14oe86jexh/runsync"
 HEADERS = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
 
