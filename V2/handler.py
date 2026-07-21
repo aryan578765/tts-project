@@ -309,7 +309,10 @@ def _clean_word(word: str, lang_code: str = "a") -> str:
     # Remove punctuation
     cleaned = re.sub(r'[^\w\s]', '', word, flags=re.UNICODE).strip()
     if not cleaned:
-        return ''
+        # Punctuation-only tokens (e.g. em dash —, ellipsis ...) get a
+        # placeholder so they keep their index position in the alignment.
+        # Dropping them shifts ALL subsequent pause_after indices.
+        return 'pause'
 
     # Check if text contains CJK characters
     has_cjk = any(ord(c) > 0x2E80 for c in cleaned)
@@ -840,8 +843,8 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         if pause_after is not None:
             want_timestamps = True
             want_boundaries = True
-            if micro_pause_ms <= 0:
-                micro_pause_ms = 10.0  # default pause for pause_after mode
+            # Allow micro_pause_ms=0: returns audio without pauses + timestamps
+            # The phoneme commas still ensure natural phrase endings
 
         # ---- Validate ----
         if lang_code not in VALID_LANG_CODES:
@@ -875,7 +878,7 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         is_phonemes = False
         comma_indices: list[int] = []
 
-        if pause_after is not None and micro_pause_ms > 0:
+        if pause_after is not None:
             try:
                 synth_text, comma_indices = _phonemize_with_boundary_commas(
                     text, pause_after, lang_code
@@ -923,8 +926,21 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
         # ---- Step 4: Determine phrase cut points ----
         cut_points: list[dict] = []
         if pause_positions:
+            # Deterministic: from Step 3 micro-pause insertion
             cut_points = pause_positions
             logger.info("Returning %d deterministic pause positions", len(cut_points))
+        elif pause_after is not None and word_ts and micro_pause_ms <= 0:
+            # No-pause mode: return word end times as cut points
+            # (for teams that insert pauses themselves)
+            for idx in pause_after:
+                if idx < len(word_ts):
+                    cut_points.append({
+                        "time": round(word_ts[idx]["end"], 4),
+                        "duration_ms": 0,
+                        "after_word_idx": idx,
+                        "after_word": word_ts[idx]["word"],
+                    })
+            logger.info("Returning %d word-end cut points (no-pause mode)", len(cut_points))
         elif (pause_after is not None or micro_pause_ms > 0) and word_ts:
             cut_points = _detect_silence_cut_points(audio, SAMPLE_RATE, min_silence_ms=max(micro_pause_ms * 0.5, 15))
             logger.info("Detected %d silence-based cut points", len(cut_points))
