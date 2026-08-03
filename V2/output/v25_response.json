@@ -1,0 +1,3528 @@
+{
+  "duration_seconds": 219.856,
+  "phrase_cut_points": [
+    {
+      "after_word": "Compute,",
+      "after_word_idx": 1,
+      "duration_ms": 2000,
+      "time": 2.1727,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "startup,",
+      "after_word_idx": 6,
+      "duration_ms": 2000,
+      "time": 6.4254,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "Upper90,",
+      "after_word_idx": 14,
+      "duration_ms": 2000,
+      "time": 12.2733,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "firm.",
+      "after_word_idx": 18,
+      "duration_ms": 2000,
+      "time": 16.1037,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "inference-specific",
+      "after_word_idx": 28,
+      "duration_ms": 2000,
+      "time": 21.044,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "run",
+      "after_word_idx": 36,
+      "duration_ms": 2000,
+      "time": 25.982,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "quickly",
+      "after_word_idx": 40,
+      "duration_ms": 2000,
+      "time": 30.5973,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "the",
+      "after_word_idx": 45,
+      "duration_ms": 2000,
+      "time": 34.4185,
+      "trough_energy": 0.1
+    },
+    {
+      "after_word": "to",
+      "after_word_idx": 50,
+      "duration_ms": 2000,
+      "time": 38.2203,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "place.",
+      "after_word_idx": 57,
+      "duration_ms": 2000,
+      "time": 42.013,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "signal",
+      "after_word_idx": 63,
+      "duration_ms": 2000,
+      "time": 46.0658,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "to",
+      "after_word_idx": 68,
+      "duration_ms": 2000,
+      "time": 49.5636,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "tools",
+      "after_word_idx": 75,
+      "duration_ms": 2000,
+      "time": 54.1439,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "infrastructure",
+      "after_word_idx": 81,
+      "duration_ms": 2000,
+      "time": 58.6115,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "models",
+      "after_word_idx": 85,
+      "duration_ms": 2000,
+      "time": 62.7645,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "LLMs",
+      "after_word_idx": 91,
+      "duration_ms": 2000,
+      "time": 67.0398,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "labs.",
+      "after_word_idx": 94,
+      "duration_ms": 2000,
+      "time": 70.8724,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "Puklowski,",
+      "after_word_idx": 99,
+      "duration_ms": 2000,
+      "time": 75.3906,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "million",
+      "after_word_idx": 105,
+      "duration_ms": 2000,
+      "time": 80.0405,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "an",
+      "after_word_idx": 112,
+      "duration_ms": 2000,
+      "time": 84.1102,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "an",
+      "after_word_idx": 119,
+      "duration_ms": 2000,
+      "time": 89.6514,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "are",
+      "after_word_idx": 123,
+      "duration_ms": 2000,
+      "time": 93.9218,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "workloads,",
+      "after_word_idx": 127,
+      "duration_ms": 2000,
+      "time": 98.2295,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "infrastructure",
+      "after_word_idx": 131,
+      "duration_ms": 2000,
+      "time": 102.6297,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "Azure.)",
+      "after_word_idx": 139,
+      "duration_ms": 2000,
+      "time": 108.8228,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "chips",
+      "after_word_idx": 143,
+      "duration_ms": 2000,
+      "time": 113.0583,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "inference.",
+      "after_word_idx": 147,
+      "duration_ms": 2000,
+      "time": 116.9208,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "require",
+      "after_word_idx": 152,
+      "duration_ms": 2000,
+      "time": 121.406,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "systems,",
+      "after_word_idx": 155,
+      "duration_ms": 2000,
+      "time": 125.5267,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "deployed",
+      "after_word_idx": 161,
+      "duration_ms": 2000,
+      "time": 129.2515,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "larger",
+      "after_word_idx": 168,
+      "duration_ms": 2000,
+      "time": 134.1818,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "Compute",
+      "after_word_idx": 174,
+      "duration_ms": 2000,
+      "time": 138.7473,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "times",
+      "after_word_idx": 182,
+      "duration_ms": 2000,
+      "time": 143.2752,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "clouds.",
+      "after_word_idx": 187,
+      "duration_ms": 2000,
+      "time": 148.1532,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "chips,",
+      "after_word_idx": 196,
+      "duration_ms": 2000,
+      "time": 152.3484,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "company.",
+      "after_word_idx": 202,
+      "duration_ms": 2000,
+      "time": 156.7012,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "Libby,",
+      "after_word_idx": 208,
+      "duration_ms": 2000,
+      "time": 161.574,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "trader,",
+      "after_word_idx": 214,
+      "duration_ms": 2000,
+      "time": 166.0739,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "2021,",
+      "after_word_idx": 221,
+      "duration_ms": 2000,
+      "time": 171.3723,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "Crusoe,",
+      "after_word_idx": 228,
+      "duration_ms": 2000,
+      "time": 176.6233,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "center",
+      "after_word_idx": 232,
+      "duration_ms": 2000,
+      "time": 180.413,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "was",
+      "after_word_idx": 237,
+      "duration_ms": 2000,
+      "time": 184.2199,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "chips.",
+      "after_word_idx": 246,
+      "duration_ms": 2000,
+      "time": 189.446,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "time",
+      "after_word_idx": 254,
+      "duration_ms": 2000,
+      "time": 194.699,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "uncertainties",
+      "after_word_idx": 260,
+      "duration_ms": 2000,
+      "time": 198.9719,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "depreciation.",
+      "after_word_idx": 263,
+      "duration_ms": 2000,
+      "time": 203.3397,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "loans",
+      "after_word_idx": 269,
+      "duration_ms": 2000,
+      "time": 208.0751,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "the",
+      "after_word_idx": 276,
+      "duration_ms": 2000,
+      "time": 212.0155,
+      "trough_energy": 0
+    },
+    {
+      "after_word": "kind",
+      "after_word_idx": 283,
+      "duration_ms": 2000,
+      "time": 216.9203,
+      "trough_energy": 0.1
+    }
+  ],
+  "rtf": 0.0476,
+  "sample_rate": 24000,
+  "synth_rtf": 0.0208,
+  "word_boundaries": [
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "General|Compute",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2360.1,
+      "pair": "Compute|an",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 120,
+      "pair": "an|AI",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100,
+      "pair": "AI|inference",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "inference|cloud",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "cloud|startup",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2460.1,
+      "pair": "startup|has",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "has|landed",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "landed|a",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 360.1,
+      "pair": "a|num",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 380.1,
+      "pair": "num|million",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "million|loan",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "loan|from",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "from|Upper",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 3040.2,
+      "pair": "Upper|a",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100,
+      "pair": "a|tech",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "tech|investment",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "investment|firm",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2700.1,
+      "pair": "firm|It",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "It|might",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "might|be",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "be|the",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "the|first",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "first|deal",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60.1,
+      "pair": "deal|to",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "to|put",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "put|up",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 140,
+      "pair": "up|inferencespecific",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2360.1,
+      "pair": "inferencespecific|chips",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 160.1,
+      "pair": "chips|as",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "as|collateral",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "collateral|pause",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "pause|chips",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100,
+      "pair": "chips|built",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "built|to",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100,
+      "pair": "to|run",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2400.1,
+      "pair": "run|alreadytrained",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 140,
+      "pair": "alreadytrained|AI",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "AI|models",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "models|quickly",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2740.1,
+      "pair": "quickly|and",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "and|efficiently",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 480.1,
+      "pair": "efficiently|rather",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "rather|than",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "than|the",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2060.1,
+      "pair": "the|more",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "more|expensive",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "expensive|chips",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 160,
+      "pair": "chips|used",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "used|to",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2160,
+      "pair": "to|build",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "build|the",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "the|models",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "models|in",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "in|the",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "the|first",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "first|place",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2120,
+      "pair": "place|The",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "The|financing",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "financing|is",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "is|the",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "the|latest",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "latest|signal",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2400,
+      "pair": "signal|that",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "that|markets",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "markets|are",
+      "status": "tight"
+    },
+    {
+      "can_separate": false,
+      "gap_ms": 0,
+      "pair": "are|responding",
+      "status": "coarticulated"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "responding|to",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2080,
+      "pair": "to|concerns",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "concerns|over",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "over|the",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "the|price",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "price|of",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100.1,
+      "pair": "of|AI",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "AI|tools",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2580,
+      "pair": "tools|and",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40.1,
+      "pair": "and|tokens",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "tokens|by",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "by|turning",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "turning|to",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "to|infrastructure",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2560.1,
+      "pair": "infrastructure|that",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100,
+      "pair": "that|runs",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100,
+      "pair": "runs|opensource",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "opensource|models",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2520,
+      "pair": "models|more",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "more|cheaply",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "cheaply|than",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "than|the",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "the|newest",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 180,
+      "pair": "newest|LLMs",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2320.1,
+      "pair": "LLMs|from",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "from|frontier",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "frontier|labs",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2820.1,
+      "pair": "labs|Founded",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "Founded|by",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 120,
+      "pair": "by|CEO",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 160,
+      "pair": "CEO|Finn",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "Finn|Puklowski",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2540,
+      "pair": "Puklowski|General",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "General|Compute",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 140,
+      "pair": "Compute|raised",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "raised|a",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "a|num",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 540.1,
+      "pair": "num|million",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2180.1,
+      "pair": "million|seed",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "seed|round",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "round|in",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "in|May",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 400,
+      "pair": "May|to",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80.1,
+      "pair": "to|build",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "build|an",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2140,
+      "pair": "an|inference",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100,
+      "pair": "inference|neocloud",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "neocloud|around",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "around|silicon",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "silicon|from",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100,
+      "pair": "from|SambaNova",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 560.1,
+      "pair": "SambaNova|an",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2140,
+      "pair": "an|Intelbacked",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "Intelbacked|chipmaker",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 180,
+      "pair": "chipmaker|Neoclouds",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "Neoclouds|are",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2060,
+      "pair": "are|purposebuilt",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "purposebuilt|for",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 140,
+      "pair": "for|AI",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60.1,
+      "pair": "AI|workloads",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2560.1,
+      "pair": "workloads|unlike",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "unlike|the",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "the|generalpurpose",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "generalpurpose|infrastructure",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2500.1,
+      "pair": "infrastructure|offered",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "offered|by",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "by|traditional",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "traditional|hyperscalers",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80.1,
+      "pair": "hyperscalers|like",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100,
+      "pair": "like|AWS",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 140,
+      "pair": "AWS|or",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 160,
+      "pair": "or|Azure",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2620.1,
+      "pair": "Azure|The",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "The|companys",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 260.1,
+      "pair": "companys|SN",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 420.1,
+      "pair": "SN|chips",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2380.1,
+      "pair": "chips|are",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "are|designed",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "designed|for",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "for|inference",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2620.1,
+      "pair": "inference|Theyre",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "Theyre|powerefficient",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 220.1,
+      "pair": "powerefficient|and",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "and|dont",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "dont|require",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2280,
+      "pair": "require|expensive",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "expensive|watercooling",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "watercooling|systems",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2420,
+      "pair": "systems|which",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "which|means",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "means|they",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "they|can",
+      "status": "tight"
+    },
+    {
+      "can_separate": false,
+      "gap_ms": 0,
+      "pair": "can|be",
+      "status": "coarticulated"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "be|deployed",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2380,
+      "pair": "deployed|more",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "more|quickly",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100,
+      "pair": "quickly|than",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "than|GPUs",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "GPUs|across",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "across|a",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "a|larger",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2340,
+      "pair": "larger|variety",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "variety|of",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "of|data",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "data|centers",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 140,
+      "pair": "centers|General",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "General|Compute",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2240.1,
+      "pair": "Compute|says",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "says|the",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "the|new",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "new|chips",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "chips|will",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "will|provide",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 440.1,
+      "pair": "provide|num",
+      "status": "clean"
+    },
+    {
+      "can_separate": false,
+      "gap_ms": 0,
+      "pair": "num|times",
+      "status": "coarticulated"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2260,
+      "pair": "times|faster",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "faster|inference",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "inference|than",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "than|GPUbased",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "GPUbased|clouds",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2620.1,
+      "pair": "clouds|The",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "The|challenge",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "challenge|is",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "is|getting",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "getting|a",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "a|lot",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "lot|of",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "of|these",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "these|chips",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2280.1,
+      "pair": "chips|especially",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "especially|when",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "when|youre",
+      "status": "tight"
+    },
+    {
+      "can_separate": false,
+      "gap_ms": 0,
+      "pair": "youre|a",
+      "status": "coarticulated"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "a|brandnew",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "brandnew|company",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2720.1,
+      "pair": "company|Upper",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 360,
+      "pair": "Upper|cofounder",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "cofounder|and",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "and|CEO",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 160,
+      "pair": "CEO|Billy",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "Billy|Libby",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2480,
+      "pair": "Libby|a",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100.1,
+      "pair": "a|former",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "former|Goldman",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80.1,
+      "pair": "Goldman|Sachs",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "Sachs|quantitative",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "quantitative|trader",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2360.1,
+      "pair": "trader|had",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "had|a",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "a|playbook",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "playbook|for",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "for|this",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 560.1,
+      "pair": "this|In",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 600.1,
+      "pair": "In|num",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2900.1,
+      "pair": "num|his",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "his|firm",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100,
+      "pair": "firm|financed",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "financed|GPU",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "GPU|purchases",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "purchases|by",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "by|Crusoe",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2360,
+      "pair": "Crusoe|the",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 120.1,
+      "pair": "the|energyfocused",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "energyfocused|data",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "data|center",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2180.1,
+      "pair": "center|startup",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 120,
+      "pair": "startup|which",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "which|he",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "he|believes",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "believes|was",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2180,
+      "pair": "was|the",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "the|first",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40.1,
+      "pair": "first|loan",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100,
+      "pair": "loan|against",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "against|the",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "the|value",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "value|of",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "of|advanced",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "advanced|chips",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2660.1,
+      "pair": "chips|Traditional",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "Traditional|lenders",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 120,
+      "pair": "lenders|eschewed",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "eschewed|such",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "such|deals",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "deals|at",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "at|the",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "the|time",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2500.1,
+      "pair": "time|because",
+      "status": "clean"
+    },
+    {
+      "can_separate": false,
+      "gap_ms": 0,
+      "pair": "because|of",
+      "status": "coarticulated"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "of|the",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "the|risks",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "risks|and",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "and|uncertainties",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2400,
+      "pair": "uncertainties|around",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "around|GPU",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100,
+      "pair": "GPU|depreciation",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2660.1,
+      "pair": "depreciation|But",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "But|as",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "as|CoreWeave",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "CoreWeave|made",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100,
+      "pair": "made|chipsbacked",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "chipsbacked|loans",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2260,
+      "pair": "loans|into",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "into|a",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "a|business",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "business|model",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 460,
+      "pair": "model|and",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 20,
+      "pair": "and|then",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "then|the",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2060,
+      "pair": "the|basis",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 80,
+      "pair": "basis|of",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 40,
+      "pair": "of|a",
+      "status": "tight"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60.1,
+      "pair": "a|blockbuster",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 160.1,
+      "pair": "blockbuster|IPO",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 620.1,
+      "pair": "IPO|this",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "this|kind",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 2040,
+      "pair": "kind|of",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "of|financing",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 100.1,
+      "pair": "financing|has",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "has|become",
+      "status": "clean"
+    },
+    {
+      "can_separate": true,
+      "gap_ms": 60,
+      "pair": "become|common",
+      "status": "clean"
+    }
+  ],
+  "word_timestamps": [
+    {
+      "end": 0.34,
+      "start": 0.06,
+      "word": "General"
+    },
+    {
+      "end": 0.8601,
+      "start": 0.38,
+      "word": "Compute,"
+    },
+    {
+      "end": 3.2802,
+      "start": 3.2202,
+      "word": "an"
+    },
+    {
+      "end": 3.7602,
+      "start": 3.4002,
+      "word": "AI"
+    },
+    {
+      "end": 4.2003,
+      "start": 3.8602,
+      "word": "inference"
+    },
+    {
+      "end": 4.5403,
+      "start": 4.2203,
+      "word": "cloud"
+    },
+    {
+      "end": 5.0204,
+      "start": 4.6003,
+      "word": "startup,"
+    },
+    {
+      "end": 7.6205,
+      "start": 7.4805,
+      "word": "has"
+    },
+    {
+      "end": 7.9805,
+      "start": 7.6805,
+      "word": "landed"
+    },
+    {
+      "end": 8.0405,
+      "start": 8.0205,
+      "word": "a"
+    },
+    {
+      "end": 8.8206,
+      "start": 8.4006,
+      "word": "$400"
+    },
+    {
+      "end": 9.5207,
+      "start": 9.2007,
+      "word": "million"
+    },
+    {
+      "end": 9.8408,
+      "start": 9.5807,
+      "word": "loan"
+    },
+    {
+      "end": 10.0408,
+      "start": 9.9208,
+      "word": "from"
+    },
+    {
+      "end": 10.2808,
+      "start": 10.0808,
+      "word": "Upper90,"
+    },
+    {
+      "end": 13.341,
+      "start": 13.321,
+      "word": "a"
+    },
+    {
+      "end": 13.641,
+      "start": 13.441,
+      "word": "tech"
+    },
+    {
+      "end": 14.2211,
+      "start": 13.701,
+      "word": "investment"
+    },
+    {
+      "end": 14.5011,
+      "start": 14.2611,
+      "word": "firm."
+    },
+    {
+      "end": 17.2812,
+      "start": 17.2012,
+      "word": "It"
+    },
+    {
+      "end": 17.5413,
+      "start": 17.3212,
+      "word": "might"
+    },
+    {
+      "end": 17.6013,
+      "start": 17.5613,
+      "word": "be"
+    },
+    {
+      "end": 17.7413,
+      "start": 17.6613,
+      "word": "the"
+    },
+    {
+      "end": 18.0613,
+      "start": 17.8013,
+      "word": "first"
+    },
+    {
+      "end": 18.2613,
+      "start": 18.0813,
+      "word": "deal"
+    },
+    {
+      "end": 18.3814,
+      "start": 18.3214,
+      "word": "to"
+    },
+    {
+      "end": 18.5614,
+      "start": 18.4214,
+      "word": "put"
+    },
+    {
+      "end": 18.6614,
+      "start": 18.5814,
+      "word": "up"
+    },
+    {
+      "end": 19.7215,
+      "start": 18.8014,
+      "word": "inference-specific"
+    },
+    {
+      "end": 22.4416,
+      "start": 22.0816,
+      "word": "chips"
+    },
+    {
+      "end": 22.7217,
+      "start": 22.6017,
+      "word": "as"
+    },
+    {
+      "end": 23.3418,
+      "start": 22.7817,
+      "word": "collateral"
+    },
+    {
+      "end": 23.5418,
+      "start": 23.3618,
+      "word": "\u2014"
+    },
+    {
+      "end": 23.9018,
+      "start": 23.5618,
+      "word": "chips"
+    },
+    {
+      "end": 24.2019,
+      "start": 24.0018,
+      "word": "built"
+    },
+    {
+      "end": 24.3019,
+      "start": 24.2419,
+      "word": "to"
+    },
+    {
+      "end": 24.6419,
+      "start": 24.4019,
+      "word": "run"
+    },
+    {
+      "end": 27.7621,
+      "start": 27.042,
+      "word": "already-trained"
+    },
+    {
+      "end": 28.2421,
+      "start": 27.9021,
+      "word": "AI"
+    },
+    {
+      "end": 28.6222,
+      "start": 28.3021,
+      "word": "models"
+    },
+    {
+      "end": 29.0022,
+      "start": 28.6822,
+      "word": "quickly"
+    },
+    {
+      "end": 31.8423,
+      "start": 31.7423,
+      "word": "and"
+    },
+    {
+      "end": 32.3824,
+      "start": 31.8623,
+      "word": "efficiently,"
+    },
+    {
+      "end": 33.1225,
+      "start": 32.8625,
+      "word": "rather"
+    },
+    {
+      "end": 33.2825,
+      "start": 33.1625,
+      "word": "than"
+    },
+    {
+      "end": 33.3825,
+      "start": 33.3025,
+      "word": "the"
+    },
+    {
+      "end": 35.6226,
+      "start": 35.4426,
+      "word": "more"
+    },
+    {
+      "end": 36.2427,
+      "start": 35.6626,
+      "word": "expensive"
+    },
+    {
+      "end": 36.6027,
+      "start": 36.3027,
+      "word": "chips"
+    },
+    {
+      "end": 36.9628,
+      "start": 36.7627,
+      "word": "used"
+    },
+    {
+      "end": 37.0628,
+      "start": 36.9828,
+      "word": "to"
+    },
+    {
+      "end": 39.4428,
+      "start": 39.2228,
+      "word": "build"
+    },
+    {
+      "end": 39.5428,
+      "start": 39.4628,
+      "word": "the"
+    },
+    {
+      "end": 39.9629,
+      "start": 39.5628,
+      "word": "models"
+    },
+    {
+      "end": 40.1029,
+      "start": 40.0429,
+      "word": "in"
+    },
+    {
+      "end": 40.2029,
+      "start": 40.1229,
+      "word": "the"
+    },
+    {
+      "end": 40.503,
+      "start": 40.2429,
+      "word": "first"
+    },
+    {
+      "end": 40.903,
+      "start": 40.543,
+      "word": "place."
+    },
+    {
+      "end": 43.103,
+      "start": 43.023,
+      "word": "The"
+    },
+    {
+      "end": 43.7031,
+      "start": 43.123,
+      "word": "financing"
+    },
+    {
+      "end": 43.8631,
+      "start": 43.7831,
+      "word": "is"
+    },
+    {
+      "end": 44.0032,
+      "start": 43.9231,
+      "word": "the"
+    },
+    {
+      "end": 44.4232,
+      "start": 44.0832,
+      "word": "latest"
+    },
+    {
+      "end": 44.7633,
+      "start": 44.4632,
+      "word": "signal"
+    },
+    {
+      "end": 47.3033,
+      "start": 47.1633,
+      "word": "that"
+    },
+    {
+      "end": 47.7034,
+      "start": 47.3433,
+      "word": "markets"
+    },
+    {
+      "end": 47.8434,
+      "start": 47.7234,
+      "word": "are"
+    },
+    {
+      "end": 48.3835,
+      "start": 47.8434,
+      "word": "responding"
+    },
+    {
+      "end": 48.4835,
+      "start": 48.4035,
+      "word": "to"
+    },
+    {
+      "end": 51.1036,
+      "start": 50.5635,
+      "word": "concerns"
+    },
+    {
+      "end": 51.2636,
+      "start": 51.1436,
+      "word": "over"
+    },
+    {
+      "end": 51.3636,
+      "start": 51.2836,
+      "word": "the"
+    },
+    {
+      "end": 51.6636,
+      "start": 51.3836,
+      "word": "price"
+    },
+    {
+      "end": 51.7436,
+      "start": 51.6836,
+      "word": "of"
+    },
+    {
+      "end": 52.1637,
+      "start": 51.8437,
+      "word": "AI"
+    },
+    {
+      "end": 52.6038,
+      "start": 52.2237,
+      "word": "tools"
+    },
+    {
+      "end": 55.2838,
+      "start": 55.1838,
+      "word": "and"
+    },
+    {
+      "end": 55.7239,
+      "start": 55.3239,
+      "word": "tokens"
+    },
+    {
+      "end": 55.8639,
+      "start": 55.7639,
+      "word": "by"
+    },
+    {
+      "end": 56.244,
+      "start": 55.9439,
+      "word": "turning"
+    },
+    {
+      "end": 56.324,
+      "start": 56.264,
+      "word": "to"
+    },
+    {
+      "end": 57.1241,
+      "start": 56.404,
+      "word": "infrastructure"
+    },
+    {
+      "end": 59.8442,
+      "start": 59.6842,
+      "word": "that"
+    },
+    {
+      "end": 60.2442,
+      "start": 59.9442,
+      "word": "runs"
+    },
+    {
+      "end": 60.9043,
+      "start": 60.3442,
+      "word": "open-source"
+    },
+    {
+      "end": 61.3244,
+      "start": 60.9243,
+      "word": "models"
+    },
+    {
+      "end": 64.0245,
+      "start": 63.8444,
+      "word": "more"
+    },
+    {
+      "end": 64.4845,
+      "start": 64.1045,
+      "word": "cheaply"
+    },
+    {
+      "end": 64.6646,
+      "start": 64.5645,
+      "word": "than"
+    },
+    {
+      "end": 64.7446,
+      "start": 64.6846,
+      "word": "the"
+    },
+    {
+      "end": 65.1246,
+      "start": 64.8046,
+      "word": "newest"
+    },
+    {
+      "end": 65.8647,
+      "start": 65.3046,
+      "word": "LLMs"
+    },
+    {
+      "end": 68.3048,
+      "start": 68.1848,
+      "word": "from"
+    },
+    {
+      "end": 68.7448,
+      "start": 68.3448,
+      "word": "frontier"
+    },
+    {
+      "end": 69.1849,
+      "start": 68.8048,
+      "word": "labs."
+    },
+    {
+      "end": 72.345,
+      "start": 72.005,
+      "word": "Founded"
+    },
+    {
+      "end": 72.5051,
+      "start": 72.385,
+      "word": "by"
+    },
+    {
+      "end": 73.0251,
+      "start": 72.6251,
+      "word": "CEO"
+    },
+    {
+      "end": 73.3452,
+      "start": 73.1851,
+      "word": "Finn"
+    },
+    {
+      "end": 73.9853,
+      "start": 73.4252,
+      "word": "Puklowski,"
+    },
+    {
+      "end": 76.8254,
+      "start": 76.5253,
+      "word": "General"
+    },
+    {
+      "end": 77.3254,
+      "start": 76.8454,
+      "word": "Compute"
+    },
+    {
+      "end": 77.7255,
+      "start": 77.4654,
+      "word": "raised"
+    },
+    {
+      "end": 77.7655,
+      "start": 77.7455,
+      "word": "a"
+    },
+    {
+      "end": 78.1255,
+      "start": 77.8255,
+      "word": "$15"
+    },
+    {
+      "end": 79.0056,
+      "start": 78.6656,
+      "word": "million"
+    },
+    {
+      "end": 81.4057,
+      "start": 81.1857,
+      "word": "seed"
+    },
+    {
+      "end": 81.7257,
+      "start": 81.4657,
+      "word": "round"
+    },
+    {
+      "end": 81.8258,
+      "start": 81.7457,
+      "word": "in"
+    },
+    {
+      "end": 82.0658,
+      "start": 81.8858,
+      "word": "May"
+    },
+    {
+      "end": 82.5258,
+      "start": 82.4658,
+      "word": "to"
+    },
+    {
+      "end": 82.8459,
+      "start": 82.6059,
+      "word": "build"
+    },
+    {
+      "end": 83.0059,
+      "start": 82.9259,
+      "word": "an"
+    },
+    {
+      "end": 85.586,
+      "start": 85.1459,
+      "word": "inference"
+    },
+    {
+      "end": 86.2861,
+      "start": 85.686,
+      "word": "neocloud"
+    },
+    {
+      "end": 86.5661,
+      "start": 86.3261,
+      "word": "around"
+    },
+    {
+      "end": 86.9862,
+      "start": 86.6261,
+      "word": "silicon"
+    },
+    {
+      "end": 87.1862,
+      "start": 87.0462,
+      "word": "from"
+    },
+    {
+      "end": 87.9263,
+      "start": 87.2862,
+      "word": "SambaNova,"
+    },
+    {
+      "end": 88.5464,
+      "start": 88.4864,
+      "word": "an"
+    },
+    {
+      "end": 91.3065,
+      "start": 90.6864,
+      "word": "Intel-backed"
+    },
+    {
+      "end": 91.8866,
+      "start": 91.3865,
+      "word": "chipmaker."
+    },
+    {
+      "end": 92.7267,
+      "start": 92.0666,
+      "word": "(Neoclouds"
+    },
+    {
+      "end": 92.8667,
+      "start": 92.7667,
+      "word": "are"
+    },
+    {
+      "end": 95.4868,
+      "start": 94.9267,
+      "word": "purpose-built"
+    },
+    {
+      "end": 95.6668,
+      "start": 95.5468,
+      "word": "for"
+    },
+    {
+      "end": 96.1268,
+      "start": 95.8068,
+      "word": "AI"
+    },
+    {
+      "end": 96.7469,
+      "start": 96.1869,
+      "word": "workloads,"
+    },
+    {
+      "end": 99.627,
+      "start": 99.307,
+      "word": "unlike"
+    },
+    {
+      "end": 99.7271,
+      "start": 99.647,
+      "word": "the"
+    },
+    {
+      "end": 100.4872,
+      "start": 99.7871,
+      "word": "general-purpose"
+    },
+    {
+      "end": 101.2072,
+      "start": 100.5272,
+      "word": "infrastructure"
+    },
+    {
+      "end": 103.9874,
+      "start": 103.7073,
+      "word": "offered"
+    },
+    {
+      "end": 104.1074,
+      "start": 104.0074,
+      "word": "by"
+    },
+    {
+      "end": 104.5874,
+      "start": 104.1674,
+      "word": "traditional"
+    },
+    {
+      "end": 105.4675,
+      "start": 104.6474,
+      "word": "hyperscalers"
+    },
+    {
+      "end": 105.7276,
+      "start": 105.5476,
+      "word": "like"
+    },
+    {
+      "end": 106.6077,
+      "start": 105.8276,
+      "word": "AWS"
+    },
+    {
+      "end": 106.8277,
+      "start": 106.7477,
+      "word": "or"
+    },
+    {
+      "end": 107.3078,
+      "start": 106.9877,
+      "word": "Azure.)"
+    },
+    {
+      "end": 110.0079,
+      "start": 109.9279,
+      "word": "The"
+    },
+    {
+      "end": 110.5279,
+      "start": 110.0479,
+      "word": "company\u2019s"
+    },
+    {
+      "end": 110.988,
+      "start": 110.788,
+      "word": "SN50"
+    },
+    {
+      "end": 111.7481,
+      "start": 111.4081,
+      "word": "chips"
+    },
+    {
+      "end": 114.2282,
+      "start": 114.1282,
+      "word": "are"
+    },
+    {
+      "end": 114.7082,
+      "start": 114.2482,
+      "word": "designed"
+    },
+    {
+      "end": 114.8483,
+      "start": 114.7482,
+      "word": "for"
+    },
+    {
+      "end": 115.3883,
+      "start": 114.9083,
+      "word": "inference."
+    },
+    {
+      "end": 118.1884,
+      "start": 118.0084,
+      "word": "They\u2019re"
+    },
+    {
+      "end": 118.9885,
+      "start": 118.2284,
+      "word": "power-efficient"
+    },
+    {
+      "end": 119.3286,
+      "start": 119.2086,
+      "word": "and"
+    },
+    {
+      "end": 119.6086,
+      "start": 119.3886,
+      "word": "don\u2019t"
+    },
+    {
+      "end": 120.2087,
+      "start": 119.6686,
+      "word": "require"
+    },
+    {
+      "end": 123.1088,
+      "start": 122.4887,
+      "word": "expensive"
+    },
+    {
+      "end": 123.6889,
+      "start": 123.1488,
+      "word": "water-cooling"
+    },
+    {
+      "end": 124.169,
+      "start": 123.7489,
+      "word": "systems,"
+    },
+    {
+      "end": 126.749,
+      "start": 126.589,
+      "word": "which"
+    },
+    {
+      "end": 127.0891,
+      "start": 126.809,
+      "word": "means"
+    },
+    {
+      "end": 127.2291,
+      "start": 127.1291,
+      "word": "they"
+    },
+    {
+      "end": 127.3691,
+      "start": 127.2491,
+      "word": "can"
+    },
+    {
+      "end": 127.4291,
+      "start": 127.3691,
+      "word": "be"
+    },
+    {
+      "end": 128.0092,
+      "start": 127.4891,
+      "word": "deployed"
+    },
+    {
+      "end": 130.5893,
+      "start": 130.3892,
+      "word": "more"
+    },
+    {
+      "end": 131.0093,
+      "start": 130.6493,
+      "word": "quickly"
+    },
+    {
+      "end": 131.2294,
+      "start": 131.1093,
+      "word": "than"
+    },
+    {
+      "end": 131.9895,
+      "start": 131.3094,
+      "word": "GPUs"
+    },
+    {
+      "end": 132.3695,
+      "start": 132.0695,
+      "word": "across"
+    },
+    {
+      "end": 132.4495,
+      "start": 132.4295,
+      "word": "a"
+    },
+    {
+      "end": 132.9296,
+      "start": 132.5295,
+      "word": "larger"
+    },
+    {
+      "end": 135.7497,
+      "start": 135.2696,
+      "word": "variety"
+    },
+    {
+      "end": 135.8697,
+      "start": 135.8097,
+      "word": "of"
+    },
+    {
+      "end": 136.1497,
+      "start": 135.9297,
+      "word": "data"
+    },
+    {
+      "end": 136.6698,
+      "start": 136.2297,
+      "word": "centers."
+    },
+    {
+      "end": 137.1099,
+      "start": 136.8098,
+      "word": "General"
+    },
+    {
+      "end": 137.5899,
+      "start": 137.1299,
+      "word": "Compute"
+    },
+    {
+      "end": 140.01,
+      "start": 139.83,
+      "word": "says"
+    },
+    {
+      "end": 140.13,
+      "start": 140.05,
+      "word": "the"
+    },
+    {
+      "end": 140.29,
+      "start": 140.17,
+      "word": "new"
+    },
+    {
+      "end": 140.6101,
+      "start": 140.35,
+      "word": "chips"
+    },
+    {
+      "end": 140.7501,
+      "start": 140.6301,
+      "word": "will"
+    },
+    {
+      "end": 141.1501,
+      "start": 140.7701,
+      "word": "provide"
+    },
+    {
+      "end": 141.6702,
+      "start": 141.5902,
+      "word": "16"
+    },
+    {
+      "end": 142.1103,
+      "start": 141.6702,
+      "word": "times"
+    },
+    {
+      "end": 144.7103,
+      "start": 144.3703,
+      "word": "faster"
+    },
+    {
+      "end": 145.1704,
+      "start": 144.7703,
+      "word": "inference"
+    },
+    {
+      "end": 145.3104,
+      "start": 145.1904,
+      "word": "than"
+    },
+    {
+      "end": 146.1105,
+      "start": 145.3704,
+      "word": "GPU-based"
+    },
+    {
+      "end": 146.6306,
+      "start": 146.1505,
+      "word": "clouds."
+    },
+    {
+      "end": 149.3307,
+      "start": 149.2507,
+      "word": "The"
+    },
+    {
+      "end": 149.8307,
+      "start": 149.3907,
+      "word": "challenge"
+    },
+    {
+      "end": 149.8908,
+      "start": 149.8507,
+      "word": "is"
+    },
+    {
+      "end": 150.1508,
+      "start": 149.9308,
+      "word": "getting"
+    },
+    {
+      "end": 150.2108,
+      "start": 150.1908,
+      "word": "a"
+    },
+    {
+      "end": 150.4508,
+      "start": 150.2708,
+      "word": "lot"
+    },
+    {
+      "end": 150.5308,
+      "start": 150.4708,
+      "word": "of"
+    },
+    {
+      "end": 150.7709,
+      "start": 150.5508,
+      "word": "these"
+    },
+    {
+      "end": 151.1309,
+      "start": 150.8109,
+      "word": "chips,"
+    },
+    {
+      "end": 153.951,
+      "start": 153.411,
+      "word": "especially"
+    },
+    {
+      "end": 154.111,
+      "start": 153.991,
+      "word": "when"
+    },
+    {
+      "end": 154.2711,
+      "start": 154.131,
+      "word": "you\u2019re"
+    },
+    {
+      "end": 154.2911,
+      "start": 154.2711,
+      "word": "a"
+    },
+    {
+      "end": 154.6911,
+      "start": 154.3111,
+      "word": "brand-new"
+    },
+    {
+      "end": 155.0512,
+      "start": 154.7311,
+      "word": "company."
+    },
+    {
+      "end": 157.9513,
+      "start": 157.7713,
+      "word": "Upper90"
+    },
+    {
+      "end": 158.8914,
+      "start": 158.3113,
+      "word": "co-founder"
+    },
+    {
+      "end": 159.0514,
+      "start": 158.9714,
+      "word": "and"
+    },
+    {
+      "end": 159.5115,
+      "start": 159.1314,
+      "word": "CEO"
+    },
+    {
+      "end": 159.8715,
+      "start": 159.6715,
+      "word": "Billy"
+    },
+    {
+      "end": 160.1316,
+      "start": 159.9315,
+      "word": "Libby,"
+    },
+    {
+      "end": 162.6316,
+      "start": 162.6116,
+      "word": "a"
+    },
+    {
+      "end": 163.0117,
+      "start": 162.7317,
+      "word": "former"
+    },
+    {
+      "end": 163.4517,
+      "start": 163.0717,
+      "word": "Goldman"
+    },
+    {
+      "end": 163.8318,
+      "start": 163.5318,
+      "word": "Sachs"
+    },
+    {
+      "end": 164.4119,
+      "start": 163.8918,
+      "word": "quantitative"
+    },
+    {
+      "end": 164.7519,
+      "start": 164.4519,
+      "word": "trader,"
+    },
+    {
+      "end": 167.252,
+      "start": 167.112,
+      "word": "had"
+    },
+    {
+      "end": 167.292,
+      "start": 167.272,
+      "word": "a"
+    },
+    {
+      "end": 167.692,
+      "start": 167.332,
+      "word": "playbook"
+    },
+    {
+      "end": 167.8521,
+      "start": 167.732,
+      "word": "for"
+    },
+    {
+      "end": 168.1321,
+      "start": 167.8921,
+      "word": "this:"
+    },
+    {
+      "end": 168.7722,
+      "start": 168.6922,
+      "word": "In"
+    },
+    {
+      "end": 169.5323,
+      "start": 169.3723,
+      "word": "2021,"
+    },
+    {
+      "end": 172.5524,
+      "start": 172.4324,
+      "word": "his"
+    },
+    {
+      "end": 172.8525,
+      "start": 172.6124,
+      "word": "firm"
+    },
+    {
+      "end": 173.4725,
+      "start": 172.9525,
+      "word": "financed"
+    },
+    {
+      "end": 173.9526,
+      "start": 173.5325,
+      "word": "GPU"
+    },
+    {
+      "end": 174.6127,
+      "start": 174.0326,
+      "word": "purchases"
+    },
+    {
+      "end": 174.7927,
+      "start": 174.6727,
+      "word": "by"
+    },
+    {
+      "end": 175.3128,
+      "start": 174.8527,
+      "word": "Crusoe,"
+    },
+    {
+      "end": 177.7528,
+      "start": 177.6728,
+      "word": "the"
+    },
+    {
+      "end": 178.673,
+      "start": 177.8729,
+      "word": "energy-focused"
+    },
+    {
+      "end": 178.953,
+      "start": 178.693,
+      "word": "data"
+    },
+    {
+      "end": 179.333,
+      "start": 179.033,
+      "word": "center"
+    },
+    {
+      "end": 181.9531,
+      "start": 181.5131,
+      "word": "startup,"
+    },
+    {
+      "end": 182.2132,
+      "start": 182.0731,
+      "word": "which"
+    },
+    {
+      "end": 182.2932,
+      "start": 182.2332,
+      "word": "he"
+    },
+    {
+      "end": 182.8332,
+      "start": 182.3532,
+      "word": "believes"
+    },
+    {
+      "end": 183.0733,
+      "start": 182.8932,
+      "word": "was"
+    },
+    {
+      "end": 185.3333,
+      "start": 185.2533,
+      "word": "the"
+    },
+    {
+      "end": 185.6733,
+      "start": 185.4133,
+      "word": "first"
+    },
+    {
+      "end": 185.9934,
+      "start": 185.7134,
+      "word": "loan"
+    },
+    {
+      "end": 186.3934,
+      "start": 186.0934,
+      "word": "against"
+    },
+    {
+      "end": 186.4935,
+      "start": 186.4134,
+      "word": "the"
+    },
+    {
+      "end": 186.9135,
+      "start": 186.5335,
+      "word": "value"
+    },
+    {
+      "end": 187.0335,
+      "start": 186.9535,
+      "word": "of"
+    },
+    {
+      "end": 187.5136,
+      "start": 187.0735,
+      "word": "advanced"
+    },
+    {
+      "end": 187.8936,
+      "start": 187.5536,
+      "word": "chips."
+    },
+    {
+      "end": 191.0138,
+      "start": 190.5537,
+      "word": "Traditional"
+    },
+    {
+      "end": 191.5139,
+      "start": 191.0738,
+      "word": "lenders"
+    },
+    {
+      "end": 192.1339,
+      "start": 191.6339,
+      "word": "eschewed"
+    },
+    {
+      "end": 192.394,
+      "start": 192.1939,
+      "word": "such"
+    },
+    {
+      "end": 192.694,
+      "start": 192.474,
+      "word": "deals"
+    },
+    {
+      "end": 192.774,
+      "start": 192.734,
+      "word": "at"
+    },
+    {
+      "end": 192.874,
+      "start": 192.794,
+      "word": "the"
+    },
+    {
+      "end": 193.2941,
+      "start": 192.894,
+      "word": "time"
+    },
+    {
+      "end": 196.0542,
+      "start": 195.7942,
+      "word": "because"
+    },
+    {
+      "end": 196.1142,
+      "start": 196.0542,
+      "word": "of"
+    },
+    {
+      "end": 196.2142,
+      "start": 196.1342,
+      "word": "the"
+    },
+    {
+      "end": 196.6743,
+      "start": 196.2942,
+      "word": "risks"
+    },
+    {
+      "end": 196.8343,
+      "start": 196.7343,
+      "word": "and"
+    },
+    {
+      "end": 197.6344,
+      "start": 196.8543,
+      "word": "uncertainties"
+    },
+    {
+      "end": 200.3545,
+      "start": 200.0344,
+      "word": "around"
+    },
+    {
+      "end": 200.9346,
+      "start": 200.4345,
+      "word": "GPU"
+    },
+    {
+      "end": 201.8147,
+      "start": 201.0346,
+      "word": "depreciation."
+    },
+    {
+      "end": 204.5948,
+      "start": 204.4748,
+      "word": "But"
+    },
+    {
+      "end": 204.7148,
+      "start": 204.6348,
+      "word": "as"
+    },
+    {
+      "end": 205.4549,
+      "start": 204.7948,
+      "word": "CoreWeave"
+    },
+    {
+      "end": 205.7149,
+      "start": 205.4949,
+      "word": "made"
+    },
+    {
+      "end": 206.395,
+      "start": 205.8149,
+      "word": "chips-backed"
+    },
+    {
+      "end": 206.8951,
+      "start": 206.475,
+      "word": "loans"
+    },
+    {
+      "end": 209.3151,
+      "start": 209.1551,
+      "word": "into"
+    },
+    {
+      "end": 209.3952,
+      "start": 209.3751,
+      "word": "a"
+    },
+    {
+      "end": 209.7952,
+      "start": 209.4752,
+      "word": "business"
+    },
+    {
+      "end": 210.1553,
+      "start": 209.8552,
+      "word": "model"
+    },
+    {
+      "end": 210.6953,
+      "start": 210.6153,
+      "word": "and"
+    },
+    {
+      "end": 210.8353,
+      "start": 210.7153,
+      "word": "then"
+    },
+    {
+      "end": 210.9554,
+      "start": 210.8753,
+      "word": "the"
+    },
+    {
+      "end": 213.4354,
+      "start": 213.0154,
+      "word": "basis"
+    },
+    {
+      "end": 213.5954,
+      "start": 213.5154,
+      "word": "of"
+    },
+    {
+      "end": 213.6554,
+      "start": 213.6354,
+      "word": "a"
+    },
+    {
+      "end": 214.2755,
+      "start": 213.7155,
+      "word": "blockbuster"
+    },
+    {
+      "end": 214.7756,
+      "start": 214.4356,
+      "word": "IPO,"
+    },
+    {
+      "end": 215.5357,
+      "start": 215.3957,
+      "word": "this"
+    },
+    {
+      "end": 215.8757,
+      "start": 215.5957,
+      "word": "kind"
+    },
+    {
+      "end": 217.9558,
+      "start": 217.9157,
+      "word": "of"
+    },
+    {
+      "end": 218.6758,
+      "start": 218.0158,
+      "word": "financing"
+    },
+    {
+      "end": 218.9159,
+      "start": 218.7759,
+      "word": "has"
+    },
+    {
+      "end": 219.2759,
+      "start": 218.9759,
+      "word": "become"
+    },
+    {
+      "end": 219.716,
+      "start": 219.3359,
+      "word": "common."
+    }
+  ]
+}
