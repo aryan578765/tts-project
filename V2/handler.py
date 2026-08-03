@@ -557,7 +557,7 @@ def _detect_silence_cut_points(
 
 
 # ---------------------------------------------------------------------------
-# Phoneme-level comma injection
+# Phrase boundary marker injection (em-dash)
 # ---------------------------------------------------------------------------
 
 # Lazy-loaded Misaki G2P
@@ -566,62 +566,63 @@ _g2p_lock = threading.Lock()
 
 
 def _get_g2p():
-    """Return cached Misaki English G2P instance (thread-safe)."""
+    """Return cached Misaki English G2P instance (thread-safe).
+
+    Initialised WITH espeak-ng fallback so that OOV / proper-noun words
+    (e.g. "Puklowski", "Neoclouds") are phonemised via letter-to-sound
+    rules instead of being silently dropped.
+    """
     global _g2p_instance
     if _g2p_instance is None:
         with _g2p_lock:
             if _g2p_instance is None:
                 from misaki import en
-                _g2p_instance = en.G2P()
+                try:
+                    from misaki import espeak as misaki_espeak
+                    fallback = misaki_espeak.EspeakFallback(british=False)
+                    logger.info("Misaki G2P: using espeak-ng fallback for OOV words")
+                except Exception as e:
+                    logger.warning("Misaki espeak fallback unavailable (%s), OOV words may be silent", e)
+                    fallback = None
+                _g2p_instance = en.G2P(fallback=fallback)
                 logger.info("Misaki G2P loaded")
     return _g2p_instance
 
 
-def _phonemize_with_boundary_commas(
+def _inject_boundary_markers(
     text: str,
     pause_after: list[int],
-    lang_code: str = "a",
 ) -> tuple[str, list[int]]:
-    """Phonemize full text and inject commas at specific word boundaries.
+    """Insert em-dashes into raw text at phrase boundaries.
 
-    This makes Kokoro generate natural word endings at those positions
-    (the model sees the comma during generation and produces falling
-    intonation / energy decay) WITHOUT modifying the original text.
+    Em-dashes produce 'holding/trailing' intonation — the word sounds
+    finished but the sentence sounds like it continues (like the speaker
+    paused mid-thought).  This is different from commas, which produce
+    'falling' intonation (sounds like a sentence ended).
 
-    Returns (phoneme_string, comma_word_indices).
+    Kokoro's internal pipeline handles all G2P — including its
+    Misaki + espeak-ng fallback chain — so unusual words like proper
+    nouns and neologisms are never silently dropped.
+
+    Returns (modified_text, marker_word_indices).
     """
-    g2p = _get_g2p()
-
-    # Phonemize the full text for natural cross-word pronunciation
-    full_phonemes, _ = g2p(text)
-    logger.info("Full-text phonemes: %s...", full_phonemes[:80])
-
-    # Also phonemize word-by-word to find word boundary positions
     words = text.split()
     pause_set = set(pause_after)
+    marker_indices: list[int] = []
 
-    # Strategy: phonemize the full text, then find where to insert commas.
-    # We phonemize each word individually to identify its phoneme span,
-    # then insert commas at the matching positions in the full phoneme string.
-    word_phonemes = []
-    for w in words:
-        wp, _ = g2p(w)
-        # Strip leading/trailing whitespace from individual phonemes
-        word_phonemes.append(wp.strip())
-
-    # Build the phoneme string with commas at pause_after positions
-    parts = []
-    comma_indices = []
-    for i, wp in enumerate(word_phonemes):
-        parts.append(wp)
+    for i in range(len(words)):
         if i in pause_set and i < len(words) - 1:
-            parts.append(",")
-            comma_indices.append(i)
+            w = words[i].rstrip()
+            # Remove any existing comma (replacing with em-dash)
+            w = w.rstrip(',')
+            # Append em-dash for holding/trailing intonation
+            words[i] = w + ' \u2014'
+            marker_indices.append(i)
 
-    result = " ".join(parts)
-    logger.info("Phonemized with commas at %d positions: %s...",
-                len(comma_indices), result[:80])
-    return result, comma_indices
+    result = " ".join(words)
+    logger.info("Injected em-dash markers at %d positions (total words: %d)",
+                len(marker_indices), len(words))
+    return result, marker_indices
 
 
 # ---------------------------------------------------------------------------
@@ -870,26 +871,27 @@ def handler(job: dict[str, Any]) -> dict[str, Any]:
             want_timestamps, want_boundaries, micro_pause_ms,
         )
 
-        # ---- Step 0: Phoneme-level comma injection ----
-        # For pause_after mode: phonemize the text and inject commas at
-        # the specified word boundaries. This makes Kokoro generate natural
-        # word endings at those positions without modifying the original text.
+        # ---- Step 0: Text-level em-dash injection ----
+        # For pause_after mode: insert em-dashes into the raw text at
+        # phrase boundaries.  Em-dashes create 'holding' intonation —
+        # the word sounds finished but the sentence continues.
+        # Kokoro's internal G2P (Misaki + espeak-ng fallback) handles
+        # all phonemisation including proper nouns and neologisms.
         synth_text = text
         is_phonemes = False
         comma_indices: list[int] = []
 
         if pause_after is not None:
             try:
-                synth_text, comma_indices = _phonemize_with_boundary_commas(
-                    text, pause_after, lang_code
+                synth_text, comma_indices = _inject_boundary_markers(
+                    text, pause_after
                 )
-                is_phonemes = True
-                logger.info("Using phoneme-level commas at %d positions",
+                # is_phonemes stays False — Kokoro does its own G2P
+                logger.info("Using em-dash markers at %d positions",
                             len(comma_indices))
             except Exception as e:
-                logger.warning("Phonemization failed, falling back to plain text: %s", e)
+                logger.warning("Marker injection failed, using plain text: %s", e)
                 synth_text = text
-                is_phonemes = False
 
         # ---- Step 1: Synthesise (ONNX FP16 + CUDA) ----
         synth_start = time.perf_counter()
